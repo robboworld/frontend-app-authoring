@@ -4,5 +4,20 @@
   "course-authoring.studio-home.courses.tab.title": "Курсы",
   "course-authoring.studio-home.legacy.libraries.tab.title": "Устаревшие библиотеки",
   "course-authoring.studio-home.archived.tab.title": "Архивные курсы",
-  "course-authoring.studio-home.taxonomies.tab.title": "Таксономии"
+  "course-authoring.studio-home.taxonomies.tab.title": "Таксономии",
+  "course-authoring.studio-home.courses.search-placeholder": "Поиск",
+  "course-authoring.studio-home.courses.tab.types-filter-menu.all-courses": "Все курсы",
+  "course-authoring.studio-home.courses.tab.types-filter-menu.active-courses": "Активные",
+  "course-authoring.studio-home.courses.tab.types-filter-menu.archived-courses": "Архивные",
+  "course-authoring.studio-home.courses.tab.order-filter-menu.ascendant-courses": "По названию (А-Я)",
+  "course-authoring.studio-home.courses.tab.order-filter-menu.descendant-courses": "По названию (Я-А)",
+  "course-authoring.studio-home.courses.tab.order-filter-menu.newest-courses": "Сначала новые",
+  "course-authoring.studio-home.courses.tab.order-filter-menu.oldest-courses": "Сначала старые",
+  "course-authoring.studio-home.courses.tab.course.not.found.alert.title": "Мы не смогли найти никаких результатов",
+  "course-authoring.studio-home.courses.tab.course.not.found.alert.message": "Нет курсов с текущими фильтрами.",
+  "course-authoring.studio-home.courses.tab.course.not.found.alert.clean.filters.button": "Очистить фильтры",
+  "course-authoring.studio-home.libraries.tab.library.search-placeholder": "Поиск",
+  "course-authoring.studio-home.libraries.tab.library.not.found.alert.title": "Мы не смогли найти никаких результатов",
+  "course-authoring.studio-home.libraries.tab.library.not.found.alert.message": "Нет библиотек с текущими фильтрами.",
+  "studio-home.legacy-libraries.migrate.create-button": "Создать новую библиотеку"
 }
