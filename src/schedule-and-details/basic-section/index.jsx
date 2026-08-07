@@ -48,10 +48,11 @@ const BasicSection = ({
 
   const promotionTitle = (
     <FormattedMessage
-      id="course-authoring.schedule.basic.promotion.title"
-      defaultMessage="Course summary page {smallText}"
+      {...messages.promotionTitle}
       values={{
-        smallText: <small>(for student enrollment and access)</small>,
+        smallText: (
+          <small>{intl.formatMessage(messages.promotionTitleHint)}</small>
+        ),
       }}
     />
   );

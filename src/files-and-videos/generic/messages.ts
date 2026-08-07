@@ -38,8 +38,13 @@ const messages = defineMessages({
   },
   addFilesButtonLabel: {
     id: 'course-authoring.files-and-upload.addFiles.button.label',
-    defaultMessage: 'Add {fileType}s',
-    description: 'Label for add files button, name changes based on page',
+    defaultMessage: 'Add files',
+    description: 'Label for add files button on the Files page',
+  },
+  addVideosButtonLabel: {
+    id: 'course-authoring.files-and-upload.addVideos.button.label',
+    defaultMessage: 'Add videos',
+    description: 'Label for add videos button on the Videos page',
   },
   actionsButtonLabel: {
     id: 'course-authoring.files-and-upload.action.button.label',
@@ -213,6 +218,11 @@ const messages = defineMessages({
     id: 'course-authoring.files-and-uploads.fileInput.ariaLabel',
     defaultMessage: 'Upload a file',
     description: 'Accessible (screen reader) label for file input',
+  },
+  toggleSortBy: {
+    id: 'course-authoring.files-and-uploads.table.toggleSortBy',
+    defaultMessage: 'Toggle SortBy',
+    description: 'Tooltip/title for sortable DataTable column headers (react-table default)',
   },
 });
 

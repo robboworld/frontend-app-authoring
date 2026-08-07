@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { Form, Dropdown } from '@openedx/paragon';
 
-import { TIME_FORMAT } from '../../constants';
 import SectionSubHeader from '../../generic/section-sub-header';
 import EntranceExam from './entrance-exam';
 import messages from './messages';
@@ -73,7 +72,7 @@ const RequirementsSection = ({
           </Form.Label>
           <Form.Control
             value={effort || ''}
-            placeholder={TIME_FORMAT.toUpperCase()}
+            placeholder={intl.formatMessage(messages.timepickerPlaceholder)}
             onChange={(e) => onChange(e.target.value, 'effort')}
             disabled={!isEditable}
           />

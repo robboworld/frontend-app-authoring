@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import isEmpty from 'lodash/isEmpty';
@@ -7,14 +7,13 @@ import {
   CardView,
   DataTable,
   Dropzone,
-  TextFilter,
   useToggle,
 } from '@openedx/paragon';
 
 import { RequestStatus } from '../../data/constants';
 import { sortFiles } from './utils';
 import messages from './messages';
-
+import LocalizedTextFilter from './LocalizedTextFilter';
 import InfoModal from './InfoModal';
 import FileInput, { useFileInput } from './FileInput';
 import {
@@ -27,6 +26,9 @@ import {
 } from './table-components';
 import ApiStatusToast from './ApiStatusToast';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
+
+const REACT_TABLE_SORT_TITLE = 'Toggle SortBy';
+const ROBBO_SORT_TOGGLE_ATTR = 'data-robbo-sort-toggle';
 
 const FileTable = ({
   files,
@@ -84,6 +86,30 @@ const FileTable = ({
   const defaultCurrentView = (fileType === 'video' && localStorage.getItem('videosCurrentView')) ||
     (fileType === 'file' && localStorage.getItem('filesCurrentView')) || defaultView;
   const [currentView, setCurrentView] = useState(defaultCurrentView);
+  const tableRootRef = useRef(null);
+  const toggleSortByLabel = intl.formatMessage(messages.toggleSortBy);
+
+  // react-table hardcodes sortable header title as "Toggle SortBy"; localize it.
+  useLayoutEffect(() => {
+    const root = tableRootRef.current;
+    if (!root || currentView !== 'list') {
+      return undefined;
+    }
+    const applyLocalizedSortTitles = () => {
+      root.querySelectorAll(
+        `th[title="${REACT_TABLE_SORT_TITLE}"], th[${ROBBO_SORT_TOGGLE_ATTR}="1"]`,
+      ).forEach((th) => {
+        if (th.getAttribute('title') !== toggleSortByLabel) {
+          th.setAttribute('title', toggleSortByLabel);
+        }
+        th.setAttribute(ROBBO_SORT_TOGGLE_ATTR, '1');
+      });
+    };
+    applyLocalizedSortTitles();
+    const observer = new MutationObserver(applyLocalizedSortTitles);
+    observer.observe(root, { attributes: true, subtree: true, attributeFilter: ['title'] });
+    return () => observer.disconnect();
+  }, [toggleSortByLabel, currentView, files.length, loadingStatus]);
 
   useEffect(() => {
     if (!isEmpty(selectedRows) && Object.keys(selectedRows[0]).length > 0) {
@@ -208,14 +234,14 @@ const FileTable = ({
   }
 
   return (
-    <div className="files-table">
+    <div className="files-table" ref={tableRootRef}>
       <DataTable
         isFilterable
         isLoading={loadingStatus === RequestStatus.IN_PROGRESS}
         isSortable
         isSelectable
         isPaginated
-        defaultColumnValues={{ Filter: TextFilter }}
+        defaultColumnValues={{ Filter: LocalizedTextFilter }}
         dataViewToggleOptions={{
           isDataViewToggleEnabled: true,
           onDataViewToggle: (val) => {
@@ -223,7 +249,6 @@ const FileTable = ({
               localStorage.setItem('videosCurrentView', val);
               setCurrentView(val);
             } else {
-              // There's only 2 fileTypes currently being used i.e. video or file
               localStorage.setItem('filesCurrentView', val);
               setCurrentView(val);
             }

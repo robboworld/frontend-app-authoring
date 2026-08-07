@@ -21,6 +21,7 @@ import {
   FileTable,
   ThumbnailColumn,
 } from '@src/files-and-videos/generic';
+import { getWrapperTypeLabel } from '@src/files-and-videos/generic/getWrapperTypeLabel';
 import { GatedComponentWrapper } from '@src/generic/agreement-gated-feature';
 import { useModels } from '@src/generic/model-store';
 import { DeprecatedReduxState } from '@src/store';
@@ -138,6 +139,7 @@ export const CourseFilesTable = () => {
     {
       Header: intl.formatMessage(messages.fileTypeColumn),
       accessor: 'wrapperType',
+      Cell: ({ row }) => getWrapperTypeLabel(intl, row.original.wrapperType),
       Filter: CheckboxFilter,
       filter: 'includesValue',
       filterChoices: [

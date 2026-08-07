@@ -13,6 +13,14 @@ const messages = defineMessages({
     id: 'course-authoring.advanced-settings.policies.title',
     defaultMessage: 'Manual policy definition',
   },
+  policyDescription: {
+    id: 'course-authoring.advanced-settings.policies.description',
+    defaultMessage: '{notice} Do not modify these policies unless you are familiar with their purpose.',
+  },
+  policyWarningNotice: {
+    id: 'course-authoring.advanced-settings.policies.warning-notice',
+    defaultMessage: 'Warning:',
+  },
   alertWarning: {
     id: 'course-authoring.advanced-settings.alert.warning',
     defaultMessage: 'You\'ve made some changes',

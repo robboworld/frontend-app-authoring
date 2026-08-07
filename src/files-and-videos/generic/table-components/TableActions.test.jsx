@@ -59,7 +59,7 @@ describe('TableActions', () => {
     expect(screen.getByRole('button', { name: messages.sortButtonLabel.defaultMessage })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: messages.actionsButtonLabel.defaultMessage })).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: messages.addFilesButtonLabel.defaultMessage.replace('{fileType}', 'video') }),
+      screen.getByRole('button', { name: messages.addVideosButtonLabel.defaultMessage }),
     ).toBeInTheDocument();
   });
 
@@ -94,7 +94,7 @@ describe('TableActions', () => {
 
     renderWithContext({ fileInputControl: { click: mockClick } }, {}, mockClear);
     fireEvent.click(
-      screen.getByRole('button', { name: messages.addFilesButtonLabel.defaultMessage.replace('{fileType}', 'video') }),
+      screen.getByRole('button', { name: messages.addVideosButtonLabel.defaultMessage }),
     );
     expect(mockClick).toHaveBeenCalled();
   });

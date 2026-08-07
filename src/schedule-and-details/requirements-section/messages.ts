@@ -17,6 +17,10 @@ const messages = defineMessages({
     id: 'course-authoring.schedule-section.requirements.timepicker.help-text',
     defaultMessage: 'Time spent on all course work',
   },
+  timepickerPlaceholder: {
+    id: 'course-authoring.schedule.schedule-section.timepicker.placeholder',
+    defaultMessage: 'HH:MM',
+  },
   dropdownLabel: {
     id: 'course-authoring.schedule-section.requirements.dropdown.label',
     defaultMessage: 'Prerequisite course',

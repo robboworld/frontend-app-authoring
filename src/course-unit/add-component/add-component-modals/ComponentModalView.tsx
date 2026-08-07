@@ -6,7 +6,7 @@ import { useIntl } from '@edx/frontend-platform/i18n';
 import { updateQueryPendingStatus } from '../../data/slice';
 import { getXBlockSupportMessages } from '../../constants';
 import AddComponentButton from '../add-component-btn';
-import messages from '../messages';
+import messages, { getComponentTypeLabel } from '../messages';
 import ModalContainer from './ModalContainer';
 
 interface ComponentTemplate {
@@ -58,6 +58,7 @@ const ComponentModalView = ({
     supportLegend,
   } = component;
   const supportLabels = getXBlockSupportMessages(intl);
+  const typeLabel = getComponentTypeLabel(intl, type, displayName);
 
   const handleSubmit = () => {
     handleCreateNewXBlock(type, moduleTitle);
@@ -83,7 +84,7 @@ const ComponentModalView = ({
       <ModalContainer
         isOpen={isOpen}
         close={close}
-        title={intl.formatMessage(messages.modalContainerTitle, { componentTitle: (displayName ?? '').toLowerCase() })}
+        title={intl.formatMessage(messages.modalContainerTitle, { componentTitle: (typeLabel ?? '').toLowerCase() })}
         btnText={intl.formatMessage(messages.modalBtnText)}
         onSubmit={handleSubmit}
         resetDisabled={() => setModuleTitle('')}
@@ -91,7 +92,7 @@ const ComponentModalView = ({
       >
         <Form.Group>
           <Form.RadioSet
-            name={displayName}
+            name={typeLabel}
             onChange={(e) => setModuleTitle(e.target.value)}
           >
             {templates.map((componentTemplate) => {

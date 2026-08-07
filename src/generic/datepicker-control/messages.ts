@@ -21,6 +21,16 @@ const messages = defineMessages({
     id: 'course-authoring.schedule.schedule-section.timepicker.screenreader-hint',
     defaultMessage: 'Enter time in {timeFormat} or twelve-hour format, for example 6:00 PM.',
   },
+  timePlaceholder: {
+    id: 'course-authoring.schedule.schedule-section.timepicker.placeholder',
+    defaultMessage: 'HH:MM',
+    description: 'Placeholder text for time inputs in schedule datepicker',
+  },
+  datePlaceholder: {
+    id: 'course-authoring.schedule.schedule-section.datepicker.placeholder',
+    defaultMessage: 'MM/DD/YYYY',
+    description: 'Placeholder text for date inputs in schedule datepicker',
+  },
 });
 
 export default messages;

@@ -217,9 +217,14 @@ const AdvancedSettings = () => {
                   <section className="setting-items-policies">
                     <div className="small">
                       <FormattedMessage
-                        id="course-authoring.advanced-settings.policies.description"
-                        defaultMessage="{notice} Do not modify these policies unless you are familiar with their purpose."
-                        values={{ notice: <strong>Warning:</strong> }}
+                        {...messages.policyDescription}
+                        values={{
+                          notice: (
+                            <strong>
+                              {intl.formatMessage(messages.policyWarningNotice)}
+                            </strong>
+                          ),
+                        }}
                       />
                     </div>
                     <div className="setting-items-deprecated-setting">

@@ -11,6 +11,10 @@ import { WysiwygEditor } from '../../generic/WysiwygEditor';
 import SectionSubHeader from '../../generic/section-sub-header';
 import IntroductionVideo from './introduction-video';
 import ExtendedCourseDetails from './extended-course-details';
+import {
+  isCourseOverviewSample,
+  localizeCourseOverviewSample,
+} from './courseOverviewSample';
 import messages from './messages';
 
 const IntroducingSection = ({
@@ -34,6 +38,10 @@ const IntroducingSection = ({
   onChange,
 }) => {
   const intl = useIntl();
+  const localizedOverview = localizeCourseOverviewSample(overview, intl.locale);
+  const overviewEditorKey = isCourseOverviewSample(overview)
+    ? `overview-sample-${intl.locale}`
+    : 'overview';
   const overviewHelpText = (
     <FormattedMessage
       id="course-authoring.schedule-section.introducing.course-overview.help-text"
@@ -114,7 +122,8 @@ const IntroducingSection = ({
           <Form.Group className="form-group-custom">
             <Form.Label>{intl.formatMessage(messages.courseOverviewLabel)}</Form.Label>
             <WysiwygEditor
-              initialValue={overview}
+              key={overviewEditorKey}
+              initialValue={localizedOverview}
               onChange={(value) => onChange(value, 'overview')}
               disabled={!isEditable}
             />

@@ -48,7 +48,7 @@ describe('GalleryCard', () => {
 
   it('renders the card with file type chip', () => {
     renderComponent();
-    expect(screen.getByText('image')).toBeInTheDocument();
+    expect(screen.getByText('Image')).toBeInTheDocument();
   });
 
   it('renders with custom className', () => {

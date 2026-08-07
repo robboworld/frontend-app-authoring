@@ -4,16 +4,22 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { Form, Icon } from '@openedx/paragon';
 import { AccessTime, Calendar } from '@openedx/paragon/icons';
-import { useIntl } from '@edx/frontend-platform/i18n';
+import { getLocale, useIntl } from '@edx/frontend-platform/i18n';
 
 import { convertToDateFromString, convertToStringFromDate, isValidDate } from '../../utils';
 import { DATE_FORMAT, TIME_FORMAT } from '../../constants';
+import { getDatePickerLocale } from './datepickerLocale';
 import messages from './messages';
 
 export const DATEPICKER_TYPES = {
   date: 'date',
   time: 'time',
 };
+
+/** Display format for the date input; storage remains ISO UTC via utils. */
+const getDateDisplayFormat = () => (
+  getLocale().startsWith('ru') ? 'dd.MM.yyyy' : DATE_FORMAT
+);
 
 const DatepickerControl = ({
   type,
@@ -29,7 +35,7 @@ const DatepickerControl = ({
   const intl = useIntl();
   const formattedDate = convertToDateFromString(value);
   const inputFormat = {
-    [DATEPICKER_TYPES.date]: DATE_FORMAT,
+    [DATEPICKER_TYPES.date]: getDateDisplayFormat(),
     [DATEPICKER_TYPES.time]: TIME_FORMAT,
   };
   const isTimePicker = type === DATEPICKER_TYPES.time;
@@ -75,6 +81,7 @@ const DatepickerControl = ({
           name={controlName}
           selected={formattedDate}
           disabled={readonly}
+          locale={getDatePickerLocale()}
           dateFormat={inputFormat[type]}
           timeFormat={inputFormat[type]}
           className={classNames('datepicker-custom-control', {
@@ -85,7 +92,11 @@ const DatepickerControl = ({
           selectsStart
           showTimeSelect={type === DATEPICKER_TYPES.time}
           showTimeSelectOnly={type === DATEPICKER_TYPES.time}
-          placeholderText={inputFormat[type].toLocaleUpperCase()}
+          placeholderText={
+            isTimePicker
+              ? intl.formatMessage(messages.timePlaceholder)
+              : intl.formatMessage(messages.datePlaceholder)
+          }
           showPopperArrow={false}
           aria-describedby={describedByIds}
           onChange={(date) => {

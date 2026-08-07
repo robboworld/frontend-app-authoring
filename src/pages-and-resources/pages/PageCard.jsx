@@ -3,7 +3,7 @@ import { useIntl } from '@edx/frontend-platform/i18n';
 import { Badge, Card } from '@openedx/paragon';
 import PropTypes from 'prop-types';
 import React from 'react';
-import messages from '../messages';
+import messages, { getCourseAppCardLabels } from '../messages';
 import { useIsDesktop } from '../../utils';
 import PageSettingButton from './PageSettingButton';
 import './PageCard.scss';
@@ -27,8 +27,14 @@ const PageCard = ({
   settingButton,
   courseId,
 }) => {
-  const { formatMessage } = useIntl();
+  const intl = useIntl();
   const isDesktop = useIsDesktop();
+  const { name, description } = getCourseAppCardLabels(
+    intl,
+    page.id,
+    page.name,
+    page.description,
+  );
 
   const SettingButton = settingButton || <PageSettingButton courseId={courseId} {...page} />;
 
@@ -40,10 +46,10 @@ const PageCard = ({
       })}
     >
       <Card.Header
-        title={page.name}
+        title={name}
         subtitle={page.enabled && (
           <Badge variant="success" className="mt-1">
-            {formatMessage(messages.enabled)}
+            {intl.formatMessage(messages.enabled)}
           </Badge>
         )}
         actions={<div className="mt-1">{SettingButton}</div>}
@@ -51,7 +57,7 @@ const PageCard = ({
       />
       <Card.Body>
         <Card.Section>
-          {page.description}
+          {description}
         </Card.Section>
       </Card.Body>
     </Card>

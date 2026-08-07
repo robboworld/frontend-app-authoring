@@ -1,4 +1,6 @@
 import { ContainerType } from '@src/generic/key-utils';
+import { formatAppMessage } from '@src/constants/formatMessage';
+import { courseBlockNameMessages } from '@src/constants/messages';
 import messages from './messages';
 
 export const ITEM_BADGE_STATUS = {
@@ -20,11 +22,21 @@ export const CHECKLIST_FILTERS = {
   INSTRUCTOR_PACED: 'INSTRUCTOR_PACED',
 } as const;
 
+/** `name` is locale-aware; `id` is stable. */
 export const COURSE_BLOCK_NAMES = {
-  chapter: { id: 'chapter', name: 'Section' },
-  sequential: { id: 'sequential', name: 'Subsection' },
-  vertical: { id: 'vertical', name: 'Unit' },
-} as const;
+  chapter: {
+    id: 'chapter',
+    get name() { return formatAppMessage(courseBlockNameMessages.chapter); },
+  },
+  sequential: {
+    id: 'sequential',
+    get name() { return formatAppMessage(courseBlockNameMessages.sequential); },
+  },
+  vertical: {
+    id: 'vertical',
+    get name() { return formatAppMessage(courseBlockNameMessages.vertical); },
+  },
+};
 
 export const LAUNCH_CHECKLIST = {
   data: [
@@ -99,6 +111,7 @@ export const API_ERROR_TYPES = {
  */
 export const OUTLINE_CATEGORY_CONFIG = {
   chapter: {
+    // English technical prefix for test ids / CSS (not user-facing copy)
     id: 'chapter',
     name: 'Section',
     containerType: ContainerType.Section,

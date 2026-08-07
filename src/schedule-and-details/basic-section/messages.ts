@@ -37,6 +37,16 @@ const messages = defineMessages({
     id: 'course-authoring.schedule.basic.promotion.button',
     defaultMessage: 'Invite your students',
   },
+  promotionTitle: {
+    id: 'course-authoring.schedule.basic.promotion.title',
+    defaultMessage: 'Course summary page {smallText}',
+    description: 'Title above the course about-page link; smallText is a parenthetical hint',
+  },
+  promotionTitleHint: {
+    id: 'course-authoring.schedule.basic.promotion.title.hint',
+    defaultMessage: '(for student enrollment and access)',
+    description: 'Parenthetical hint next to the course summary page title',
+  },
 });
 
 export default messages;
