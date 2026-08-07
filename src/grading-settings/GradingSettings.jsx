@@ -32,6 +32,7 @@ import DeadlineSection from './deadline-section';
 import GradingScale from './grading-scale/GradingScale';
 import GradingSidebar from './grading-sidebar';
 import { useConvertGradeCutoffs, useUpdateGradingData } from './hooks';
+import { localizeDefaultCourseAssignmentLists } from './localizeDefaultGradingLabels';
 import messages from './messages';
 
 const GradingSettings = () => {
@@ -61,8 +62,8 @@ const GradingSettings = () => {
     isError: savingFailed,
   } = useGradingSettingUpdater(courseId);
 
-  const courseAssignmentLists = gradingSettings?.courseAssignmentLists;
   const courseGradingDetails = gradingSettings?.courseDetails;
+  const rawCourseAssignmentLists = gradingSettings?.courseAssignmentLists;
   const isLoadingDenied = isGradingSettingsError || isCourseSettingsError;
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const isLoading = isCourseSettingsLoading || isGradingSettingsLoading || isLoadingUserPermissions;
@@ -85,7 +86,18 @@ const GradingSettings = () => {
     handleResetPageData,
     handleAddAssignment,
     handleRemoveAssignment,
-  } = useUpdateGradingData(courseGradingDetails, setOverrideInternetConnectionAlert, setShowSuccessAlert);
+  } = useUpdateGradingData(
+    courseGradingDetails,
+    setOverrideInternetConnectionAlert,
+    setShowSuccessAlert,
+    rawCourseAssignmentLists,
+  );
+
+  const courseAssignmentLists = localizeDefaultCourseAssignmentLists(
+    rawCourseAssignmentLists,
+    intl.locale,
+    graders,
+  );
 
   const {
     gradeLetters,

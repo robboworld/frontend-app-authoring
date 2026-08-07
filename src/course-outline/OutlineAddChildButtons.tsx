@@ -10,6 +10,7 @@ import { useCourseOutlineContext } from '@src/course-outline/CourseOutlineContex
 import { LoadingSpinner } from '@src/generic/Loading';
 import { useCallback } from 'react';
 import {
+  COURSE_BLOCK_NAMES,
   OUTLINE_CATEGORY_CONFIG,
   CONTAINER_CATEGORY_CONFIG,
 } from './constants';
@@ -135,7 +136,7 @@ const OutlineAddChildButtons = ({
       handleAddAndOpenUnit.mutateAsync({
         type: ContainerType.Vertical,
         parentLocator,
-        displayName: OUTLINE_CATEGORY_CONFIG.vertical.name,
+        displayName: COURSE_BLOCK_NAMES.vertical.name,
         sectionId: grandParentLocator,
       }),
   };

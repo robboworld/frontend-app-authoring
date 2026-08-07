@@ -1,4 +1,5 @@
-import { defineMessages } from '@edx/frontend-platform/i18n';
+import { defineMessages, type IntlShape } from '@edx/frontend-platform/i18n';
+import { COMPONENT_TYPES } from '@src/generic/block-type-utils/constants';
 
 const messages = defineMessages({
   title: {
@@ -10,6 +11,61 @@ const messages = defineMessages({
     id: 'course-authoring.course-unit.add.component.button.text',
     defaultMessage: 'Add Component:',
     description: 'Information text for screen-readers about each add component button',
+  },
+  typeHtml: {
+    id: 'course-authoring.course-unit.add.component.type.html',
+    defaultMessage: 'Text',
+    description: 'Label for the Text/HTML component type button',
+  },
+  typeVideo: {
+    id: 'course-authoring.course-unit.add.component.type.video',
+    defaultMessage: 'Video',
+    description: 'Label for the Video component type button',
+  },
+  typeProblem: {
+    id: 'course-authoring.course-unit.add.component.type.problem',
+    defaultMessage: 'Problem',
+    description: 'Label for the Problem component type button',
+  },
+  typeOpenResponse: {
+    id: 'course-authoring.course-unit.add.component.type.openassessment',
+    defaultMessage: 'Open Response',
+    description: 'Label for the Open Response Assessment component type button',
+  },
+  typeProblemBank: {
+    id: 'course-authoring.course-unit.add.component.type.itembank',
+    defaultMessage: 'Problem Bank',
+    description: 'Label for the Problem Bank component type button',
+  },
+  typeDragAndDrop: {
+    id: 'course-authoring.course-unit.add.component.type.drag-and-drop-v2',
+    defaultMessage: 'Drag and Drop',
+    description: 'Label for the Drag and Drop component type button',
+  },
+  typeLibraryContent: {
+    id: 'course-authoring.course-unit.add.component.type.library_v2',
+    defaultMessage: 'Library Content',
+    description: 'Label for the Library Content (v2) component type button',
+  },
+  typeLegacyLibrary: {
+    id: 'course-authoring.course-unit.add.component.type.library',
+    defaultMessage: 'Legacy Library',
+    description: 'Label for the Legacy Library component type button',
+  },
+  typeAdvanced: {
+    id: 'course-authoring.course-unit.add.component.type.advanced',
+    defaultMessage: 'Advanced',
+    description: 'Label for the Advanced component type button',
+  },
+  typeDiscussion: {
+    id: 'course-authoring.course-unit.add.component.type.discussion',
+    defaultMessage: 'Discussion',
+    description: 'Label for the Discussion component type button',
+  },
+  betaBadge: {
+    id: 'course-authoring.course-unit.add.component.beta',
+    defaultMessage: 'Beta',
+    description: 'Badge for beta component types',
   },
   modalBtnText: {
     id: 'course-authoring.course-unit.modal.button.text',
@@ -87,5 +143,31 @@ const messages = defineMessages({
     description: 'Message for support status tooltip for modules with provisional platform support',
   },
 });
+
+const COMPONENT_TYPE_MESSAGE_KEYS: Record<string, keyof typeof messages> = {
+  [COMPONENT_TYPES.html]: 'typeHtml',
+  [COMPONENT_TYPES.video]: 'typeVideo',
+  [COMPONENT_TYPES.problem]: 'typeProblem',
+  [COMPONENT_TYPES.openassessment]: 'typeOpenResponse',
+  [COMPONENT_TYPES.itembank]: 'typeProblemBank',
+  [COMPONENT_TYPES.dragAndDrop]: 'typeDragAndDrop',
+  [COMPONENT_TYPES.libraryV2]: 'typeLibraryContent',
+  [COMPONENT_TYPES.library]: 'typeLegacyLibrary',
+  [COMPONENT_TYPES.advanced]: 'typeAdvanced',
+  [COMPONENT_TYPES.discussion]: 'typeDiscussion',
+};
+
+/** Locale-aware label for add-component buttons; falls back to CMS displayName. */
+export function getComponentTypeLabel(
+  intl: IntlShape,
+  type: string,
+  fallbackDisplayName: string,
+): string {
+  const messageKey = COMPONENT_TYPE_MESSAGE_KEYS[type];
+  if (!messageKey) {
+    return fallbackDisplayName;
+  }
+  return intl.formatMessage(messages[messageKey]);
+}
 
 export default messages;

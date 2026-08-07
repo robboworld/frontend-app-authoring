@@ -361,7 +361,9 @@ const OutlineNode = ({
                       onClick={() => onOpenHighlightsModal(liveBlock)}
                     >
                       <Bubble className="mr-1">{Number((blk.highlights as any[])?.length ?? 0)}</Bubble>
-                      <p className="m-0 text-black">{outlineNodeMessages.sectionHighlightsBadge.defaultMessage}</p>
+                      <p className="m-0 text-black">
+                        {intl.formatMessage(outlineNodeMessages.sectionHighlightsBadge)}
+                      </p>
                     </Button>
                   </div>
                 )}

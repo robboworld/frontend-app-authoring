@@ -88,7 +88,9 @@ const TableActions = ({
       </Dropdown>
       {permissions.canCreateFiles && (
         <Button iconBefore={Add} onClick={handleOpenFileSelector}>
-          {intl.formatMessage(messages.addFilesButtonLabel, { fileType })}
+          {intl.formatMessage(
+            fileType === 'video' ? messages.addVideosButtonLabel : messages.addFilesButtonLabel,
+          )}
         </Button>
       )}
       <SortAndFilterModal {...{ isSortOpen, closeSort, handleSort }} />

@@ -103,6 +103,7 @@ const PageAlerts = ({
         icon={InfoOutlineIcon}
         variant="info"
         onClose={onDismiss}
+        closeLabel={intl.formatMessage({ id: 'pgn.Alert.closeLabel', defaultMessage: 'Dismiss' })}
         actions={[
           <Button
             key="learnMore"

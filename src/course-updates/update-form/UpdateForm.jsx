@@ -8,7 +8,7 @@ import {
 } from '@openedx/paragon';
 import classNames from 'classnames';
 import DatePicker from 'react-datepicker';
-import { useIntl } from '@edx/frontend-platform/i18n';
+import { getLocale, useIntl } from '@edx/frontend-platform/i18n';
 import { Calendar as CalendarIcon, Error as ErrorIcon } from '@openedx/paragon/icons';
 import { Formik } from 'formik';
 
@@ -19,6 +19,7 @@ import {
 } from '../../utils';
 import { DATE_FORMAT, DEFAULT_EMPTY_WYSIWYG_VALUE } from '../../constants';
 import { WysiwygEditor } from '../../generic/WysiwygEditor';
+import { getDatePickerLocale } from '../../generic/datepicker-control/datepickerLocale';
 import { REQUEST_TYPES } from '../constants';
 import { geUpdateFormSettings } from './utils';
 import messages from './messages';
@@ -32,6 +33,8 @@ const UpdateForm = ({
   isFirstUpdate,
 }) => {
   const intl = useIntl();
+  const isRu = getLocale().startsWith('ru');
+  const dateDisplayFormat = isRu ? 'dd.MM.yyyy' : DATE_FORMAT;
 
   const {
     currentContent,
@@ -78,7 +81,8 @@ const UpdateForm = ({
                     name="date"
                     data-testid="course-updates-datepicker"
                     selected={isValidDate(values.date) ? convertToDateFromString(values.date) : undefined}
-                    dateFormat={DATE_FORMAT}
+                    locale={getDatePickerLocale()}
+                    dateFormat={dateDisplayFormat}
                     className={classNames('datepicker-custom-control', {
                       'datepicker-custom-control_isInvalid': !isValid,
                     })}

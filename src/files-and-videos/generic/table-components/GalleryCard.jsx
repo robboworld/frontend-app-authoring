@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import {
   ActionRow,
   Icon,
@@ -10,6 +11,7 @@ import {
 import { ClosedCaption } from '@openedx/paragon/icons';
 import FileMenu from '../FileMenu';
 import FileThumbnail from '../ThumbnailPreview';
+import { getWrapperTypeLabel } from '../getWrapperTypeLabel';
 
 const GalleryCard = ({
   className,
@@ -25,6 +27,7 @@ const GalleryCard = ({
     canDeleteFiles: true,
   },
 }) => {
+  const intl = useIntl();
   const lockFile = () => {
     const { locked, id } = original;
     handleLockFile(id, !locked);
@@ -79,7 +82,7 @@ const GalleryCard = ({
       </Card.Section>
       <Card.Footer className="p-3 pt-4 row m-0 flex-row-reverse justify-content-between align-items-center">
         <Chip>
-          {original.wrapperType}
+          {getWrapperTypeLabel(intl, original.wrapperType)}
         </Chip>
         {original.transcripts?.length > 0 && <Icon size="lg" src={ClosedCaption} className="m-0 text-primary-500" />}
       </Card.Footer>

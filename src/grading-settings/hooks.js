@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
+import { getLocale } from '@edx/frontend-platform/i18n';
 import { v4 as uuidv4 } from 'uuid';
 
 import { getGradingValues, getSortedGrades } from './grading-scale/utils';
+import { localizeDefaultGradingDetails } from './localizeDefaultGradingLabels';
 
 const useConvertGradeCutoffs = (
   gradeCutoffs,
@@ -17,7 +19,12 @@ const useConvertGradeCutoffs = (
   };
 };
 
-const useUpdateGradingData = (gradingSettingsData, setOverrideInternetConnectionAlert, setShowSuccessAlert) => {
+const useUpdateGradingData = (
+  gradingSettingsData,
+  setOverrideInternetConnectionAlert,
+  setShowSuccessAlert,
+  courseAssignmentLists,
+) => {
   const uniqueId = uuidv4();
   const [gradingData, setGradingData] = useState({});
   const [showSavePrompt, setShowSavePrompt] = useState(false);
@@ -31,14 +38,24 @@ const useUpdateGradingData = (gradingSettingsData, setOverrideInternetConnection
 
   useEffect(() => {
     if (gradingSettingsData !== undefined) {
-      setGradingData(gradingSettingsData);
+      setGradingData(localizeDefaultGradingDetails(
+        gradingSettingsData,
+        getLocale(),
+        courseAssignmentLists,
+      ));
     }
+    // courseAssignmentLists arrives with the same fetch as gradingSettingsData
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gradingSettingsData]);
 
   const handleResetPageData = () => {
     setShowSavePrompt(!showSavePrompt);
     setShowSuccessAlert(false);
-    setGradingData(gradingSettingsData);
+    setGradingData(localizeDefaultGradingDetails(
+      gradingSettingsData,
+      getLocale(),
+      courseAssignmentLists,
+    ));
     resetDataRef.current = true;
     setOverrideInternetConnectionAlert(false);
   };

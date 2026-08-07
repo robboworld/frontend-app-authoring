@@ -1,3 +1,6 @@
+import { formatAppMessage } from './constants/formatMessage';
+import { courseBlockNameMessages, notificationMessages } from './constants/messages';
+
 export const DATE_FORMAT = 'MM/dd/yyyy';
 export const TIME_FORMAT = 'HH:mm';
 export const DATE_TIME_FORMAT = 'YYYY-MM-DDTHH:mm:ss\\Z';
@@ -20,19 +23,23 @@ export const BADGE_STATES = {
   secondary: 'secondary',
 };
 
+/**
+ * Processing toast labels. Resolved via i18n so locale can switch (ru/en).
+ * Access properties at call time (getters), not at module load.
+ */
 export const NOTIFICATION_MESSAGES = {
-  adding: 'Adding',
-  saving: 'Saving',
-  duplicating: 'Duplicating',
-  deleting: 'Deleting',
-  copying: 'Copying',
-  pasting: 'Pasting',
-  discardChanges: 'Discarding changes',
-  moving: 'Moving',
-  undoMoving: 'Undo moving',
-  publishing: 'Publishing',
-  hidingFromStudents: 'Hiding from students',
-  makingVisibleToStudents: 'Making visible to students',
+  get adding() { return formatAppMessage(notificationMessages.adding); },
+  get saving() { return formatAppMessage(notificationMessages.saving); },
+  get duplicating() { return formatAppMessage(notificationMessages.duplicating); },
+  get deleting() { return formatAppMessage(notificationMessages.deleting); },
+  get copying() { return formatAppMessage(notificationMessages.copying); },
+  get pasting() { return formatAppMessage(notificationMessages.pasting); },
+  get discardChanges() { return formatAppMessage(notificationMessages.discardChanges); },
+  get moving() { return formatAppMessage(notificationMessages.moving); },
+  get undoMoving() { return formatAppMessage(notificationMessages.undoMoving); },
+  get publishing() { return formatAppMessage(notificationMessages.publishing); },
+  get hidingFromStudents() { return formatAppMessage(notificationMessages.hidingFromStudents); },
+  get makingVisibleToStudents() { return formatAppMessage(notificationMessages.makingVisibleToStudents); },
   empty: '',
 };
 
@@ -55,15 +62,42 @@ export const DECODED_ROUTES = {
 
 export const UPLOAD_FILE_MAX_SIZE = 20 * 1024 * 1024; // 100mb
 
+/**
+ * Course block type metadata. `name` is locale-aware (i18n); `id` is stable.
+ */
 export const COURSE_BLOCK_NAMES = {
-  chapter: { id: 'chapter', name: 'Section' },
-  sequential: { id: 'sequential', name: 'Subsection' },
-  vertical: { id: 'vertical', name: 'Unit' },
-  libraryContent: { id: 'library_content', name: 'Library content' },
-  splitTest: { id: 'split_test', name: 'Split Test' },
-  component: { id: 'component', name: 'Component' },
-  itembank: { id: 'itembank', name: 'Problem Bank' },
-  legacyLibraryContent: { id: 'library_content', name: 'Randomized Content Block' },
+  chapter: {
+    id: 'chapter',
+    get name() { return formatAppMessage(courseBlockNameMessages.chapter); },
+  },
+  sequential: {
+    id: 'sequential',
+    get name() { return formatAppMessage(courseBlockNameMessages.sequential); },
+  },
+  vertical: {
+    id: 'vertical',
+    get name() { return formatAppMessage(courseBlockNameMessages.vertical); },
+  },
+  libraryContent: {
+    id: 'library_content',
+    get name() { return formatAppMessage(courseBlockNameMessages.libraryContent); },
+  },
+  splitTest: {
+    id: 'split_test',
+    get name() { return formatAppMessage(courseBlockNameMessages.splitTest); },
+  },
+  component: {
+    id: 'component',
+    get name() { return formatAppMessage(courseBlockNameMessages.component); },
+  },
+  itembank: {
+    id: 'itembank',
+    get name() { return formatAppMessage(courseBlockNameMessages.itembank); },
+  },
+  legacyLibraryContent: {
+    id: 'library_content',
+    get name() { return formatAppMessage(courseBlockNameMessages.legacyLibraryContent); },
+  },
 };
 
 export const STUDIO_CLIPBOARD_CHANNEL = 'studio_clipboard_channel';

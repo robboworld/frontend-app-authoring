@@ -13,6 +13,14 @@ const messages = defineMessages({
     id: 'course-authoring.advanced-settings.sidebar.about.description-2',
     defaultMessage: 'Any policies you modify here override all other information you’ve defined elsewhere in Studio. Do not edit policies unless you are familiar with both their purpose and syntax.',
   },
+  aboutDescription3: {
+    id: 'course-authoring.advanced-settings.about.description-3',
+    defaultMessage: '{notice} When you enter strings as policy values, ensure that you use double quotation marks (“) around the string. Do not use single quotation marks (‘).',
+  },
+  aboutNoteNotice: {
+    id: 'course-authoring.advanced-settings.about.note-notice',
+    defaultMessage: 'Note:',
+  },
   other: {
     id: 'course-authoring.advanced-settings.sidebar.other.title',
     defaultMessage: 'Other course settings',

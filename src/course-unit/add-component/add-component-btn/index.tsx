@@ -6,7 +6,7 @@ import {
 } from '@openedx/paragon';
 import { useIntl } from '@edx/frontend-platform/i18n';
 
-import messages from '../messages';
+import messages, { getComponentTypeLabel } from '../messages';
 import AddComponentIcon from './AddComponentIcon';
 
 interface AddComponentButtonProps {
@@ -27,6 +27,7 @@ const AddComponentButton = ({
   disabledReason = null,
 }: AddComponentButtonProps) => {
   const intl = useIntl();
+  const label = getComponentTypeLabel(intl, type, displayName);
 
   const button = (
     <Button
@@ -37,8 +38,12 @@ const AddComponentButton = ({
     >
       <AddComponentIcon type={type} />
       <span className="sr-only">{intl.formatMessage(messages.buttonText)}</span>
-      <span className="small mt-2">{displayName}</span>
-      {beta && <Badge className="pb-1 mt-1" variant="primary">Beta</Badge>}
+      <span className="small mt-2">{label}</span>
+      {beta && (
+        <Badge className="pb-1 mt-1" variant="primary">
+          {intl.formatMessage(messages.betaBadge)}
+        </Badge>
+      )}
     </Button>
   );
 
