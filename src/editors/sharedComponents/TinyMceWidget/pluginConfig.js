@@ -101,6 +101,8 @@ const pluginConfig = ({ placeholder, editorType, enableImageUpload }) => {
         powerpaste_word_import: 'prompt',
         powerpaste_html_import: 'prompt',
         powerpaste_googledoc_import: 'prompt',
+        // Allow image file drops; Robbo handlers in TinyMceWidget/hooks upload them as assets.
+        block_unsupported_drop: false,
         autoresize_bottom_margin: autoresizeBottomMargin,
       },
     })

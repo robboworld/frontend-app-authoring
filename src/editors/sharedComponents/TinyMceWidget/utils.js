@@ -26,3 +26,23 @@ export const parseAssetName = (relativeUrl) => {
   }
   return assetName;
 };
+
+/** Detect inline base64 images (clipboard / HTML paste) that bloat course OLX. */
+export const BASE64_IMAGE_SRC_RE = /(?:src|data-mce-src)\s*=\s*["']?\s*data:image\//i;
+
+/**
+ * @param {string | Element | null | undefined} htmlOrNode
+ * @returns {boolean}
+ */
+export const containsBase64Image = (htmlOrNode) => {
+  if (!htmlOrNode) {
+    return false;
+  }
+  if (typeof htmlOrNode === 'string') {
+    return BASE64_IMAGE_SRC_RE.test(htmlOrNode);
+  }
+  if (typeof htmlOrNode.querySelector === 'function') {
+    return Boolean(htmlOrNode.querySelector('img[src^="data:image"], img[data-mce-src^="data:image"]'));
+  }
+  return false;
+};
