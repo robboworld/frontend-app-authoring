@@ -239,5 +239,10 @@
   "course-authoring.files-and-uploads.table.textFilter.placeholder": "Search {header}",
   "course-authoring.files-and-upload.addFiles.button.label": "Add files",
   "course-authoring.files-and-upload.addVideos.button.label": "Add videos",
-  "authoring.footer.help.educatorsDocs.button.label": "ROBBO Support"
+  "authoring.footer.help.educatorsDocs.button.label": "ROBBO Support",
+  "authoring.tinymce.base64ImagePasteWarning": "Pasting images as base64 overloads the course. Prefer uploading the file via “Add Image” instead.",
+  "authoring.tinymce.base64ImagePasteAction": "Add Image",
+  "authoring.tinymce.desktopFilePasteHint": "Copying a file from the desktop does not put the image in the browser clipboard. Use “Add Image” or drag the file into the editor.",
+  "authoring.tinymce.imageUploadFailed": "Could not upload the image. Try “Add Image” instead.",
+  "authoring.tinymce.imageUploading": "Uploading image…"
 }
