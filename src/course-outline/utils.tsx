@@ -1,3 +1,6 @@
+/**
+ * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
+ */
 import type { IntlShape, MessageDescriptor } from 'react-intl';
 import type { XBlockActions, UpstreamInfo } from '@src/data/types';
 import {
@@ -95,7 +98,8 @@ const getItemStatusBorder = (status?: ItemBadgeStatusValue) => {
   switch (status) {
     case ITEM_BADGE_STATUS.live:
       return {
-        borderLeft: '5px solid #00688D',
+        // Robbo brand green (was Open edX info blue #00688D)
+        borderLeft: '5px solid #00af41',
       };
     case ITEM_BADGE_STATUS.publishedNotLive:
       return {

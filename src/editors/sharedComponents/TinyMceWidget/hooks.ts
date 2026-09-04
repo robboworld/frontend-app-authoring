@@ -8,13 +8,190 @@ import { getConfig } from '@edx/frontend-platform';
 import { getLocale, isRtl } from '@edx/frontend-platform/i18n';
 import { a11ycheckerCss } from 'frontend-components-tinymce-advanced-plugins';
 import { isEmpty } from 'lodash';
+import { formatAppMessage } from '@src/constants/formatMessage';
+import { showToastOutsideReact } from '@src/generic/toast-context';
+import { camelizeKeys } from '@src/editors/utils';
+import cmsApi from '../../data/services/cms/api';
 import tinyMCEStyles from '../../data/constants/tinyMCEStyles';
 import { StrictDict } from '../../utils';
 import pluginConfig from './pluginConfig';
 
 import * as tinyMCE from '../../data/constants/tinyMCE';
-import { getRelativeUrl, getStaticUrl, parseAssetName } from './utils';
+import messages from './messages';
+import { containsBase64Image, getRelativeUrl, getStaticUrl, parseAssetName } from './utils';
 import { isLibraryKey } from '@src/generic/key-utils';
+
+/** Cooldown so multi-image paste does not spam toasts. */
+const BASE64_IMAGE_WARNING_COOLDOWN_MS = 12000;
+/** How long informational toasts stay visible. */
+const IMAGE_TOAST_DELAY_MS = 10000;
+
+const toastActionOpenImg = (openImgModal?: () => void) => (
+  openImgModal
+    ? { label: formatAppMessage(messages.base64ImagePasteAction), onClick: openImgModal }
+    : undefined
+);
+
+/**
+ * Warn once (with cooldown) when TinyMCE content includes inline base64 images.
+ * Toast is deferred so we never interrupt TinyMCE paste/SetContent.
+ */
+export const warnIfBase64Images = ({
+  htmlOrNode,
+  openImgModal,
+  lastWarnedAtRef,
+}: {
+  htmlOrNode: string | Element | null | undefined;
+  openImgModal?: () => void;
+  lastWarnedAtRef: { current: number };
+}) => {
+  try {
+    if (!containsBase64Image(htmlOrNode)) {
+      return;
+    }
+    const now = Date.now();
+    if (now - lastWarnedAtRef.current < BASE64_IMAGE_WARNING_COOLDOWN_MS) {
+      return;
+    }
+    lastWarnedAtRef.current = now;
+    window.setTimeout(() => {
+      try {
+        showToastOutsideReact(
+          formatAppMessage(messages.base64ImagePasteWarning),
+          toastActionOpenImg(openImgModal),
+          IMAGE_TOAST_DELAY_MS,
+        );
+      } catch {
+        // ToastProvider may be unavailable in some editor shells — ignore.
+      }
+    }, 0);
+  } catch {
+    // Never let detection break editor paste/insert.
+  }
+};
+
+/** Collect image File objects from a Paste or Drop dataTransfer/clipboardData. */
+export const collectImageFiles = (data: DataTransfer | null | undefined): File[] => {
+  if (!data) {
+    return [];
+  }
+  const out: File[] = [];
+  if (data.files?.length) {
+    Array.from(data.files).forEach((file) => {
+      if (file.type.startsWith('image/')) {
+        out.push(file);
+      }
+    });
+  }
+  if (!out.length && data.items?.length) {
+    Array.from(data.items).forEach((item) => {
+      if (item.kind === 'file' && item.type.startsWith('image/')) {
+        const file = item.getAsFile();
+        if (file) {
+          out.push(file);
+        }
+      }
+    });
+  }
+  return out;
+};
+
+const clipboardHasHtml = (data: DataTransfer): boolean => {
+  try {
+    return Boolean((data.getData('text/html') || '').trim());
+  } catch {
+    return false;
+  }
+};
+
+/**
+ * True when the OS file manager put a local file path on the clipboard (file://),
+ * which browsers refuse to read — Ctrl+V then inserts nothing.
+ */
+export const isDesktopFileUriClipboard = (data: DataTransfer | null | undefined): boolean => {
+  if (!data) {
+    return false;
+  }
+  const types = Array.from(data.types || []);
+  if (types.includes('text/uri-list')) {
+    try {
+      const uri = (data.getData('text/uri-list') || '').trim();
+      if (/^file:/i.test(uri)) {
+        return true;
+      }
+    } catch {
+      // Some browsers throw on getData for restricted types.
+    }
+  }
+  // Chromium: type "Files" listed but FileList empty (security) and no HTML to paste.
+  if (types.includes('Files') && (!data.files || data.files.length === 0) && !clipboardHasHtml(data)) {
+    return true;
+  }
+  return false;
+};
+
+export const resolveEditorBlockId = (): string | null => {
+  const { pathname } = window.location;
+  const match = pathname.match(/block-v1:[^/?#]+/) || pathname.match(/lb:[^/?#]+/);
+  return match ? match[0] : null;
+};
+
+/**
+ * Upload an image File as a course asset and insert a normal <img src=…> (not base64).
+ */
+export const uploadAndInsertImageFile = async ({
+  editor,
+  file,
+  learningContextId,
+  openImgModal,
+}: {
+  editor: { insertContent: (html: string) => void };
+  file: File;
+  learningContextId?: string | null;
+  openImgModal?: () => void;
+}) => {
+  const studioEndpointUrl = getConfig().STUDIO_BASE_URL;
+  const lmsEndpointUrl = getConfig().LMS_BASE_URL || '';
+  const blockId = resolveEditorBlockId();
+  if (!learningContextId || !blockId) {
+    showToastOutsideReact(
+      formatAppMessage(messages.desktopFilePasteHint),
+      toastActionOpenImg(openImgModal),
+      IMAGE_TOAST_DELAY_MS,
+    );
+    openImgModal?.();
+    return;
+  }
+  showToastOutsideReact(formatAppMessage(messages.imageUploading), undefined, 4000);
+  try {
+    const response = await cmsApi.uploadAsset({
+      asset: file,
+      blockId,
+      learningContextId,
+      studioEndpointUrl,
+    });
+    const asset = camelizeKeys(response.data.asset) as {
+      externalUrl?: string;
+      url?: string;
+      portableUrl?: string;
+    };
+    let url = asset.externalUrl || asset.url || '';
+    if (!url && asset.portableUrl) {
+      url = asset.portableUrl.startsWith('/') ? asset.portableUrl : `/${asset.portableUrl}`;
+    }
+    if (lmsEndpointUrl && url.startsWith(lmsEndpointUrl)) {
+      url = url.substring(lmsEndpointUrl.length);
+    }
+    const alt = file.name.replace(/"/g, '');
+    editor.insertContent(`<img src="${url}" alt="${alt}" />`);
+  } catch {
+    showToastOutsideReact(
+      formatAppMessage(messages.imageUploadFailed),
+      toastActionOpenImg(openImgModal),
+      IMAGE_TOAST_DELAY_MS,
+    );
+  }
+};
 
 export const state = StrictDict({
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -412,6 +589,128 @@ export const setupCustomBehavior = ({
   });
   // after resizing an image in the editor, synchronize React state and ref
   editor.on('ObjectResized', getImageResizeHandler({ editor, imagesRef: images, setImage }));
+
+  // Robbo: paste/drop image files as course assets (not base64); explain desktop-file Ctrl+V.
+  // PowerPaste here is an Open edX stub — there is no real paste plugin; use native events.
+  // Do not call editor.getContent() inside SetContent — it can drop the pasted image.
+  const lastBase64WarnAt = { current: 0 };
+  const lastDesktopHintAt = { current: 0 };
+
+  const handleImageFiles = (files: File[]) => {
+    files.forEach((file) => {
+      void uploadAndInsertImageFile({
+        editor,
+        file,
+        learningContextId,
+        openImgModal,
+      });
+    });
+  };
+
+  const hintDesktopFilePaste = () => {
+    const now = Date.now();
+    if (now - lastDesktopHintAt.current < BASE64_IMAGE_WARNING_COOLDOWN_MS) {
+      return;
+    }
+    lastDesktopHintAt.current = now;
+    window.setTimeout(() => {
+      try {
+        showToastOutsideReact(
+          formatAppMessage(messages.desktopFilePasteHint),
+          toastActionOpenImg(openImgModal),
+          IMAGE_TOAST_DELAY_MS,
+        );
+        openImgModal?.();
+      } catch {
+        // ToastProvider may be unavailable — ignore.
+      }
+    }, 0);
+  };
+
+  const onNativePaste = (e: ClipboardEvent) => {
+    const data = e.clipboardData;
+    const files = collectImageFiles(data);
+    // Prefer uploading raw image files (screenshot / "Copy image"); leave HTML pastes alone.
+    if (files.length && data && !clipboardHasHtml(data)) {
+      e.preventDefault();
+      e.stopPropagation();
+      handleImageFiles(files);
+      return;
+    }
+    if (isDesktopFileUriClipboard(data)) {
+      e.preventDefault();
+      e.stopPropagation();
+      hintDesktopFilePaste();
+      return;
+    }
+    // Browser may still embed a bitmap as data:image — warn after it lands.
+    window.setTimeout(() => {
+      warnIfBase64Images({
+        htmlOrNode: editor.getBody?.() ?? null,
+        openImgModal,
+        lastWarnedAtRef: lastBase64WarnAt,
+      });
+    }, 400);
+  };
+
+  const onNativeDrop = (e: DragEvent) => {
+    const files = collectImageFiles(e.dataTransfer);
+    if (!files.length) {
+      return;
+    }
+    e.preventDefault();
+    e.stopPropagation();
+    handleImageFiles(files);
+  };
+
+  const onNativeDragOver = (e: DragEvent) => {
+    if (collectImageFiles(e.dataTransfer).length) {
+      e.preventDefault();
+    }
+  };
+
+  editor.on('init', /* istanbul ignore next */ () => {
+    const body = editor.getBody?.();
+    if (!body) {
+      return;
+    }
+    // Capture phase: run before TinyMCE blocks unsupported file drops.
+    body.addEventListener('paste', onNativePaste, true);
+    body.addEventListener('drop', onNativeDrop, true);
+    body.addEventListener('dragover', onNativeDragOver, true);
+    editor.on('remove', () => {
+      body.removeEventListener('paste', onNativePaste, true);
+      body.removeEventListener('drop', onNativeDrop, true);
+      body.removeEventListener('dragover', onNativeDragOver, true);
+    });
+  });
+
+  editor.on('PastePostProcess', /* istanbul ignore next */ (e) => {
+    warnIfBase64Images({
+      htmlOrNode: e.node,
+      openImgModal,
+      lastWarnedAtRef: lastBase64WarnAt,
+    });
+    window.setTimeout(() => {
+      warnIfBase64Images({
+        htmlOrNode: editor.getBody?.() ?? null,
+        openImgModal,
+        lastWarnedAtRef: lastBase64WarnAt,
+      });
+    }, 400);
+  });
+  editor.on('SetContent', /* istanbul ignore next */ (e) => {
+    if (e.initial || e.paste) {
+      return;
+    }
+    if (typeof e.content === 'string' && e.content) {
+      warnIfBase64Images({
+        htmlOrNode: e.content,
+        openImgModal,
+        lastWarnedAtRef: lastBase64WarnAt,
+      });
+    }
+  });
 };
 
 // imagetools_cors_hosts needs a protocol-sanatized url

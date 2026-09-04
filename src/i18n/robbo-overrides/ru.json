@@ -3326,5 +3326,10 @@
   "course-authoring.files-and-uploads.wrapperType.video": "Видео",
   "course-authoring.files-and-uploads.wrapperType.unknown": "Неизвестно",
   "course-authoring.files-and-uploads.table.toggleSortBy": "Переключить сортировку",
-  "course-authoring.files-and-uploads.table.textFilter.placeholder": "Поиск по имени файла"
+  "course-authoring.files-and-uploads.table.textFilter.placeholder": "Поиск по имени файла",
+  "authoring.tinymce.base64ImagePasteWarning": "Вставка изображений в формате base64 перегружает курс. Рекомендуем загружать файл через «Добавить изображение», а не вставлять из буфера.",
+  "authoring.tinymce.base64ImagePasteAction": "Добавить изображение",
+  "authoring.tinymce.desktopFilePasteHint": "Копирование файла с рабочего стола не помещает картинку в буфер браузера. Используйте «Добавить изображение» или перетащите файл в редактор.",
+  "authoring.tinymce.imageUploadFailed": "Не удалось загрузить изображение. Попробуйте «Добавить изображение».",
+  "authoring.tinymce.imageUploading": "Загрузка изображения…"
 }

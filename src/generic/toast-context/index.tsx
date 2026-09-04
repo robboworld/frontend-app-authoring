@@ -126,8 +126,12 @@ export function useToastContext(): ToastContextData {
  * (e.g. Redux thunks, plain async functions). Requires that a <ToastProvider>
  * is mounted in the tree before this is called.
  */
-export function showToastOutsideReact(message: string, action?: ToastActionData) {
-  internalShowToast(message, action);
+export function showToastOutsideReact(
+  message: string,
+  action?: ToastActionData,
+  delay?: number,
+) {
+  internalShowToast(message, action, delay);
 }
 
 /**

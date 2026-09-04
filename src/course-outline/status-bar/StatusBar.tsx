@@ -1,3 +1,6 @@
+/**
+ * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
+ */
 import moment, { Moment } from 'moment/moment';
 import {
   FormattedDate,
@@ -29,6 +32,7 @@ import { useHelpUrls } from '@src/help-urls/hooks';
 
 import messages from './messages';
 import { NotificationStatusIcon } from './NotificationStatusIcon';
+import './StatusBar.scss';
 
 const CourseBadge = ({ startDate, endDate }: { startDate: Moment; endDate: Moment; }) => {
   const now = moment().utc();
@@ -116,7 +120,7 @@ const CourseDates = ({
   if (!startDate.isValid()) {
     return (
       <Link
-        className="small"
+        className="small status-bar-course-dates"
         to={datesLink}
       >
         <Stack direction="horizontal" gap={2}>
@@ -129,7 +133,7 @@ const CourseDates = ({
 
   return (
     <Link
-      className="small text-gray-700"
+      className="small status-bar-course-dates"
       to={datesLink}
     >
       <Stack direction="horizontal" gap={2}>
