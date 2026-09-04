@@ -10,7 +10,7 @@ export const getXBlockBaseApiUrl = (itemId: string) => `${getStudioBaseUrl()}/xb
 export const getCourseSectionVerticalApiUrl = (itemId: string) =>
   `${getStudioBaseUrl()}/api/contentstore/v1/container_handler/${itemId}`;
 export const getCourseVerticalChildrenApiUrl = (itemId: string, getUpstreamInfo: boolean = false) =>
-  `${getStudioBaseUrl()}/api/contentstore/v1/container/${itemId}/children?get_upstream_info=${getUpstreamInfo}`;
+  `${getStudioBaseUrl()}/api/contentstore/v1/container/vertical/${itemId}/children?get_upstream_info=${getUpstreamInfo}`;
 export const getCourseOutlineInfoUrl = (courseId: string) => `${getStudioBaseUrl()}/course/${courseId}?format=concise`;
 export const postXBlockBaseApiUrl = () => `${getStudioBaseUrl()}/xblock/`;
 export const libraryBlockChangesUrl = (blockId: string) =>

@@ -3,6 +3,7 @@ import { getConfig } from '@edx/frontend-platform';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { type Container, useToggle } from '@openedx/paragon';
 
+import '../robbo-frontend-chrome/studio-header.css';
 import { SearchModal } from '../search-modal';
 import {
   useContentMenuItems,

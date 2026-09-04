@@ -110,3 +110,47 @@ export const courseBlockNameMessages = defineMessages({
     description: 'Display name for legacy randomized content blocks',
   },
 });
+
+/** Genitive forms for delete-modal copy ("Deleting this {category}…"). EN equals nominative. */
+export const courseBlockNameGenitiveMessages = defineMessages({
+  chapter: {
+    id: 'course-authoring.course-block-name.chapter.genitive',
+    defaultMessage: 'section',
+    description: 'Genitive/display form of section used in delete confirmation body',
+  },
+  sequential: {
+    id: 'course-authoring.course-block-name.sequential.genitive',
+    defaultMessage: 'subsection',
+    description: 'Genitive/display form of subsection used in delete confirmation body',
+  },
+  vertical: {
+    id: 'course-authoring.course-block-name.vertical.genitive',
+    defaultMessage: 'unit',
+    description: 'Genitive/display form of unit used in delete confirmation body',
+  },
+  libraryContent: {
+    id: 'course-authoring.course-block-name.library-content.genitive',
+    defaultMessage: 'library content',
+    description: 'Genitive/display form of library content used in delete confirmation body',
+  },
+  splitTest: {
+    id: 'course-authoring.course-block-name.split-test.genitive',
+    defaultMessage: 'split test',
+    description: 'Genitive/display form of split test used in delete confirmation body',
+  },
+  component: {
+    id: 'course-authoring.course-block-name.component.genitive',
+    defaultMessage: 'component',
+    description: 'Genitive/display form of component used in delete confirmation body',
+  },
+  itembank: {
+    id: 'course-authoring.course-block-name.itembank.genitive',
+    defaultMessage: 'problem bank',
+    description: 'Genitive/display form of problem bank used in delete confirmation body',
+  },
+  legacyLibraryContent: {
+    id: 'course-authoring.course-block-name.legacy-library-content.genitive',
+    defaultMessage: 'randomized content block',
+    description: 'Genitive/display form of legacy library content used in delete confirmation body',
+  },
+});

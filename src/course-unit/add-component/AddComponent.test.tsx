@@ -437,8 +437,7 @@ describe('<AddComponent />', () => {
     const radioInput = within(modalContainer).getByRole('radio', { name: 'Annotation' });
     const sendBtn = within(modalContainer).getByRole('button', { name: messages.modalBtnText.defaultMessage });
 
-    expect(sendBtn).toBeDisabled();
-    await user.click(radioInput);
+    expect(radioInput).toBeChecked();
     expect(sendBtn).not.toBeDisabled();
 
     await user.click(sendBtn);
@@ -464,8 +463,7 @@ describe('<AddComponent />', () => {
     const radioInput = within(modalContainer).getByRole('radio', { name: 'Text' });
     const sendBtn = within(modalContainer).getByRole('button', { name: messages.modalBtnText.defaultMessage });
 
-    expect(sendBtn).toBeDisabled();
-    await user.click(radioInput);
+    expect(radioInput).toBeChecked();
     expect(sendBtn).not.toBeDisabled();
 
     await user.click(sendBtn);
@@ -488,11 +486,10 @@ describe('<AddComponent />', () => {
     await user.click(openResponseButton);
     const modalContainer = getByRole('dialog');
 
-    const radioInput = within(modalContainer).getByRole('radio', { name: 'Peer Assessment Only' });
+    const firstRadio = within(modalContainer).getByRole('radio', { name: 'Peer Assessment Only' });
     const sendBtn = within(modalContainer).getByRole('button', { name: messages.modalBtnText.defaultMessage });
 
-    expect(sendBtn).toBeDisabled();
-    await user.click(radioInput);
+    expect(firstRadio).toBeChecked();
     expect(sendBtn).not.toBeDisabled();
 
     await user.click(sendBtn);
