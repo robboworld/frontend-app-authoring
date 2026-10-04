@@ -18,7 +18,7 @@ import { updateSavingStatus, updatePostErrors } from '../data/slice';
 import { fetchOrganizationsQuery } from '../data/thunks';
 import messages from './messages';
 
-const useCreateOrRerunCourse = (initialValues) => {
+const useCreateOrRerunCourse = (initialValues, importFile = null) => {
   const intl = useIntl();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -104,7 +104,12 @@ const useCreateOrRerunCourse = (initialValues) => {
   useEffect(() => {
     if (createOrRerunCourseSavingStatus === RequestStatus.SUCCESSFUL) {
       dispatch(updateSavingStatus({ status: '' }));
-      const { url, destinationCourseKey } = redirectUrlObj;
+      const { url, destinationCourseKey, courseKey } = redirectUrlObj;
+      // Robbo: "create from archive" — hand the file over to the import page of the new course
+      if (importFile && courseKey) {
+        navigate(`/course/${courseKey}/import`, { state: { robboImportFile: importFile } });
+        return;
+      }
       // New courses' url to the outline page is provided in the url. However, for course
       // re-runs the url is /course/. The actual destination for the rer-run's  outline
       // is in the destionationCourseKey attribute from the api.

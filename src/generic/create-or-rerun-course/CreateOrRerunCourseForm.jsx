@@ -29,6 +29,8 @@ const CreateOrRerunCourseForm = ({
   isCreateNewCourse,
   initialValues,
   onClickCancel,
+  importFile,
+  children,
 }) => {
   const { courseId } = useParams();
   const savingStatus = useSelector(getSavingStatus);
@@ -50,7 +52,7 @@ const CreateOrRerunCourseForm = ({
     handleChange,
     hasErrorField,
     setFieldValue,
-  } = useCreateOrRerunCourse(initialValues);
+  } = useCreateOrRerunCourse(initialValues, importFile);
 
   const newCourseFields = [
     {
@@ -227,6 +229,7 @@ const CreateOrRerunCourseForm = ({
           null}
       </TransitionReplace>
       <h3 className="mb-3">{title}</h3>
+      {children}
       <Form>
         {newCourseFields.map((field) => (
           <Form.Group
@@ -288,6 +291,8 @@ const CreateOrRerunCourseForm = ({
 CreateOrRerunCourseForm.defaultProps = {
   title: '',
   isCreateNewCourse: false,
+  importFile: null,
+  children: null,
 };
 
 CreateOrRerunCourseForm.propTypes = {
@@ -300,6 +305,9 @@ CreateOrRerunCourseForm.propTypes = {
   }).isRequired,
   isCreateNewCourse: PropTypes.bool,
   onClickCancel: PropTypes.func.isRequired,
+  // Robbo: OLX archive to import into the newly created course
+  importFile: PropTypes.instanceOf(File),
+  children: PropTypes.node,
 };
 
 export default CreateOrRerunCourseForm;
