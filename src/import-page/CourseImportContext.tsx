@@ -3,10 +3,12 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import moment from 'moment';
 import Cookies from 'universal-cookie';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useIntl } from '@edx/frontend-platform/i18n';
 
 import { useCourseAuthoringContext } from '@src/CourseAuthoringContext';
@@ -59,6 +61,9 @@ export const CourseImportProvider = ({ children }: CourseImportProviderProps) =>
   const [successDate, setSuccessDate] = useState<number>();
 
   const cookies = new Cookies();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const pendingFileHandled = useRef(false);
 
   useEffect(() => {
     const cookieData = cookies.get(LAST_IMPORT_COOKIE_NAME);
@@ -99,6 +104,21 @@ export const CourseImportProvider = ({ children }: CourseImportProviderProps) =>
       handleError(error);
     });
   };
+
+  // Robbo: "create from archive" on Studio home hands the file over via router state
+  useEffect(() => {
+    const pendingFile = (location.state as { robboImportFile?: File; } | null)?.robboImportFile;
+    if (!(pendingFile instanceof File) || pendingFileHandled.current) {
+      return;
+    }
+    pendingFileHandled.current = true;
+    // drop the file from history so a reload does not upload it again
+    navigate(location.pathname, { replace: true, state: null });
+    const fileData = new FormData();
+    fileData.append('file', pendingFile);
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    handleOnProcessUpload({ fileData, requestConfig: {}, handleError: () => {} });
+  }, []);
 
   const {
     data: importStatusData,
