@@ -14,6 +14,7 @@ import CertificateCreateForm from './certificate-create-form/CertificateCreateFo
 import CertificateEditForm from './certificate-edit-form/CertificateEditForm';
 import { MODE_STATES } from './data/constants';
 import MainLayout from './layout/MainLayout';
+import CertificateDesignPicker from './certificate-design/CertificateDesignPicker';
 
 const MODE_COMPONENTS = {
   [MODE_STATES.noModes]: CertificateWithoutModes,
@@ -65,7 +66,10 @@ const Certificates = () => {
       <MainLayout
         showHeaderButtons={!!(hasCertificateModes && certificates && certificates?.length > 0)}
       >
-        <ModeComponent />
+        <>
+          <CertificateDesignPicker />
+          <ModeComponent />
+        </>
       </MainLayout>
     </>
   );
