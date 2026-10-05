@@ -1,0 +1,343 @@
+// Copyright (C) 2026 Robbo <https://robbo.ru>
+// SPDX-License-Identifier: AGPL-3.0-only
+//
+// Part of the Robbo Open edX distribution (certificate designs). See NOTICE at repository root.
+
+.certificate-design {
+  --certificate-design-radius: var(--pgn-size-border-radius-base, .375rem);
+  --certificate-design-gap: 1rem;
+
+  margin: 0 0 1.5rem;
+  padding: 1.5rem;
+  min-width: 0;
+  border: 1px solid var(--pgn-color-light-400);
+  border-radius: var(--certificate-design-radius);
+  background: var(--pgn-color-white);
+
+  // Plain block fieldset: no border, legend in normal flow (not on the frame).
+  .certificate-design__fieldset {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .certificate-design__title {
+    float: left;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .5rem;
+    width: 100%;
+    margin-bottom: .25rem;
+    padding: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--pgn-color-black);
+  }
+
+  .certificate-design__hint {
+    clear: both;
+    color: var(--pgn-color-gray-700);
+  }
+
+  .certificate-design__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    gap: var(--certificate-design-gap);
+    margin-bottom: 1rem;
+  }
+
+  .certificate-design__option {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    border: 2px solid var(--pgn-color-light-400);
+    border-radius: var(--certificate-design-radius);
+    transition: border-color .15s ease, box-shadow .15s ease;
+
+    &:hover {
+      border-color: var(--pgn-color-primary-300);
+    }
+
+    &.is-selected {
+      border-color: var(--pgn-color-primary);
+      box-shadow: 0 0 0 1px var(--pgn-color-primary);
+    }
+  }
+
+  // Native radio stays in the a11y tree and keyboard order; the whole card is its label.
+  .certificate-design__input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .certificate-design__input:focus-visible + .certificate-design__choice {
+    outline: 3px solid var(--pgn-color-primary-300);
+    outline-offset: 2px;
+  }
+
+  .certificate-design__choice {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    margin: 0;
+    border-radius: var(--certificate-design-radius);
+    cursor: pointer;
+  }
+
+  .certificate-design__thumb {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 297 / 210;
+    overflow: hidden;
+    border-bottom: 1px solid var(--pgn-color-light-400);
+    border-radius: var(--certificate-design-radius) var(--certificate-design-radius) 0 0;
+    background: var(--pgn-color-light-200);
+
+    img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .certificate-design__thumb-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .25rem;
+    color: var(--pgn-color-gray-500);
+    font-size: .875rem;
+  }
+
+  .certificate-design__text {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+    padding: .75rem 1rem;
+  }
+
+  .certificate-design__name {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem;
+    font-weight: 700;
+    color: var(--pgn-color-black);
+    overflow-wrap: anywhere;
+  }
+
+  .certificate-design__selected {
+    display: inline-flex;
+    align-items: center;
+    gap: .25rem;
+    margin-left: auto;
+    font-size: .875rem;
+    font-weight: 600;
+    color: var(--pgn-color-primary);
+  }
+
+  .certificate-design__description {
+    font-size: .875rem;
+    color: var(--pgn-color-gray-700);
+  }
+
+  .certificate-design__hours {
+    max-width: 24rem;
+    margin-bottom: 1rem;
+  }
+
+  .certificate-design__hours-row {
+    display: flex;
+    gap: .5rem;
+
+    .form-control {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+
+  .certificate-design__hours-missing {
+    color: var(--pgn-color-warning-700);
+    font-weight: 600;
+  }
+
+  .certificate-design__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .25rem 1rem;
+    margin: 0 1rem .75rem;
+  }
+
+  .certificate-design__preview {
+    padding: .25rem 0;
+    font-size: .875rem;
+  }
+}
+
+// ---- Editor (FullscreenModal) ----
+.certificate-design-editor {
+  .certificate-design-editor__layout {
+    display: grid;
+    grid-template-columns: minmax(0, 26rem) minmax(0, 1fr);
+    gap: 2rem;
+    align-items: start;
+
+    @media (max-width: 991.98px) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  // Preview first on narrow screens: it is what the form changes.
+  .certificate-design-editor__preview {
+    position: sticky;
+    top: 1rem;
+
+    @media (max-width: 991.98px) {
+      position: static;
+      order: -1;
+    }
+  }
+
+  .certificate-design-editor__subtitle {
+    margin: 1.5rem 0 .25rem;
+    font-size: 1.125rem;
+    font-weight: 700;
+  }
+
+  .certificate-design-editor__hint {
+    font-size: .875rem;
+    color: var(--pgn-color-gray-700);
+  }
+
+  .certificate-design-editor__add {
+    display: flex;
+    gap: .5rem;
+
+    .form-group {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+}
+
+.certificate-design-field {
+  min-width: 0;
+  margin: 0 0 1rem;
+  padding: .75rem 1rem;
+  border: 1px solid var(--pgn-color-light-400);
+  border-radius: var(--pgn-size-border-radius-base, .375rem);
+  background: var(--pgn-color-white);
+
+  &.is-active {
+    border-color: var(--pgn-color-primary);
+  }
+
+  .certificate-design-field__legend {
+    float: left;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: .5rem;
+    padding: 0;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  .certificate-design-field__grid {
+    clear: both;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 .75rem;
+  }
+
+  .certificate-design-field__control {
+    min-width: 0;
+    margin-bottom: .5rem;
+  }
+
+  .is-wide {
+    grid-column: 1 / -1;
+  }
+
+  .certificate-design-field__color {
+    height: 2.75rem;
+    padding: .25rem;
+  }
+
+  .certificate-design-field__checks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+
+  .certificate-design-field__hint {
+    clear: both;
+    margin: 0;
+    font-size: .875rem;
+    color: var(--pgn-color-gray-700);
+  }
+}
+
+.certificate-design-preview {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--pgn-color-light-400);
+  background: var(--pgn-color-light-200);
+
+  .certificate-design-preview__sheet {
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    // Stretch, not crop: field positions are % of the background image.
+    background: #fff no-repeat 0 0 / 100% 100%;
+    transform-origin: top left;
+  }
+
+  .certificate-design-preview__empty {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: var(--pgn-color-gray-500);
+  }
+
+  .certificate-design-preview__field {
+    position: absolute;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+
+    &.is-active {
+      outline: 3px dashed var(--pgn-color-primary);
+      outline-offset: 4px;
+    }
+  }
+
+  img.certificate-design-preview__field {
+    height: auto;
+  }
+
+  .certificate-design-preview__signature-stub {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 5 / 2;
+    border: 2px dashed var(--pgn-color-gray-400);
+    font-size: 1.25rem;
+    color: var(--pgn-color-gray-500);
+  }
+}
