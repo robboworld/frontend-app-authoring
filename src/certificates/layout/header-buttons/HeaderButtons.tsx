@@ -22,9 +22,12 @@ const HeaderButtons = () => {
 
   return (
     <>
-      <DropdownButton id="dropdown-basic-button" title={dropdowmItem} onSelect={(item) => setDropdowmItem(item)}>
-        {courseModes.map((mode) => <Dropdown.Item key={mode} eventKey={mode}>{mode}</Dropdown.Item>)}
-      </DropdownButton>
+      {/* Robbo: mode picker only matters when the course has more than one mode */}
+      {courseModes.length > 1 && (
+        <DropdownButton id="dropdown-basic-button" title={dropdowmItem} onSelect={(item) => setDropdowmItem(item)}>
+          {courseModes.map((mode) => <Dropdown.Item key={mode} eventKey={mode}>{mode}</Dropdown.Item>)}
+        </DropdownButton>
+      )}
       <Button
         variant="outline-primary"
         as={Hyperlink}
