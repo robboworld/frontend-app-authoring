@@ -329,6 +329,7 @@
 
   img.certificate-design-preview__field {
     height: auto;
+    mix-blend-mode: multiply; // same as the LMS sheet: no white box around uploaded signatures
   }
 
   .certificate-design-preview__signature-stub {
