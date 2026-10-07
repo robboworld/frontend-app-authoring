@@ -50,6 +50,7 @@ export const CourseExportProvider = ({ children }: CourseExportProviderProps) =>
   const [isStopFetching, setStopFetching] = useState(false);
   const [exportTriggered, setExportTriggered] = useState(false);
   const [successDate, setSuccessDate] = useState<number>();
+  const [isStartingExport, setStartingExport] = useState(false);
 
   const reset = () => {
     setStopFetching(false);
@@ -62,7 +63,7 @@ export const CourseExportProvider = ({ children }: CourseExportProviderProps) =>
     isPending: isPendingExportStatus,
     isError: isErrorExportStatus,
     failureReason: exportStatusError,
-  } = useExportStatus(courseId, isStopFetching, exportTriggered);
+  } = useExportStatus(courseId, isStopFetching, exportTriggered && !isStartingExport);
   const exportMutation = useStartCourseExporting(courseId);
   const invalidateExportStatus = useInvalidateExportStatus(courseId);
 
@@ -108,7 +109,15 @@ export const CourseExportProvider = ({ children }: CourseExportProviderProps) =>
     reset();
     invalidateExportStatus();
     setExportTriggered(true);
-    await exportMutation.mutateAsync();
+    // Poll only after the server has accepted the new export: until then the status endpoint
+    // reports the previous, finished export, and the page would stop and offer a download
+    // of an archive that is not ready yet (404).
+    setStartingExport(true);
+    try {
+      await exportMutation.mutateAsync();
+    } finally {
+      setStartingExport(false);
+    }
     const momentDate = moment().valueOf();
     setExportCookie(momentDate);
     setSuccessDate(momentDate);
