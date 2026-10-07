@@ -1,9 +1,11 @@
 import { StudioHeader } from '@edx/frontend-component-header';
 import { getConfig } from '@edx/frontend-platform';
+import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { type Container, useToggle } from '@openedx/paragon';
 
 import '../robbo-frontend-chrome/studio-header.css';
+import { ROBBO_STACK_PROFILE } from '../robbo-frontend-chrome/stackProfile';
 import { SearchModal } from '../search-modal';
 import {
   useContentMenuItems,
@@ -87,6 +89,12 @@ const Header = ({
   // Hide dropdowns whose items were all filtered out by permissions.
   mainMenuDropdowns = mainMenuDropdowns.filter((dropdown) => dropdown.items.length > 0);
 
+  // Admin-only stack profile letter (O / S / C) left of the logo — drawn in studio-header.css.
+  const stackShellClassName = ['robbo-stack-shell', `robbo-stack-shell--${ROBBO_STACK_PROFILE}`];
+  if (getAuthenticatedUser()?.administrator) {
+    stackShellClassName.push('robbo-stack-shell--admin');
+  }
+
   const getOutlineLink = () => {
     if (isLibrary) {
       return `/library/${contextId}`;
@@ -96,18 +104,20 @@ const Header = ({
 
   return (
     <>
-      <StudioHeader
-        org={org}
-        number={number}
-        title={title}
-        isHiddenMainMenu={isHiddenMainMenu}
-        mainMenuDropdowns={mainMenuDropdowns}
-        outlineLink={getOutlineLink()}
-        searchButtonAction={meiliSearchEnabled ? openSearchModal : undefined}
-        containerProps={containerProps}
-        // TODO: remove isNewHomePage prop once StudioHeader drops support for it (https://github.com/openedx/frontend-app-authoring/issues/3086)
-        isNewHomePage={true}
-      />
+      <div className={stackShellClassName.join(' ')}>
+        <StudioHeader
+          org={org}
+          number={number}
+          title={title}
+          isHiddenMainMenu={isHiddenMainMenu}
+          mainMenuDropdowns={mainMenuDropdowns}
+          outlineLink={getOutlineLink()}
+          searchButtonAction={meiliSearchEnabled ? openSearchModal : undefined}
+          containerProps={containerProps}
+          // TODO: remove isNewHomePage prop once StudioHeader drops support for it (https://github.com/openedx/frontend-app-authoring/issues/3086)
+          isNewHomePage={true}
+        />
+      </div>
       {meiliSearchEnabled && (
         <SearchModal
           isOpen={isShowSearchModalOpen}
