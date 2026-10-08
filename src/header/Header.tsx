@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { StudioHeader } from '@edx/frontend-component-header';
 import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
@@ -15,6 +16,7 @@ import {
   useToolsMenuItems,
 } from './hooks';
 import messages from './messages';
+import RobboHeaderExtras from './RobboHeaderExtras';
 
 type ContainerPropsType = Omit<React.ComponentProps<typeof Container>, 'children'>;
 
@@ -95,6 +97,9 @@ const Header = ({
     stackShellClassName.push('robbo-stack-shell--admin');
   }
 
+  // Robbo buttons before the user menu of the package header (RobboHeaderExtras.tsx).
+  const stackShellRef = useRef<HTMLDivElement>(null);
+
   const getOutlineLink = () => {
     if (isLibrary) {
       return `/library/${contextId}`;
@@ -104,7 +109,7 @@ const Header = ({
 
   return (
     <>
-      <div className={stackShellClassName.join(' ')}>
+      <div className={stackShellClassName.join(' ')} ref={stackShellRef}>
         <StudioHeader
           org={org}
           number={number}
@@ -117,6 +122,7 @@ const Header = ({
           // TODO: remove isNewHomePage prop once StudioHeader drops support for it (https://github.com/openedx/frontend-app-authoring/issues/3086)
           isNewHomePage={true}
         />
+        <RobboHeaderExtras shellRef={stackShellRef} />
       </div>
       {meiliSearchEnabled && (
         <SearchModal

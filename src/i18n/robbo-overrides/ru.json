@@ -3416,5 +3416,7 @@
   "course-authoring.certificates.robbo-design.hours.save-error": "Не удалось сохранить объём курса. Попробуйте снова.",
   "course-authoring.certificates.robbo-design.custom-badge": "Кастомный",
   "course-authoring.certificates.robbo-design.custom-badge-hint": "Сделано командой разработки РОББО",
-  "course-authoring.certificates.robbo-design.hours.missing": "Укажите объём — иначе строка с часами не выведется на сертификате."
+  "course-authoring.certificates.robbo-design.hours.missing": "Укажите объём — иначе строка с часами не выведется на сертификате.",
+  "robbo.header.lms.label": "LMS",
+  "robbo.header.lms.aria": "Перейти в LMS"
 }
