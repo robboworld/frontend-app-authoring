@@ -75,8 +75,11 @@ export const useCourseUnit = ({
   const { sharedClipboardData, showPasteXBlock, showPasteUnit } = useClipboard(canEdit);
   const { canPasteComponent } = courseVerticalChildren;
   const { displayName: unitTitle, category: unitCategory } = xblockInfo;
-  const sequenceId = courseUnit.ancestorInfo?.ancestors[0]?.id;
-  const sectionId = courseUnit.ancestorInfo?.ancestors[1]?.id;
+  // Robbo: until the opened unit loads, Redux still holds the previous one (e.g. after breadcrumb navigation).
+  // Its ancestors would rewrite the URL with the previous subsection and the page would flash the previous unit.
+  const isCurrentUnitData = courseUnit.id === blockId;
+  const sequenceId = isCurrentUnitData ? courseUnit.ancestorInfo?.ancestors[0]?.id : undefined;
+  const sectionId = isCurrentUnitData ? courseUnit.ancestorInfo?.ancestors[1]?.id : undefined;
   const isUnitVerticalType = unitCategory === COURSE_BLOCK_NAMES.vertical.id;
   const isUnitLegacyLibraryType = unitCategory === COURSE_BLOCK_NAMES.libraryContent.id;
   const isSplitTestType = unitCategory === COURSE_BLOCK_NAMES.splitTest.id;
@@ -211,11 +214,16 @@ export const useCourseUnit = ({
     }
   }, [savingStatus]);
 
+  // Robbo: load once per unit; the subsection becomes known only after the load, and refetching on that
+  // change reloaded the page a second time.
   useEffect(() => {
     dispatch(fetchCourseSectionVerticalData(blockId, sequenceId));
     dispatch(fetchCourseVerticalChildrenData(blockId, isSplitTestType));
-    handleNavigate(sequenceId);
     dispatch(updateMovedXBlockParams({ isSuccess: false }));
+  }, [courseId, blockId]);
+
+  useEffect(() => {
+    handleNavigate(sequenceId);
   }, [courseId, blockId, sequenceId]);
 
   useEffect(() => {
@@ -257,7 +265,7 @@ export const useCourseUnit = ({
     savingStatus,
     staticFileNotices,
     currentlyVisibleToStudents,
-    isLoading,
+    isLoading: isLoading || (!isCurrentUnitData && sequenceStatus !== RequestStatus.FAILED),
     isTitleEditFormOpen,
     isUnitVerticalType,
     isUnitLegacyLibraryType,

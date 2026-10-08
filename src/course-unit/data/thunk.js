@@ -50,7 +50,9 @@ export function fetchCourseSectionVerticalData(courseId, sequenceId) {
       }));
       dispatch(fetchStaticFileNoticesSuccess(JSON.parse(localStorage.getItem('staticFileNotices'))));
       localStorage.removeItem('staticFileNotices');
-      dispatch(fetchSequenceSuccess({ sequenceId }));
+      // Robbo: the unit page loads once per unit (useCourseUnit), often before its subsection is known,
+      // so take the subsection from the loaded data for the sequence navigation.
+      dispatch(fetchSequenceSuccess({ sequenceId: courseSectionVerticalData.sequence?.id ?? sequenceId }));
       return true;
     } catch {
       dispatch(updateLoadingCourseSectionVerticalDataStatus({ status: RequestStatus.FAILED }));

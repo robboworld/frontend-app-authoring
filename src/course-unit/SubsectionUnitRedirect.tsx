@@ -1,4 +1,4 @@
-import { LoadingSpinner } from '@src/generic/Loading';
+import Loading from '@src/generic/Loading';
 import { useCourseAuthoringContext } from '@src/CourseAuthoringContext';
 
 import { useParams, Navigate } from 'react-router-dom';
@@ -13,13 +13,15 @@ const SubsectionUnitRedirect = () => {
   const { data: courseItemData, isLoading } = useCourseItemData<XBlock>(subsectionId);
   let firstUnitId = courseItemData?.childInfo?.children?.[0]?.id;
 
+  // Robbo: full-page loader like the unit page (not a bare spinner in the corner) and the subsection
+  // in the URL right away, so the unit page does not redirect once more.
   if (isLoading) {
-    return <LoadingSpinner />;
+    return <Loading />;
   }
 
-  if (firstUnitId) {
+  if (firstUnitId && subsectionId) {
     firstUnitId = encodeURIComponent(firstUnitId);
-    return <Navigate replace to={`/course/${courseId}/container/${firstUnitId}`} />;
+    return <Navigate replace to={`/course/${courseId}/container/${firstUnitId}/${encodeURIComponent(subsectionId)}`} />;
   }
   if (subsectionId) {
     // if no unit then navigate to the subsection outline
