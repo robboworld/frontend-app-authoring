@@ -181,6 +181,16 @@ const messages = defineMessages({
     defaultMessage: 'Back to course outline in Studio',
     description: 'The aria label for the link back to the Studio Course Outline',
   },
+  'header.robbo.lms': {
+    id: 'robbo.header.lms.label',
+    defaultMessage: 'LMS',
+    description: 'Header pill that opens the LMS (platform staff only)',
+  },
+  'header.robbo.lms.aria': {
+    id: 'robbo.header.lms.aria',
+    defaultMessage: 'Go to LMS',
+    description: 'Accessible name of the LMS header pill',
+  },
 });
 
 export default messages;

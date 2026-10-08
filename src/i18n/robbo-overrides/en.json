@@ -244,5 +244,7 @@
   "authoring.tinymce.base64ImagePasteAction": "Add Image",
   "authoring.tinymce.desktopFilePasteHint": "Copying a file from the desktop does not put the image in the browser clipboard. Use “Add Image” or drag the file into the editor.",
   "authoring.tinymce.imageUploadFailed": "Could not upload the image. Try “Add Image” instead.",
-  "authoring.tinymce.imageUploading": "Uploading image…"
+  "authoring.tinymce.imageUploading": "Uploading image…",
+  "robbo.header.lms.label": "LMS",
+  "robbo.header.lms.aria": "Go to LMS"
 }
