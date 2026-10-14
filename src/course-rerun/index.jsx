@@ -7,7 +7,6 @@ import {
   ActionRow,
   Button,
 } from '@openedx/paragon';
-import { StudioFooterSlot } from '@edx/frontend-component-footer';
 
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -89,7 +88,6 @@ const CourseRerun = () => {
           isQueryPending={savingStatus === RequestStatus.PENDING}
         />
       </div>
-      <StudioFooterSlot />
     </>
   );
 };

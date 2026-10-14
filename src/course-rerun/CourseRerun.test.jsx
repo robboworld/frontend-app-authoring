@@ -55,10 +55,9 @@ describe('<CourseRerun />', () => {
     expect(spinner.textContent).toEqual('Loading...');
   });
 
-  it('should show footer', async () => {
-    const { findByText } = render(<CourseRerun />);
-    await findByText('Looking for help with Studio?');
-    const lmsElement = await findByText('LMS');
-    expect(lmsElement).toHaveAttribute('href', process.env.LMS_BASE_URL);
+  it('should not show footer', async () => {
+    const { findByText, queryByText } = render(<CourseRerun />);
+    await findByText(messages.rerunTitle.defaultMessage);
+    expect(queryByText('Looking for help with Studio?')).not.toBeInTheDocument();
   });
 });

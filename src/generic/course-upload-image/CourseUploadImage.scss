@@ -23,3 +23,19 @@
     background: var(--pgn-color-white);
   }
 }
+
+// Robbo: compact «replace image» dropzone under a custom preview (renderPreview).
+.image-body .course-upload-image__dropzone--compact {
+  min-height: auto;
+  padding: var(--pgn-spacing-spacer-3);
+}
+
+.course-upload-image__replace {
+  align-items: center;
+  color: var(--pgn-color-gray-700);
+  display: flex;
+  font-size: .875rem;
+  gap: var(--pgn-spacing-spacer-2);
+  line-height: 1.4;
+  text-align: left;
+}

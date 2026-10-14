@@ -11,6 +11,8 @@ import { WysiwygEditor } from '../../generic/WysiwygEditor';
 import SectionSubHeader from '../../generic/section-sub-header';
 import IntroductionVideo from './introduction-video';
 import ExtendedCourseDetails from './extended-course-details';
+import CourseCardImagePreview from './course-card-preview';
+import cardPreviewMessages from './course-card-preview/messages';
 import {
   isCourseOverviewSample,
   localizeCourseOverviewSample,
@@ -35,6 +37,11 @@ const IntroducingSection = ({
   enableExtendedCourseDetails,
   videoThumbnailImageAssetPath,
   isEditable = true,
+  hasUnsavedChanges = false,
+  courseDisplayName,
+  startDate,
+  endDate,
+  previewOverview,
   onChange,
 }) => {
   const intl = useIntl();
@@ -149,6 +156,22 @@ const IntroducingSection = ({
             showImageBodyText
             disabled={!isEditable}
             onChange={onChange}
+            renderPreview={(imageUrl, { uploadImage, uploadCount }) => (
+              <CourseCardImagePreview
+                imageUrl={imageUrl}
+                uploadImage={uploadImage}
+                uploadCount={uploadCount}
+                title={courseDisplayName}
+                startDate={startDate}
+                endDate={endDate}
+                shortDescription={shortDescription}
+                overview={previewOverview ?? overview}
+                hasUnsavedChanges={hasUnsavedChanges}
+              />
+            )}
+            replaceText={intl.formatMessage(cardPreviewMessages.replaceImage)}
+            emptyText={intl.formatMessage(cardPreviewMessages.imageEmpty)}
+            customHelpText={intl.formatMessage(cardPreviewMessages.imageHelp)}
           />
         </>
       )}
@@ -193,6 +216,10 @@ IntroducingSection.defaultProps = {
   bannerImageAssetPath: '',
   videoThumbnailImageAssetPath: '',
   overview: '',
+  courseDisplayName: '',
+  startDate: '',
+  endDate: '',
+  previewOverview: undefined,
 };
 
 IntroducingSection.propTypes = {
@@ -212,6 +239,12 @@ IntroducingSection.propTypes = {
   shortDescriptionEditable: PropTypes.bool.isRequired,
   enableExtendedCourseDetails: PropTypes.bool.isRequired,
   videoThumbnailImageAssetPath: PropTypes.string,
+  hasUnsavedChanges: PropTypes.bool,
+  // Course card mock-ups next to the card image (unsaved form values).
+  courseDisplayName: PropTypes.string,
+  startDate: PropTypes.string,
+  endDate: PropTypes.string,
+  previewOverview: PropTypes.string,
   onChange: PropTypes.func.isRequired,
 };
 

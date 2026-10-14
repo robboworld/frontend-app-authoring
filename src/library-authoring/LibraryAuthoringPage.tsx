@@ -7,7 +7,6 @@ import {
 } from 'react';
 import { Helmet } from 'react-helmet';
 import classNames from 'classnames';
-import { StudioFooterSlot } from '@edx/frontend-component-footer';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import {
   Alert,
@@ -408,7 +407,6 @@ const LibraryAuthoringPage = ({
             <LibraryContent contentType={activeKey} />
           </SearchContextProvider>
         </Container>
-        {!componentPickerMode && <StudioFooterSlot containerProps={{ size: undefined }} />}
       </div>
       {!!sidebarItemInfo?.type && (
         <div className="library-authoring-sidebar box-shadow-left-1 bg-white" data-testid="library-sidebar">
