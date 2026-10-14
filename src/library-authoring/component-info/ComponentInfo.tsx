@@ -1,17 +1,17 @@
-import React from 'react';
+import React, { useCallback, useContext } from 'react';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import {
   Button,
   Tab,
   Tabs,
   Stack,
-  useToggle,
 } from '@openedx/paragon';
 import {
   CheckBoxIcon,
   CheckBoxOutlineBlank,
 } from '@openedx/paragon/icons';
 import { getBlockType } from '@src/generic/key-utils';
+import { ToastContext } from '@src/generic/toast-context';
 
 import { useComponentPickerContext } from '../common/context/ComponentPickerContext';
 import { useOptionalLibraryContext } from '../common/context/LibraryContext';
@@ -27,10 +27,9 @@ import ComponentDetails from './ComponentDetails';
 import ComponentManagement from './ComponentManagement';
 import ComponentPreview from './ComponentPreview';
 import messages from './messages';
-import { useLibraryBlockMetadata } from '../data/apiHooks';
+import { useLibraryBlockMetadata, usePublishComponent } from '../data/apiHooks';
 import { ComponentUsageTab } from './ComponentUsageTab';
 import { PublishDraftButton, PublishedChip } from '../generic/publish-status-buttons';
-import { ComponentPublisher } from './ComponentPublisher';
 
 const AddComponentWidget = () => {
   const intl = useIntl();
@@ -111,19 +110,21 @@ const ComponentActions = ({
 }) => {
   const intl = useIntl();
   const { openComponentEditor } = useOptionalLibraryContext();
-  const [isPublisherOpen, openPublisher, closePublisher] = useToggle(false);
   const canEdit = canEditComponent(componentId);
 
   const { sidebarItemInfo } = useSidebarContext();
 
-  if (isPublisherOpen) {
-    return (
-      <ComponentPublisher
-        handleClose={closePublisher}
-        componentId={componentId}
-      />
-    );
-  }
+  // robbo: a component has no children, so there is nothing to confirm: publish right away
+  const publishComponent = usePublishComponent(componentId);
+  const { showToast } = useContext(ToastContext);
+  const handlePublish = useCallback(async () => {
+    try {
+      await publishComponent.mutateAsync();
+      showToast(intl.formatMessage(messages.publishSuccessMsg));
+    } catch {
+      showToast(intl.formatMessage(messages.publishErrorMsg));
+    }
+  }, [publishComponent, showToast, intl]);
 
   return (
     <div className="d-flex flex-wrap">
@@ -143,7 +144,8 @@ const ComponentActions = ({
           ) :
           (
             <PublishDraftButton
-              onClick={openPublisher}
+              onClick={handlePublish}
+              disabled={publishComponent.isPending}
             />
           )}
       </div>

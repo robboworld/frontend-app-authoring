@@ -191,6 +191,32 @@ describe('<LibraryInfo />', () => {
     });
   });
 
+  // robbo: platform without the authz API answers permission queries with 404
+  it('can publish library when the authz API is unavailable and user can edit the library', async () => {
+    validateUserPermissionsMock.mockRejectedValue(new Error('Request failed with status code 404'));
+    const url = getCommitLibraryChangesUrl(libraryData.id);
+    axiosMock.onPost(url).reply(200);
+    render();
+
+    expect(await screen.findByText(libraryData.org)).toBeInTheDocument();
+
+    fireEvent.click(await screen.findByRole('button', { name: /publish/i }));
+
+    await waitFor(() => {
+      expect(axiosMock.history.post[0].url).toEqual(url);
+      expect(mockShowToast).toHaveBeenCalledWith('Library published successfully');
+    });
+  });
+
+  it('cannot publish library when the authz API is unavailable and user cannot edit the library', async () => {
+    validateUserPermissionsMock.mockRejectedValue(new Error('Request failed with status code 404'));
+    render(libraryIdReadOnly);
+
+    expect(await screen.findByText(libraryData.org)).toBeInTheDocument();
+
+    expect(screen.queryByRole('button', { name: /publish/i })).not.toBeInTheDocument();
+  });
+
   it('should discard changes', async () => {
     const url = getCommitLibraryChangesUrl(libraryData.id);
     axiosMock.onDelete(url).reply(200);
