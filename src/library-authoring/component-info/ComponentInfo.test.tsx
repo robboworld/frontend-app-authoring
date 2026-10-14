@@ -99,56 +99,29 @@ describe('<ComponentInfo> Sidebar', () => {
     await waitFor(() => expect(publishButton).not.toBeDisabled());
   });
 
-  it('should show the confirmation box', async () => {
-    initializeMocks();
+  it('should publish the component right away, without a confirmation box', async () => {
+    const { axiosMock } = initializeMocks();
+    const url = getXBlockPublishApiUrl(mockLibraryBlockMetadata.usageKeyNeverPublished);
+    axiosMock.onPost(url).reply(200);
     render(
       <ComponentInfo />,
       withLibraryId(mockContentLibrary.libraryId, mockLibraryBlockMetadata.usageKeyNeverPublished),
     );
+
     const publishButton = await screen.findByRole('button', { name: /Publish Changes/ });
-    const editButton = screen.getByRole('button', { name: /edit component/i });
-    const menuButton = screen.getByRole('button', { name: /component actions menu/i });
-    expect(publishButton).toBeInTheDocument();
-    expect(editButton).toBeInTheDocument();
-    expect(menuButton).toBeInTheDocument();
+    await waitFor(() => expect(publishButton).not.toBeDisabled());
     publishButton.click();
 
-    // Should show hirearchy info
-    expect(await screen.findByText(/Confirm Publish/i)).toBeInTheDocument();
-
-    // Should hide all action buttons
-    expect(publishButton).not.toBeInTheDocument();
-    expect(editButton).not.toBeInTheDocument();
-    expect(menuButton).not.toBeInTheDocument();
-
-    // Click on Cancel
-    const cancelButton = screen.getByRole('button', { name: /cancel/i });
-    cancelButton.click();
-
-    // Should show all action buttons
-    expect(publishButton).not.toBeInTheDocument();
-    expect(editButton).not.toBeInTheDocument();
-    expect(menuButton).not.toBeInTheDocument();
+    await waitFor(() => expect(axiosMock.history.post.map((r) => r.url)).toContain(url));
+    expect(screen.queryByText(/Confirm Publish/i)).not.toBeInTheDocument();
+    // The action buttons stay visible
+    expect(screen.getByRole('button', { name: /edit component/i })).toBeInTheDocument();
   });
 
-  it('should show publish confirmation on first publish', async () => {
-    initializeMocks();
-    render(
-      <ComponentInfo />,
-      withLibraryId(mockContentLibrary.libraryId, mockLibraryBlockMetadata.usageKeyNeverPublished),
-    );
-
-    const publishButton = await screen.findByRole('button', { name: /Publish Changes/i });
-    publishButton.click();
-
-    // Should show the confirmation box
-    expect(await screen.findByText(/Confirm Publish/i)).toBeInTheDocument();
-    const secondPublishButton = screen.getByRole('button', { name: /publish/i });
-    secondPublishButton.click();
-  });
-
-  it('should show publish confirmation on already published', async () => {
-    initializeMocks();
+  it('should publish the component with unpublished changes right away', async () => {
+    const { axiosMock } = initializeMocks();
+    const url = getXBlockPublishApiUrl(mockLibraryBlockMetadata.usageKeyPublishedWithChanges);
+    axiosMock.onPost(url).reply(200);
     render(
       <ComponentInfo />,
       withLibraryId(mockContentLibrary.libraryId, mockLibraryBlockMetadata.usageKeyPublishedWithChanges),
@@ -158,27 +131,8 @@ describe('<ComponentInfo> Sidebar', () => {
     await waitFor(() => expect(publishButton).not.toBeDisabled());
     publishButton.click();
 
-    // Should show the confirmation box
-    expect(await screen.findByText(/Confirm Publish/i)).toBeInTheDocument();
-    const secondPublishButton = screen.getByRole('button', { name: /publish/i });
-    secondPublishButton.click();
-  });
-
-  it('should show publish confirmation on already published empty downstreams', async () => {
-    initializeMocks();
-    render(
-      <ComponentInfo />,
-      withLibraryId(mockContentLibrary.libraryId, mockLibraryBlockMetadata.usageKeyPublishedWithChangesV2),
-    );
-
-    const publishButton = await screen.findByRole('button', { name: /Publish Changes/i });
-    await waitFor(() => expect(publishButton).not.toBeDisabled());
-    publishButton.click();
-
-    // Should show the confirmation box
-    expect(await screen.findByText(/Confirm Publish/i)).toBeInTheDocument();
-    const secondPublishButton = screen.getByRole('button', { name: /publish/i });
-    secondPublishButton.click();
+    await waitFor(() => expect(axiosMock.history.post.map((r) => r.url)).toContain(url));
+    expect(screen.queryByText(/Confirm Publish/i)).not.toBeInTheDocument();
   });
 
   it('should show toast message when the component is published successfully', async () => {
@@ -192,11 +146,6 @@ describe('<ComponentInfo> Sidebar', () => {
 
     const publishButton = await screen.findByRole('button', { name: /Publish Changes/i });
     publishButton.click();
-
-    // Should show the confirmation box
-    expect(await screen.findByText(/Confirm Publish/i)).toBeInTheDocument();
-    const secondPublishButton = screen.getByRole('button', { name: /publish/i });
-    secondPublishButton.click();
 
     await waitFor(() => {
       expect(mockShowToast).toHaveBeenCalledWith('Component published successfully.');
@@ -214,11 +163,6 @@ describe('<ComponentInfo> Sidebar', () => {
 
     const publishButton = await screen.findByRole('button', { name: /Publish Changes/i });
     publishButton.click();
-
-    // Should show the confirmation box
-    expect(await screen.findByText(/Confirm Publish/i)).toBeInTheDocument();
-    const secondPublishButton = screen.getByRole('button', { name: /publish/i });
-    secondPublishButton.click();
 
     await waitFor(() => {
       expect(mockShowToast).toHaveBeenCalledWith('There was an error publishing the component.');
