@@ -1,7 +1,10 @@
+/**
+ * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
+ */
 import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import { useIntl } from '@edx/frontend-platform/i18n';
-import { getConfig } from '@edx/frontend-platform';
+import { useParams } from 'react-router-dom';
 import {
   ActionRow,
   AlertModal,
@@ -12,6 +15,8 @@ import {
   Truncate,
 } from '@openedx/paragon';
 
+import robboMessages from '../files-page/robbo-catalog/messages';
+import { formatUsageLocation, usageKey, usageLink } from '../files-page/robbo-catalog/usageText';
 import messages from './messages';
 
 const DeleteConfirmationModal = ({
@@ -22,6 +27,7 @@ const DeleteConfirmationModal = ({
   fileType,
 }) => {
   const intl = useIntl();
+  const { courseId } = useParams();
   const { clearSelection } = useContext(DataTableContext);
 
   const handleConfirmDeletion = () => {
@@ -50,10 +56,11 @@ const DeleteConfirmationModal = ({
         data-testid={`collapsible-${original.id}`}
       >
         <ul className="px-2 py-0">
-          {original.usageLocations.map(location => (
-            <li key={`usage-location-${location.displayLocation}`} style={{ listStyle: 'square' }}>
-              <Hyperlink destination={`${getConfig().STUDIO_BASE_URL}${location.url}`} target="_blank">
-                {location.displayLocation}
+          {/* Robbo: Russian place names and links (see robbo-catalog/usageText.ts) */}
+          {original.usageLocations.map((location, index) => (
+            <li key={usageKey(location, index)} style={{ listStyle: 'square' }}>
+              <Hyperlink destination={usageLink(courseId, location)} target="_blank">
+                {formatUsageLocation(intl, location)}
               </Hyperlink>
             </li>
           ))}
@@ -80,8 +87,11 @@ const DeleteConfirmationModal = ({
           <Button variant="tertiary" onClick={closeDeleteConfirmation}>
             {intl.formatMessage(messages.cancelButtonLabel)}
           </Button>
-          <Button onClick={handleConfirmDeletion}>
-            {intl.formatMessage(messages.deleteFileButtonLabel)}
+          {/* Robbo: deleting a file that is in use needs a deliberate click */}
+          <Button variant={isDeletingCourseContent ? 'danger' : 'primary'} onClick={handleConfirmDeletion}>
+            {intl.formatMessage(
+              isDeletingCourseContent ? robboMessages.deleteUsedConfirm : messages.deleteFileButtonLabel,
+            )}
           </Button>
         </ActionRow>
       }
@@ -107,6 +117,9 @@ const DeleteConfirmationModal = ({
             {deletedCourseContent}
           </ul>
         </div>
+      )}
+      {fileType === 'file' && (
+        <p className="small text-gray-700 mt-3 mb-0">{intl.formatMessage(robboMessages.deleteExternalNote)}</p>
       )}
     </AlertModal>
   );

@@ -9,7 +9,7 @@ const messages = defineMessages({
   base64ImagePasteWarning: {
     id: 'authoring.tinymce.base64ImagePasteWarning',
     defaultMessage:
-      'Pasting images as base64 overloads the course. Prefer uploading the file via “Add Image” instead.',
+      'Images pasted together with text are stored inside the component. They will be moved to Files when you save.',
     description:
       'Warning when an author pastes or inserts an inline base64 (data:image) image into TinyMCE',
   },
@@ -33,6 +33,23 @@ const messages = defineMessages({
     id: 'authoring.tinymce.imageUploading',
     defaultMessage: 'Uploading image…',
     description: 'Toast while uploading a pasted or dropped image as a course asset',
+  },
+  imagesUploadingOnSave: {
+    id: 'authoring.tinymce.imagesUploadingOnSave',
+    defaultMessage: 'Moving {count, plural, one {# image} other {# images}} from the component to Files…',
+    description: 'Toast on save while inline base64 images of the block are uploaded to course Files',
+  },
+  imagesMovedOnSave: {
+    id: 'authoring.tinymce.imagesMovedOnSave',
+    defaultMessage:
+      '{moved, plural, one {# image was} other {# images were}} moved to Files{reused, plural, =0 {} other {, # of them had already been uploaded}}.',
+    description: 'Toast after save: inline base64 images were replaced with links to course Files',
+  },
+  imagesFailedOnSave: {
+    id: 'authoring.tinymce.imagesFailedOnSave',
+    defaultMessage:
+      '{failed, plural, one {# image} other {# images}} could not be uploaded to Files and stayed inside the component.',
+    description: 'Toast after save when some inline base64 images could not be uploaded to course Files',
   },
 });
 

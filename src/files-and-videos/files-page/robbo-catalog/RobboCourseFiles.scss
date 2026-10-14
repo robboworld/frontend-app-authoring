@@ -1,0 +1,186 @@
+// Copyright (C) 2026 Robbo <https://robbo.ru>
+// SPDX-License-Identifier: AGPL-3.0-only
+//
+// Part of the Robbo Open edX distribution (course files catalog). See NOTICE at repository root.
+
+// Below this width the tree turns into a select above the table (same breakpoint as the certificate picker).
+$robbo-files-catalog-narrow: 991.98px;
+
+.robbo-files-catalog {
+  --robbo-files-gap: 1.5rem;
+  --robbo-files-radius: var(--pgn-size-border-radius-base, .375rem);
+  --robbo-files-row-height: 2.75rem;
+  --robbo-files-indent: 1rem;
+
+  display: grid;
+  grid-template-columns: minmax(13rem, 16rem) minmax(0, 1fr);
+  gap: var(--robbo-files-gap);
+  align-items: start;
+
+  .robbo-files-catalog__aside {
+    position: sticky;
+    top: 1rem;
+    min-width: 0;
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+  }
+
+  .robbo-files-catalog__main {
+    min-width: 0;
+
+    // The table toolbar has long Russian labels: next to the catalog whole buttons wrap, not their text.
+    .pgn__data-table-actions,
+    .pgn__table-actions {
+      flex-wrap: wrap;
+      gap: .5rem;
+    }
+
+    .pgn__table-actions .btn {
+      white-space: nowrap;
+    }
+  }
+
+  .robbo-files-catalog__note {
+    margin-bottom: 1rem;
+  }
+
+  @media (max-width: $robbo-files-catalog-narrow) {
+    grid-template-columns: minmax(0, 1fr);
+
+    .robbo-files-catalog__aside {
+      display: none;
+    }
+  }
+}
+
+.robbo-files-tree {
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .robbo-files-tree__children {
+    padding-left: var(--robbo-files-indent);
+  }
+
+  .robbo-files-tree__row {
+    display: flex;
+    align-items: center;
+    gap: .125rem;
+    min-width: 0;
+    border-radius: var(--robbo-files-radius);
+
+    &.is-selected {
+      background: var(--pgn-color-light-300);
+    }
+
+    &.is-pending .robbo-files-tree__label {
+      font-style: italic;
+    }
+  }
+
+  .robbo-files-tree__toggle,
+  .robbo-files-tree__toggle-spacer {
+    flex: 0 0 auto;
+    width: 2rem;
+  }
+
+  .robbo-files-tree__label {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: .375rem;
+    min-width: 0;
+    min-height: var(--robbo-files-row-height);
+    padding: .25rem .5rem;
+    border: 0;
+    border-radius: var(--robbo-files-radius);
+    background: transparent;
+    color: var(--pgn-color-gray-700);
+    text-align: left;
+
+    &:hover {
+      background: var(--pgn-color-light-200);
+      color: var(--pgn-color-black);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--pgn-color-primary-500);
+      outline-offset: 1px;
+    }
+
+    &[aria-current='true'] {
+      color: var(--pgn-color-black);
+      font-weight: 700;
+    }
+  }
+
+  .robbo-files-tree__item--group > .robbo-files-tree__row .robbo-files-tree__label {
+    color: var(--pgn-color-black);
+  }
+
+  .robbo-files-tree__icon {
+    flex: 0 0 auto;
+  }
+
+  .robbo-files-tree__text {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .robbo-files-tree__count {
+    flex: 0 0 auto;
+    color: var(--pgn-color-gray-500);
+    font-size: .875rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .robbo-files-tree__menu {
+    flex: 0 0 auto;
+  }
+
+  .robbo-files-tree__new-folder {
+    min-height: var(--robbo-files-row-height);
+    margin-left: 2rem;
+  }
+}
+
+.robbo-files-catalog-select {
+  display: none;
+
+  @media (max-width: $robbo-files-catalog-narrow) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: .5rem 1rem;
+    margin-bottom: 1rem;
+
+    .robbo-files-catalog-select__field {
+      flex: 1 1 16rem;
+      min-width: 0;
+    }
+
+    .robbo-files-catalog-select__actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+    }
+  }
+}
+
+.robbo-files-conflict {
+  display: grid;
+  gap: 1rem;
+
+  .robbo-files-conflict__item {
+    padding: 1rem;
+    border: 1px solid var(--pgn-color-light-400);
+    border-radius: var(--pgn-size-border-radius-base, .375rem);
+  }
+
+  .robbo-files-conflict__name {
+    overflow-wrap: anywhere;
+  }
+}

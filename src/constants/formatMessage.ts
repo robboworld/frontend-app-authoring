@@ -9,13 +9,16 @@
 import { createIntl, getLocale, getMessages } from '@edx/frontend-platform/i18n';
 import type { MessageDescriptor } from 'react-intl';
 
-export function formatAppMessage(message: MessageDescriptor): string {
+export function formatAppMessage(
+  message: MessageDescriptor,
+  values?: Record<string, string | number>,
+): string {
   try {
     const intl = createIntl({
       locale: getLocale(),
       messages: getMessages(),
     });
-    return intl.formatMessage(message);
+    return intl.formatMessage(message, values);
   } catch {
     return typeof message.defaultMessage === 'string' ? message.defaultMessage : '';
   }

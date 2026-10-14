@@ -1,6 +1,9 @@
+/**
+ * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
+ */
 import { FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
-import { getConfig } from '@edx/frontend-platform';
 import PropTypes from 'prop-types';
+import { useParams } from 'react-router-dom';
 import {
   Hyperlink,
   Icon,
@@ -10,6 +13,7 @@ import {
 import { ErrorOutline } from '@openedx/paragon/icons';
 import isEmpty from 'lodash/isEmpty';
 import { RequestStatus } from '../../data/constants';
+import { formatUsageLocation, usageKey, usageLink } from '../files-page/robbo-catalog/usageText';
 import messages from './messages';
 
 const UsageMetricsMessage = ({
@@ -18,16 +22,18 @@ const UsageMetricsMessage = ({
   error,
 }) => {
   const intl = useIntl();
+  const { courseId } = useParams();
   let usageMessage;
   if (usagePathStatus === RequestStatus.SUCCESSFUL) {
     usageMessage = isEmpty(usageLocations) ?
       <FormattedMessage {...messages.usageNotInUseMessage} /> :
       (
         <ul className="p-0">
-          {usageLocations.map(location => (
-            <li key={`usage-location-${location.displayLocation}`} style={{ listStyle: 'none' }}>
-              <Hyperlink destination={`${getConfig().STUDIO_BASE_URL}${location.url}`} target="_blank">
-                {location.displayLocation}
+          {/* Robbo: Russian place names and links for course design, certificates, pages, blocks */}
+          {usageLocations.map((location, index) => (
+            <li key={usageKey(location, index)} style={{ listStyle: 'none' }}>
+              <Hyperlink destination={usageLink(courseId, location)} target="_blank">
+                {formatUsageLocation(intl, location)}
               </Hyperlink>
             </li>
           ))}
