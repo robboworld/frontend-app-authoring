@@ -1,0 +1,12 @@
+// Copyright (C) 2026 Robbo <https://robbo.ru>
+// SPDX-License-Identifier: AGPL-3.0-only
+// Part of the Robbo Open edX distribution (course deletion in Studio). See NOTICE at repository root.
+
+.robbo-delete-course__key {
+  // The ID moves to its own line as a whole; only an ID longer than the dialog wraps inside.
+  // One click selects the whole ID to copy.
+  display: inline-block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  user-select: all;
+}
