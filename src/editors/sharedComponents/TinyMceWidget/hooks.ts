@@ -10,8 +10,6 @@ import { a11ycheckerCss } from 'frontend-components-tinymce-advanced-plugins';
 import { isEmpty } from 'lodash';
 import { formatAppMessage } from '@src/constants/formatMessage';
 import { showToastOutsideReact } from '@src/generic/toast-context';
-import { camelizeKeys } from '@src/editors/utils';
-import cmsApi from '../../data/services/cms/api';
 import tinyMCEStyles from '../../data/constants/tinyMCEStyles';
 import { StrictDict } from '../../utils';
 import pluginConfig from './pluginConfig';
@@ -19,6 +17,7 @@ import pluginConfig from './pluginConfig';
 import * as tinyMCE from '../../data/constants/tinyMCE';
 import messages from './messages';
 import { containsBase64Image, getRelativeUrl, getStaticUrl, parseAssetName } from './utils';
+import { uploadImageAsset } from './robboImageAssets';
 import { isLibraryKey } from '@src/generic/key-utils';
 
 /** Cooldown so multi-image paste does not spam toasts. */
@@ -150,8 +149,6 @@ export const uploadAndInsertImageFile = async ({
   learningContextId?: string | null;
   openImgModal?: () => void;
 }) => {
-  const studioEndpointUrl = getConfig().STUDIO_BASE_URL;
-  const lmsEndpointUrl = getConfig().LMS_BASE_URL || '';
   const blockId = resolveEditorBlockId();
   if (!learningContextId || !blockId) {
     showToastOutsideReact(
@@ -164,24 +161,8 @@ export const uploadAndInsertImageFile = async ({
   }
   showToastOutsideReact(formatAppMessage(messages.imageUploading), undefined, 4000);
   try {
-    const response = await cmsApi.uploadAsset({
-      asset: file,
-      blockId,
-      learningContextId,
-      studioEndpointUrl,
-    });
-    const asset = camelizeKeys(response.data.asset) as {
-      externalUrl?: string;
-      url?: string;
-      portableUrl?: string;
-    };
-    let url = asset.externalUrl || asset.url || '';
-    if (!url && asset.portableUrl) {
-      url = asset.portableUrl.startsWith('/') ? asset.portableUrl : `/${asset.portableUrl}`;
-    }
-    if (lmsEndpointUrl && url.startsWith(lmsEndpointUrl)) {
-      url = url.substring(lmsEndpointUrl.length);
-    }
+    // Content-based name: reuses the same picture already in Files, never overwrites a different one.
+    const { url } = await uploadImageAsset({ file, learningContextId, blockId });
     const alt = file.name.replace(/"/g, '');
     editor.insertContent(`<img src="${url}" alt="${alt}" />`);
   } catch {

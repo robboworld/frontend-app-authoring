@@ -67,6 +67,8 @@ interface Props extends EditorComponent {
   getContent: Function;
   isDirty: () => boolean;
   validateEntry?: Function | null;
+  /** Robbo: async step before saving (e.g. move base64 images to Files); the save button waits for it. */
+  prepareSave?: (() => Promise<void>) | null;
 }
 
 const EditorContainer: React.FC<Props> = ({
@@ -76,6 +78,7 @@ const EditorContainer: React.FC<Props> = ({
   onClose = null,
   validateEntry = null,
   returnFunction = null,
+  prepareSave = null,
 }) => {
   const intl = useIntl();
   const dispatch = useDispatch();
@@ -86,7 +89,8 @@ const EditorContainer: React.FC<Props> = ({
   const [isFullscreen, , , toggleFullscreen] = useToggle(false);
   const handleCancel = hooks.handleCancel({ onClose, returnFunction });
   const { createFailed, createFailedError } = hooks.createFailed();
-  const disableSave = !isInitialized;
+  const [isPreparingSave, setIsPreparingSave] = React.useState(false);
+  const disableSave = !isInitialized || isPreparingSave;
   const saveFailed = hooks.saveFailed();
   const clearSaveFailed = hooks.clearSaveError({ dispatch });
   const clearCreateFailed = hooks.clearCreateError({ dispatch });
@@ -98,7 +102,17 @@ const EditorContainer: React.FC<Props> = ({
     returnFunction,
   });
 
-  const onSave = () => {
+  const onSave = async () => {
+    if (prepareSave) {
+      setIsPreparingSave(true);
+      try {
+        await prepareSave();
+      } catch {
+        // Never block saving: the content is saved as it is.
+      } finally {
+        setIsPreparingSave(false);
+      }
+    }
     setSaved(true);
     handleSave();
   };

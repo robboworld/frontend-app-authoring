@@ -1,3 +1,6 @@
+/**
+ * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
+ */
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { CheckboxFilter } from '@openedx/paragon';
 import { AgreementGated, UPLOAD_FILE_MAX_SIZE } from '@src/constants';
@@ -32,7 +35,18 @@ import { useParams } from 'react-router-dom';
 import { useCourseUserPermissions } from '@src/authz/hooks';
 import { getFilesPermissions } from '@src/authz/permissionHelpers';
 
-export const CourseFilesTable = () => {
+/**
+ * Robbo: the «Файлы» catalog (robbo-catalog/RobboCourseFiles.tsx) narrows the list to the open
+ * catalog node, adds the folder column and its own upload flow; without it the table is upstream.
+ */
+export interface RobboCourseFilesTableProps {
+  handleAddFile?: (files: File[]) => void;
+  filterAssets?: (assets: any[]) => any[];
+  extraColumns?: Record<string, any>[];
+  conflictModal?: React.ReactNode;
+}
+
+export const CourseFilesTable = ({ robbo }: { robbo?: RobboCourseFilesTableProps; } = {}) => {
   const intl = useIntl();
   const { courseId } = useParams() as { courseId: string; };
   const dispatch = useDispatch();
@@ -56,10 +70,10 @@ export const CourseFilesTable = () => {
       selectedRows,
       courseId,
     }));
-  const handleAddFile = (files) => {
+  const handleAddFile = robbo?.handleAddFile ?? ((files) => {
     handleErrorReset({ errorType: 'add' });
     dispatch(validateAssetFiles(courseId, files));
-  };
+  });
   const handleFileOverwrite = (close, files) => {
     Object.values(files).forEach(file => dispatch(addAssetFile(courseId, file, true)));
     close();
@@ -81,7 +95,8 @@ export const CourseFilesTable = () => {
       canLockFile: canEditFiles,
     });
 
-  const assets = useModels('assets', assetIds);
+  const allAssets = useModels('assets', assetIds);
+  const assets = robbo?.filterAssets ? robbo.filterAssets(allAssets) : allAssets;
   const data = {
     fileIds: assetIds,
     loadingStatus,
@@ -165,6 +180,7 @@ export const CourseFilesTable = () => {
         },
       ],
     },
+    ...(robbo?.extraColumns || []),
     { ...activeColumn },
     { ...accessColumn },
   ];
@@ -198,7 +214,7 @@ export const CourseFilesTable = () => {
             },
           }}
         />
-        <FileValidationModal {...{ handleFileOverwrite }} />
+        {robbo?.conflictModal ?? <FileValidationModal {...{ handleFileOverwrite }} />}
       </>
     </GatedComponentWrapper>
   );

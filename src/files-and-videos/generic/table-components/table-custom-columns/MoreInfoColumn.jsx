@@ -1,3 +1,6 @@
+/**
+ * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
+ */
 import React, { useState } from 'react';
 import { PropTypes } from 'prop-types';
 import { useIntl } from '@edx/frontend-platform/i18n';
@@ -12,6 +15,8 @@ import {
 } from '@openedx/paragon';
 import { MoreHoriz } from '@openedx/paragon/icons';
 
+import { useRobboFileActions } from '../../../files-page/robbo-catalog/RobboFileActionsContext';
+import robboMessages from '../../../files-page/robbo-catalog/messages';
 import messages from '../../messages';
 
 const MoreInfoColumn = ({
@@ -27,6 +32,7 @@ const MoreInfoColumn = ({
   },
 }) => {
   const intl = useIntl();
+  const robboActions = useRobboFileActions();
   const [isOpen, , close, toggle] = useToggle();
   const [target, setTarget] = useState(null);
 
@@ -121,6 +127,19 @@ const MoreInfoColumn = ({
           >
             {intl.formatMessage(messages.infoTitle)}
           </MenuItem>
+          {/* Robbo: author folders in «Файлы» (no provider on the videos page) */}
+          {robboActions && permissions.canEditFiles && (
+            <MenuItem
+              as={Button}
+              variant="tertiary"
+              onClick={() => {
+                robboActions.onMoveToFolder([id]);
+                close();
+              }}
+            >
+              {intl.formatMessage(robboMessages.moveMenuItem)}
+            </MenuItem>
+          )}
 
           {permissions.canDeleteFiles && (
             <>

@@ -1,3 +1,6 @@
+/**
+ * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
+ */
 import React, { useContext, useEffect } from 'react';
 import { isEmpty } from 'lodash';
 import { PropTypes } from 'prop-types';
@@ -10,6 +13,8 @@ import {
   useToggle,
 } from '@openedx/paragon';
 import { Add, Tune } from '@openedx/paragon/icons';
+import { useRobboFileActions } from '../../files-page/robbo-catalog/RobboFileActionsContext';
+import robboMessages from '../../files-page/robbo-catalog/messages';
 import messages from '../messages';
 import SortAndFilterModal from './sort-and-filter-modal';
 
@@ -30,6 +35,7 @@ const TableActions = ({
   const intl = useIntl();
   const [isSortOpen, openSort, closeSort] = useToggle(false);
   const { state, clearSelection } = useContext(DataTableContext);
+  const robboActions = useRobboFileActions();
 
   // This useEffect saves DataTable state so it can persist after table re-renders due to data reload.
   useEffect(() => {
@@ -71,6 +77,18 @@ const TableActions = ({
           >
             <FormattedMessage {...messages.downloadTitle} />
           </Dropdown.Item>
+          {/* Robbo: move the selected files to an author folder (row selection is by index, so clear it) */}
+          {robboActions && (
+            <Dropdown.Item
+              onClick={() => {
+                robboActions.onMoveToFolder(selectedFlatRows.map(row => row.original.id));
+                clearSelection();
+              }}
+              disabled={isEmpty(selectedFlatRows)}
+            >
+              <FormattedMessage {...robboMessages.moveMenuItem} />
+            </Dropdown.Item>
+          )}
           {permissions.canDeleteFiles
             && (
               <>

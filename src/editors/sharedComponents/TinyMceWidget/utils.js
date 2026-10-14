@@ -1,5 +1,21 @@
+/**
+ * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
+ */
+// Robbo: asset names keep Unicode letters (Python's \w on the server), so «Слайд13.JPG» must not
+// become /static/13.JPG; percent-encoded names are decoded because /static/ links are not.
+const decodeAssetName = (name) => {
+  if (!/%[0-9A-Fa-f]{2}/.test(name)) {
+    return name;
+  }
+  try {
+    return decodeURIComponent(name);
+  } catch {
+    return name;
+  }
+};
+
 const getLocatorSafeName = ({ displayName }) => {
-  const locatorSafeName = displayName.replace(/[^\w.%-]/gm, '');
+  const locatorSafeName = decodeAssetName(displayName).replace(/[^\p{L}\p{N}_.%-]/gmu, '');
   return locatorSafeName;
 };
 
