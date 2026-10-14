@@ -1,3 +1,6 @@
+/**
+ * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
+ */
 import {
   InsertDriveFile,
   Terminal,
@@ -24,9 +27,11 @@ export const updateFileValues = (files) => {
       wrapperType = 'audio';
     }
 
-    const { dateAdded, locked, usageLocations } = file;
-    const utcDateString = dateAdded.replace(/\bat\b/g, '');
-    const utcDateTime = new Date(utcDateString).toString();
+    const { dateAdded, dateAddedIso, locked, usageLocations } = file;
+    // Robbo: dateAdded comes in the UI language («13 октября 2026 г. 11:23 UTC») and Date can't parse it, so use
+    // the CMS ISO field. Keep ISO in the store: FormattedDate reads it and sortFiles compares it as a string.
+    const addedAt = new Date(dateAddedIso || dateAdded.replace(/\bat\b/g, ''));
+    const utcDateTime = Number.isNaN(addedAt.getTime()) ? dateAdded : addedAt.toISOString();
     const lockStatus = locked ? 'locked' : 'public';
     const activeStatus = usageLocations?.length > 0 ? 'active' : 'inactive';
 
