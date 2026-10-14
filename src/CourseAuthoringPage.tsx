@@ -4,7 +4,6 @@ import { useDispatch } from 'react-redux';
 import {
   useLocation,
 } from 'react-router-dom';
-import { StudioFooterSlot } from '@edx/frontend-component-footer';
 import Header from './header';
 import NotFoundAlert from './generic/NotFoundAlert';
 import { fetchOnlyStudioHomeData } from './studio-home/data/thunks';
@@ -56,7 +55,6 @@ const CourseAuthoringPage = ({ children }: Props) => {
           />
         ))}
       {children}
-      {!inProgress && !isEditor && <StudioFooterSlot />}
     </div>
   );
 };

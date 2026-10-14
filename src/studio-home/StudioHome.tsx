@@ -10,7 +10,6 @@ import {
 import { Add as AddIcon, Error, ManageAccounts } from '@openedx/paragon/icons';
 import { FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
 import { getConfig } from '@edx/frontend-platform';
-import { StudioFooterSlot } from '@edx/frontend-component-footer';
 import { Link, useLocation } from 'react-router-dom';
 
 import { useWaffleFlags } from '@src/data/apiHooks';
@@ -191,7 +190,6 @@ const StudioHome = () => {
           isQueryPending={anyQueryIsPending}
         />
       </div>
-      <StudioFooterSlot />
     </>
   );
 };

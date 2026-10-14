@@ -1,0 +1,662 @@
+// Copyright (C) 2026 Robbo <https://robbo.ru>
+// SPDX-License-Identifier: AGPL-3.0-only
+// Part of the Robbo Open edX distribution. See NOTICE at repository root.
+
+// Course card image field with the catalog and «Мои курсы» card mock-ups.
+// Mock-up values repeat the real cards on desktop; when those change, update here too:
+// catalog — robbo-theme sass/courseware/_robbo-courses-catalog.scss (.robbo-courses-catalog__stub--course),
+// «Мои курсы» — learner-dashboard containers/CourseCard/CourseCard.scss and its components.
+
+// Light brand backdrop (docs/design/robbo-brand-guidelines.md, --robbo-ui-primary-light) so the
+// white cards, the «Мои курсы» one especially, stand out from the white field.
+.robbo-card-preview-field {
+  --robbo-card-preview-field-bg: var(--robbo-ui-primary-light, #e8f8ef);
+  // Hints of the field: one point larger than the Studio form texts.
+  --robbo-card-preview-field-text-up: 1pt;
+
+  background: var(--robbo-card-preview-field-bg);
+  border-top-left-radius: var(--pgn-size-card-border-radius-inner);
+  border-top-right-radius: var(--pgn-size-card-border-radius-inner);
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: var(--pgn-spacing-spacer-3);
+  text-align: left;
+}
+
+.robbo-card-preview-field__intro {
+  color: var(--pgn-color-gray-700);
+  font-size: calc(.875rem + var(--robbo-card-preview-field-text-up));
+  line-height: 1.4;
+  margin: 0;
+}
+
+.robbo-card-preview-field__image-info,
+.robbo-card-preview-field__safe-zone {
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+}
+
+.robbo-card-preview-field__note {
+  align-items: flex-start;
+  color: var(--pgn-color-gray-700);
+  display: flex;
+  font-size: calc(.8125rem + var(--robbo-card-preview-field-text-up));
+  gap: .25rem;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.robbo-card-preview-field__warning-icon {
+  color: var(--pgn-color-warning-500);
+  flex-shrink: 0;
+}
+
+.robbo-card-preview-field__safe-zone .pgn__form-switch {
+  margin: 0;
+}
+
+// The switch label gets the small `.form-group-custom .pgn__form-label` style; one point up.
+.robbo-card-preview-field .robbo-card-preview-field__safe-zone .pgn__form-label {
+  font-size: calc(.75rem + var(--robbo-card-preview-field-text-up));
+  line-height: 1.4;
+}
+
+.robbo-card-preview-field__crop {
+  margin-top: .25rem;
+}
+
+.robbo-card-preview-field__item {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  min-width: 0;
+
+  // Heading and link span the card, not the whole field.
+  &--catalog {
+    max-width: 562px;
+  }
+}
+
+.robbo-card-preview-field__head {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .25rem 1rem;
+  justify-content: space-between;
+}
+
+.robbo-card-preview-field__title {
+  color: var(--pgn-color-gray-700);
+  font-size: calc(.875rem + var(--robbo-card-preview-field-text-up));
+  font-weight: var(--pgn-typography-font-weight-bold);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.robbo-card-preview-field__link {
+  font-size: .875rem;
+}
+
+// A picture of the card: same box, nothing inside is clickable.
+.robbo-card-mock {
+  --robbo-card-mock-font: "ProximaNova", "Proxima Nova", Helvetica, Arial, sans-serif;
+  --robbo-card-mock-radius: 10px;
+  --robbo-card-mock-shadow: 0 1px 2px rgba(0, 0, 0, .06), 0 4px 12px rgba(0, 0, 0, .05);
+  --robbo-card-mock-green: #00af41;
+  --robbo-card-mock-muted: #6b7280;
+
+  background: #fff;
+  border-radius: var(--robbo-card-mock-radius);
+  box-shadow: var(--robbo-card-mock-shadow);
+  box-sizing: border-box;
+  font-family: var(--robbo-card-mock-font);
+  overflow: hidden;
+  pointer-events: none;
+  width: 100%;
+}
+
+// --- Catalog (/courses, one column of the 2-column grid at ≥1200px) ---
+.robbo-card-mock--catalog {
+  --robbo-card-mock-cat-pad: 1.5rem;
+  --robbo-card-mock-cat-img-w: 214px; // art lane 14rem minus the 10px inset
+  --robbo-card-mock-cat-img-gap: 10px;
+
+  border: 1px solid #e5e7eb;
+  color: #222;
+  font-size: 1rem;
+  max-width: 562px;
+  padding: var(--robbo-card-mock-cat-pad);
+}
+
+.robbo-card-mock__catalog-body {
+  display: grid;
+  gap: .85rem;
+  grid-template-rows: 1fr auto;
+}
+
+.robbo-card-mock__catalog-copy {
+  align-items: start;
+  column-gap: var(--robbo-card-mock-cat-img-gap);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--robbo-card-mock-cat-img-w);
+}
+
+.robbo-card-mock__catalog-main {
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+  min-width: 0;
+}
+
+.robbo-card-mock__catalog-title {
+  color: #111827;
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -.01em;
+  line-height: 1.3;
+  margin: 0;
+  min-width: 0;
+}
+
+.robbo-card-mock__catalog-meta {
+  color: var(--robbo-card-mock-muted);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: .75rem;
+  gap: .35rem .65rem;
+  line-height: 1.35;
+  margin: 0;
+  min-width: 0;
+}
+
+.robbo-card-mock__catalog-meta-item::after {
+  color: #d1d5db;
+  content: "·";
+  margin-left: .65rem;
+}
+
+.robbo-card-mock__catalog-about {
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.robbo-card-mock__catalog-desc {
+  -webkit-box-orient: vertical;
+  color: var(--robbo-card-mock-muted);
+  display: -webkit-box;
+  font-size: var(--robbo-card-mock-desc-size, 1.1rem);
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  line-height: 1.45;
+  margin: .1rem 0 0;
+  overflow: hidden;
+}
+
+.robbo-card-mock__catalog-media {
+  aspect-ratio: 4 / 3;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, .08);
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+
+  &.is-placeholder {
+    align-items: center;
+    background: linear-gradient(145deg, #f8fafc 0%, #eef2f7 100%);
+    box-shadow: inset 0 0 0 1px rgba(15, 23, 42, .06);
+    display: flex;
+    justify-content: center;
+
+    .robbo-card-mock__catalog-img {
+      height: auto;
+      max-height: 65%;
+      max-width: 65%;
+      object-fit: contain;
+      object-position: center;
+      opacity: .72;
+      padding: .75rem;
+      width: auto;
+    }
+  }
+}
+
+.robbo-card-mock__catalog-img {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  width: 100%;
+}
+
+.robbo-card-mock__catalog-cta {
+  align-items: center;
+  background: var(--robbo-card-mock-green);
+  border: 1px solid var(--robbo-card-mock-green);
+  border-radius: 23px;
+  box-sizing: border-box;
+  color: #fff;
+  display: flex;
+  font-size: .9375rem;
+  font-weight: 700;
+  justify-content: center;
+  line-height: 1.2;
+  min-height: 46px;
+  padding: .4rem 1.15rem;
+  width: 100%;
+}
+
+// --- «Мои курсы» (learner dashboard row, ≥768px) ---
+.robbo-card-mock--dashboard {
+  --robbo-card-mock-dash-img-w: 18.75rem;
+  --robbo-card-mock-dash-max-h: 14rem;
+  --robbo-card-mock-dash-pad: 1rem;
+
+  align-items: stretch;
+  color: #383838;
+  display: flex;
+  font-size: 1.125rem;
+  line-height: 1.5556;
+  max-height: var(--robbo-card-mock-dash-max-h);
+}
+
+// The image fills the card height (as in the real card), it does not set it.
+.robbo-card-mock__dash-media {
+  align-self: stretch;
+  flex: 0 0 var(--robbo-card-mock-dash-img-w);
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.robbo-card-mock__dash-img {
+  display: block;
+  height: 100%;
+  inset: 0;
+  object-fit: cover;
+  object-position: center;
+  position: absolute;
+  width: 100%;
+
+  &.is-placeholder {
+    object-fit: contain;
+    padding: .75rem;
+  }
+}
+
+.robbo-card-mock__dash-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  max-height: var(--robbo-card-mock-dash-max-h);
+  min-height: 0;
+  min-width: 0;
+  padding: .75rem var(--robbo-card-mock-dash-pad) var(--robbo-card-mock-dash-pad);
+}
+
+// Paragon .pgn__card-header-title-md: 22px on a 34.2px line (the status badge sits on it).
+.robbo-card-mock__dash-header {
+  color: #000;
+  flex-shrink: 0;
+  font-size: 1.375rem;
+  font-weight: 700;
+  line-height: 1.5553;
+}
+
+.robbo-card-mock__dash-status {
+  background: #f3f4f6;
+  border-radius: 4px;
+  color: var(--robbo-card-mock-muted);
+  display: inline-block;
+  font-size: .6875rem;
+  font-weight: 700;
+  letter-spacing: .02em;
+  line-height: 1.2;
+  margin-bottom: .35rem;
+  padding: .2rem .5rem;
+  text-transform: uppercase;
+}
+
+.robbo-card-mock__dash-title {
+  font-size: 1.375rem;
+  line-height: 1.25;
+  margin: 0 0 .25rem;
+}
+
+.robbo-card-mock__dash-section {
+  flex-shrink: 0;
+}
+
+.robbo-card-mock__dash-details {
+  font-size: 87.5%;
+}
+
+.robbo-card-mock__dash-progress {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .3rem;
+  margin-top: .5rem;
+  min-width: 0;
+  width: 100%;
+}
+
+.robbo-card-mock__dash-progress-row {
+  align-items: center;
+  display: flex;
+  gap: .3rem;
+  min-width: 0;
+  width: 100%;
+}
+
+.robbo-card-mock__dash-progress-track {
+  background: #e5e7eb;
+  border-radius: 999px;
+  flex: 1 1 auto;
+  height: 5px;
+  min-width: 0;
+}
+
+.robbo-card-mock__dash-progress-percent {
+  color: #374151;
+  flex-shrink: 0;
+  font-size: .75rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.robbo-card-mock__dash-progress-units {
+  color: var(--robbo-card-mock-muted);
+  flex: 1 1 100%;
+  font-size: .75rem;
+  line-height: 1.3;
+  margin: 0;
+  min-width: 0;
+}
+
+.robbo-card-mock__dash-footer {
+  align-items: flex-end;
+  display: flex;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: .5rem;
+  justify-content: flex-end;
+  margin-top: auto;
+  min-width: 0;
+  width: 100%;
+}
+
+.robbo-card-mock__dash-banners {
+  align-items: center;
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-right: auto;
+  min-width: 0;
+
+  .alert {
+    border-radius: 8px;
+    box-shadow: none;
+    display: inline-flex;
+    flex: 0 1 auto;
+    font-size: .8125rem;
+    line-height: 1.35;
+    margin: 0;
+    max-width: 100%;
+    padding: .25rem .5rem;
+    width: auto;
+  }
+
+  .alert-icon {
+    flex-shrink: 0;
+    margin-top: 0;
+  }
+}
+
+.robbo-card-mock__dash-button {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+// Safe zone over the mock-up images (SafeZoneOverlay): shade outside, dashed frame on the edge.
+.robbo-card-safe-zone {
+  height: 100%;
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  width: 100%;
+
+  // Stacked «Мои курсы» card only (image contained, see the container query below).
+  &--contain {
+    display: none;
+  }
+}
+
+.robbo-card-safe-zone__shade {
+  fill: rgba(15, 23, 42, .45);
+}
+
+.robbo-card-safe-zone__outline,
+.robbo-card-safe-zone__frame {
+  fill: none;
+}
+
+.robbo-card-safe-zone__outline {
+  stroke: rgba(15, 23, 42, .7);
+  stroke-width: 4px;
+}
+
+.robbo-card-safe-zone__frame {
+  stroke: #fff;
+  stroke-dasharray: 6 4;
+  stroke-width: 2px;
+}
+
+// Narrow field: the dashboard card stacks like on a phone (image on top, full-width button).
+@container (max-width: 40rem) {
+  .robbo-card-safe-zone--cover-center {
+    display: none;
+  }
+
+  .robbo-card-safe-zone--contain {
+    display: block;
+  }
+
+  .robbo-card-mock--dashboard {
+    flex-direction: column;
+    max-height: none;
+  }
+
+  .robbo-card-mock__dash-media {
+    aspect-ratio: 16 / 9;
+    border-radius: var(--robbo-card-mock-radius);
+    flex: none;
+    margin: var(--robbo-card-mock-dash-pad) var(--robbo-card-mock-dash-pad) 0;
+    max-height: var(--robbo-card-mock-dash-max-h);
+  }
+
+  .robbo-card-mock__dash-img {
+    object-fit: contain;
+  }
+
+  .robbo-card-mock__dash-body {
+    max-height: none;
+    padding-top: .5rem;
+  }
+
+  .robbo-card-mock__dash-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .robbo-card-mock__dash-button {
+    width: 100%;
+  }
+
+  .robbo-card-mock--catalog {
+    --robbo-card-mock-cat-img-w: 38%;
+  }
+}
+
+// --- Crop to 4:3 (CardImageCropper, in a modal) ---
+// Frame on the left, explanations and zoom on the right; stacked on narrow screens.
+.robbo-card-cropper {
+  align-items: start;
+  display: grid;
+  gap: 1rem 1.25rem;
+  grid-template-columns: minmax(0, 1fr);
+
+  @media (min-width: 768px) {
+    grid-template-columns: minmax(0, 3fr) minmax(13rem, 2fr);
+  }
+}
+
+.robbo-card-cropper__controls {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+  min-width: 0;
+}
+
+.robbo-card-cropper__text {
+  color: var(--pgn-color-gray-700);
+  font-size: .875rem;
+  line-height: 1.4;
+  margin: 0;
+}
+
+// Why the crop cannot move (it spans the whole width or height of the picture).
+.robbo-card-cropper__text--hint {
+  align-items: flex-start;
+  display: flex;
+  gap: .25rem;
+}
+
+.robbo-card-cropper__hint-icon {
+  color: var(--pgn-color-info-500);
+  flex-shrink: 0;
+  margin-top: .1rem;
+}
+
+// Re-crop from the original: says where the picture in the frame comes from.
+.robbo-card-cropper__text--source {
+  color: var(--pgn-color-gray-900);
+  font-weight: var(--pgn-typography-font-weight-bold);
+}
+
+// Fixed 4:3 frame with the dimmed rest of the picture around it; the frame height also fits the
+// window so the modal does not scroll. Where the picture ends, the empty background shows.
+.robbo-card-cropper__viewport {
+  --robbo-card-cropper-margin: 1.75rem; // dimmed surroundings, room for the «Каталог» label
+  --robbo-card-cropper-catalog: #00af41; // brand green
+  --robbo-card-cropper-dashboard: #fff;
+  --robbo-card-cropper-shade: rgba(15, 23, 42, .6);
+  --robbo-card-cropper-line: 2px;
+
+  background: var(--pgn-color-gray-200);
+  border-radius: 8px;
+  box-sizing: border-box;
+  cursor: grab;
+  margin-inline: auto;
+  overflow: hidden;
+  padding: var(--robbo-card-cropper-margin);
+  position: relative;
+  touch-action: none;
+  user-select: none;
+  width: min(100%, calc((100vh - 22rem) * 4 / 3 + 2 * var(--robbo-card-cropper-margin)));
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  &:focus-visible {
+    outline: 3px solid var(--pgn-color-primary-base);
+    outline-offset: 2px;
+  }
+}
+
+.robbo-card-cropper__image {
+  max-width: none;
+  pointer-events: none;
+  position: absolute;
+}
+
+.robbo-card-cropper__frame {
+  aspect-ratio: 4 / 3;
+  position: relative;
+  width: 100%;
+}
+
+// Dims everything outside the frame (the viewport clips it).
+.robbo-card-cropper__shade {
+  box-shadow: 0 0 0 100vmax var(--robbo-card-cropper-shade);
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.robbo-card-cropper__bounds {
+  pointer-events: none;
+  position: absolute;
+}
+
+// «Каталог»: the whole 4:3 frame.
+.robbo-card-cropper__bounds--catalog {
+  border: var(--robbo-card-cropper-line) solid var(--robbo-card-cropper-catalog);
+  // Dark hairline inside so the green line stays visible on green pictures.
+  box-shadow: inset 0 0 0 1px rgba(15, 23, 42, .55);
+  inset: calc(-1 * var(--robbo-card-cropper-line));
+}
+
+// «Мои курсы»: the 16:9 middle of the frame (the shortest dashboard card; home and About pages).
+.robbo-card-cropper__bounds--dashboard {
+  border-block: var(--robbo-card-cropper-line) solid var(--robbo-card-cropper-dashboard);
+  box-shadow:
+    0 -1px 0 rgba(15, 23, 42, .55),
+    0 1px 0 rgba(15, 23, 42, .55),
+    inset 0 1px 0 rgba(15, 23, 42, .55),
+    inset 0 -1px 0 rgba(15, 23, 42, .55);
+  height: 75%;
+  inset-inline: 0;
+  top: 12.5%;
+}
+
+.robbo-card-cropper__label {
+  border-radius: 4px;
+  font-size: .75rem;
+  font-weight: var(--pgn-typography-font-weight-bold);
+  line-height: 1.2;
+  padding: .15rem .4rem;
+  position: absolute;
+  white-space: nowrap;
+}
+
+// Tab above the frame's top-left corner, in the dimmed margin.
+.robbo-card-cropper__label--catalog {
+  background: var(--robbo-card-cropper-catalog);
+  bottom: 100%;
+  color: #fff;
+  left: calc(-1 * var(--robbo-card-cropper-line));
+  margin-bottom: var(--robbo-card-cropper-line);
+}
+
+// Inside the band, under its top line on the right.
+.robbo-card-cropper__label--dashboard {
+  background: var(--robbo-card-cropper-dashboard);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, .35);
+  color: #383838;
+  right: .35rem;
+  top: .35rem;
+}
+
+.robbo-card-cropper__zoom {
+  margin: 0;
+}
+
+.robbo-card-cropper__zoom-range {
+  accent-color: var(--pgn-color-primary-base);
+  width: 100%;
+}

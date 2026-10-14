@@ -317,6 +317,11 @@ const ScheduleAndDetails = () => {
                     enableExtendedCourseDetails={enableExtendedCourseDetails}
                     videoThumbnailImageAssetPath={videoThumbnailImageAssetPath}
                     isEditable={canEditDetails}
+                    hasUnsavedChanges={showModifiedAlert}
+                    courseDisplayName={courseDisplayName}
+                    startDate={startDate}
+                    endDate={endDate}
+                    previewOverview={editedValues.overview}
                     onChange={handleValuesChange}
                   />
                   {enableExtendedCourseDetails && (

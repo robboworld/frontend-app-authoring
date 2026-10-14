@@ -33,9 +33,6 @@ const MockChildComponent = () => {
 };
 
 jest.mock('../header', () => jest.fn(() => <div data-testid="mock-header" />));
-jest.mock('@edx/frontend-component-footer', () => ({
-  StudioFooterSlot: jest.fn(() => <div data-testid="mock-footer" />),
-}));
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   Outlet: () => <MockChildComponent />,
@@ -51,7 +48,6 @@ describe('<TaxonomyLayout />', () => {
     render(<TaxonomyLayout />);
     expect(screen.getByTestId('mock-header')).toBeInTheDocument();
     expect(screen.getByTestId('mock-content')).toBeInTheDocument();
-    expect(screen.getByTestId('mock-footer')).toBeInTheDocument();
   });
 
   it('should show toast', async () => {

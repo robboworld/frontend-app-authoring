@@ -28,10 +28,15 @@ const CourseUploadImage = ({
   showImageBodyText,
   customInputPlaceholder,
   disabled = false,
+  renderPreview,
+  replaceText,
+  emptyText,
   onChange,
 }) => {
   const { courseId } = useParams();
   const intl = useIntl();
+  // Robbo: dropzone uploads so far — a custom preview may react to a fresh upload (crop offer).
+  const [uploadCount, setUploadCount] = React.useState(0);
   const imageAbsolutePath = () => new URL(assetImagePath, getConfig().LMS_BASE_URL);
   const assetsUrl = () => new URL(`/assets/${courseId}`, getConfig().STUDIO_BASE_URL);
 
@@ -51,13 +56,36 @@ const CourseUploadImage = ({
       const url = response?.asset?.url;
       if (url) {
         handleChangeImageAsset(url);
+        setUploadCount((count) => count + 1);
       }
     } catch (error) {
       handleError(error);
     }
   };
 
-  const inputComponent = assetImagePath ?
+  // Robbo: upload a file made by the custom preview (cropped image) and put it into the field.
+  const uploadImage = async (file) => {
+    const fileData = new FormData();
+    fileData.append('file', file);
+    const response = await uploadAssets(courseId, fileData);
+    const url = response?.asset?.url;
+    if (!url) {
+      throw new Error('The uploaded image has no URL');
+    }
+    handleChangeImageAsset(url);
+  };
+
+  // Robbo: a field may show its own preview of the image (course card mock-ups); the dropzone
+  // below it then only offers to replace the image.
+  const hasCustomPreview = Boolean(assetImagePath && renderPreview);
+
+  const filledInputComponent = hasCustomPreview ?
+    (
+      <div className="course-upload-image__replace">
+        <Icon src={FileUploadIcon} />
+        <span>{replaceText}</span>
+      </div>
+    ) :
     (
       <div className="image-preview">
         <Image
@@ -66,7 +94,10 @@ const CourseUploadImage = ({
           fluid
         />
       </div>
-    ) :
+    );
+
+  const inputComponent = assetImagePath ?
+    filledInputComponent :
     (
       <>
         <IconButton
@@ -105,7 +136,7 @@ const CourseUploadImage = ({
     ) :
     (
       <span className="x-small text-gray-700">
-        {intl.formatMessage(messages.uploadImageEmpty)}
+        {emptyText || intl.formatMessage(messages.uploadImageEmpty)}
       </span>
     );
 
@@ -114,8 +145,13 @@ const CourseUploadImage = ({
       <Form.Label>{label}</Form.Label>
       <Card>
         <Card.Body className="image-body">
+          {hasCustomPreview && renderPreview(imageAbsolutePath().href, {
+            uploadImage: disabled ? undefined : uploadImage,
+            uploadCount,
+          })}
           <div style={disabled ? { pointerEvents: 'none' } : undefined}>
             <Dropzone
+              className={hasCustomPreview ? 'course-upload-image__dropzone--compact' : undefined}
               onProcessUpload={handleProcessUpload}
               inputComponent={inputComponent}
               accept={{
@@ -157,6 +193,9 @@ CourseUploadImage.defaultProps = {
   showImageBodyText: false,
   identifierFieldText: '',
   customInputPlaceholder: '',
+  renderPreview: undefined,
+  replaceText: '',
+  emptyText: '',
 };
 
 CourseUploadImage.propTypes = {
@@ -168,6 +207,12 @@ CourseUploadImage.propTypes = {
   showImageBodyText: PropTypes.bool,
   identifierFieldText: PropTypes.string,
   customInputPlaceholder: PropTypes.string,
+  // (imageUrl, { uploadImage(file), uploadCount }) => node shown instead of the plain image preview;
+  // requires replaceText. uploadImage is undefined when the field is read-only.
+  renderPreview: PropTypes.func,
+  replaceText: PropTypes.string,
+  // Text under the empty dropzone instead of the generic «minimum 375×200» hint.
+  emptyText: PropTypes.string,
   onChange: PropTypes.func.isRequired,
 };
 
