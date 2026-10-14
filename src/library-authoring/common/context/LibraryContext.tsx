@@ -106,13 +106,21 @@ export const LibraryProvider = ({
     componentPickerMode,
   } = useComponentPickerContext();
 
-  const { isLoading: isLoadingUserPermissions, data: userPermissions } = useUserPermissions({
+  const {
+    isLoading: isLoadingUserPermissions,
+    isError: isUserPermissionsError,
+    data: userPermissions,
+  } = useUserPermissions({
     canPublish: {
       action: CONTENT_LIBRARY_PERMISSIONS.PUBLISH_LIBRARY_CONTENT,
       scope: libraryId,
     },
   }, typeof libraryId !== 'undefined');
-  const canPublish = !libraryId || userPermissions?.canPublish || false;
+  // robbo: platform without the authz API (POST /api/authz/v1/permissions/validate/me returns 404) cannot
+  // answer permission queries. The backend allows publishing to those who can edit the library, so use that.
+  const canPublish = !libraryId
+    || (isUserPermissionsError ? !!libraryData?.canEditLibrary : userPermissions?.canPublish)
+    || false;
   const readOnly = !libraryId || !!componentPickerMode || !libraryData?.canEditLibrary;
 
   // Parse the initial collectionId and/or container ID(s) from the current URL params

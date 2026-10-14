@@ -532,6 +532,8 @@ export const useLibraryItemHierarchy = (key: string) => {
     queryKey,
     queryFn,
     enabled: !!key,
+    // robbo: older openedx-platform has no hierarchy API; do not retry a 404, show the fallback at once
+    retry: (failureCount, error: any) => error?.response?.status !== 404 && failureCount < 3,
   });
 };
 

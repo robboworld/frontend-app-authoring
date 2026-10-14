@@ -39,10 +39,8 @@ export const ItemHierarchyPublisher = ({
     return <Loading />;
   }
 
-  // istanbul ignore if: this should never happen
-  if (isError) {
-    return null;
-  }
+  // robbo: the backend may not provide the hierarchy API (older openedx-platform). Without it we
+  // cannot list the children, but publishing itself works, so keep the confirm dialog usable.
 
   const highlight = (...chunks: ReactNode[]) => <strong>{chunks}</strong>;
   const childWarningMessage = () => {
@@ -52,17 +50,17 @@ export const ItemHierarchyPublisher = ({
 
     switch (itemType) {
       case ContainerType.Section:
-        childCount = hierarchy.subsections.length;
+        childCount = hierarchy?.subsections.length ?? 0;
         childMessage = messages.publishSectionWithChildrenWarning;
         noChildMessage = messages.publishSectionWarning;
         break;
       case ContainerType.Subsection:
-        childCount = hierarchy.units.length;
+        childCount = hierarchy?.units.length ?? 0;
         childMessage = messages.publishSubsectionWithChildrenWarning;
         noChildMessage = messages.publishSubsectionWarning;
         break;
       case ContainerType.Unit:
-        childCount = hierarchy.components.length;
+        childCount = hierarchy?.components.length ?? 0;
         childMessage = messages.publishUnitWithChildrenWarning;
         noChildMessage = messages.publishUnitWarning;
         break;
@@ -85,7 +83,7 @@ export const ItemHierarchyPublisher = ({
     <Container className="p-3 status-box draft-status">
       <h4>{intl.formatMessage(messages.publishConfirmHeading)}</h4>
       <p>{childWarningMessage()}</p>
-      <ItemHierarchy showPublishStatus />
+      {!isError && <ItemHierarchy showPublishStatus />}
       <ActionRow>
         <Button
           variant="outline-primary rounded-0"
