@@ -1,6 +1,11 @@
-import React from 'react';
+/**
+ * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
+ * Robbo: platform staff can delete a course from its card menu.
+ */
+import React, { useContext, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
 import {
   Icon,
@@ -17,11 +22,14 @@ import { getStudioHomeData, getStudioHomeCoursesParams, getLoadingStatuses } fro
 import { resetStudioHomeCoursesCustomParams, updateStudioHomeCoursesCustomParams } from '@src/studio-home/data/slice';
 import { fetchStudioHomeData } from '@src/studio-home/data/thunks';
 import { CardItem } from '@src/studio-home/card-item';
+import DeleteCourseModal, { type CourseToDelete } from '@src/studio-home/delete-course/DeleteCourseModal';
+import deleteCourseMessages from '@src/studio-home/delete-course/messages';
 import CollapsibleStateWithAction from '@src/studio-home/collapsible-state-with-action';
 import ProcessingCourses from '@src/studio-home/processing-courses';
 import { LoadingSpinner } from '@src/generic/Loading';
 import AlertMessage from '@src/generic/alert-message';
 import { RequestStatus } from '@src/data/constants';
+import { ToastContext } from '@src/generic/toast-context';
 import messages from '../messages';
 import CoursesFilters from './courses-filters';
 import ContactAdministrator from './contact-administrator';
@@ -45,6 +53,7 @@ interface CardListProps {
   inSelectMode?: boolean;
   selectedCourseId?: string;
   migrationStatusWidget?: React.ComponentType<MigrationStatusProps>;
+  onDeleteCourse?: (course: CourseToDelete) => void;
 }
 
 const CardList = ({
@@ -60,6 +69,7 @@ const CardList = ({
   inSelectMode = false,
   selectedCourseId,
   migrationStatusWidget,
+  onDeleteCourse,
 }: CardListProps) => {
   const {
     courses: allCourses,
@@ -106,6 +116,7 @@ const CardList = ({
                   selectPosition={inSelectMode ? 'card' : undefined}
                   isSelected={inSelectMode && selectedCourseId === courseKey}
                   subtitleBeforeWidget={MigrationStatusWidget && <MigrationStatusWidget courseId={courseKey} />}
+                  onDelete={onDeleteCourse && (() => onDeleteCourse({ courseKey, displayName }))}
                 />
               ),
             )}
@@ -166,6 +177,8 @@ export const CoursesList: React.FC<Props> = ({
   const dispatch = useDispatch();
   const intl = useIntl();
   const location = useLocation();
+  const { showToast } = useContext(ToastContext);
+  const [courseToDelete, setCourseToDelete] = useState<CourseToDelete | null>(null);
   const {
     courses: allCourses,
     coursesCount,
@@ -196,6 +209,15 @@ export const CoursesList: React.FC<Props> = ({
       currentPage: page,
       isFiltered: true,
     }));
+  };
+
+  const canDeleteCourses = !inSelectMode && !!getAuthenticatedUser()?.administrator;
+
+  const handleCourseDeleted = (course: CourseToDelete) => {
+    setCourseToDelete(null);
+    showToast(intl.formatMessage(deleteCourseMessages.deleted, { name: course.displayName || course.courseKey }));
+    // Reload the current page without the deleted course; step back if it was the last one on its page.
+    handlePageSelected(allCourses.length === 1 && currentPage > 1 ? currentPage - 1 : currentPage);
   };
 
   const handleCleanFilters = () => {
@@ -266,6 +288,7 @@ export const CoursesList: React.FC<Props> = ({
                 hasAbilityToCreateCourse={hasAbilityToCreateCourse}
                 showNewCourseContainer={showNewCourseContainer}
                 onClickNewCourse={onClickNewCourse}
+                onDeleteCourse={canDeleteCourses ? setCourseToDelete : undefined}
               />
             )}
 
@@ -273,6 +296,13 @@ export const CoursesList: React.FC<Props> = ({
             <CollapsibleStateWithAction
               state={courseCreatorStatus!}
               className="mt-3"
+            />
+          )}
+          {canDeleteCourses && (
+            <DeleteCourseModal
+              course={courseToDelete}
+              onClose={() => setCourseToDelete(null)}
+              onDeleted={handleCourseDeleted}
             />
           )}
         </div>
