@@ -34,11 +34,12 @@ const FileInfoModalSidebar = ({
       <div className="font-weight-bold">
         <FormattedMessage {...messages.dateAddedTitle} />
       </div>
+      {/* Robbo: «4 марта 2026 г. в 14:40» instead of «04 мар. 2026 г., 14:40» */}
       <FormattedDate
         value={asset?.dateAdded}
         year="numeric"
-        month="short"
-        day="2-digit"
+        month="long"
+        day="numeric"
         hour="numeric"
         minute="numeric"
       />
