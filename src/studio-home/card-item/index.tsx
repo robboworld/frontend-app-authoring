@@ -24,6 +24,7 @@ import { Link } from 'react-router-dom';
 import { COURSE_CREATOR_STATES } from '@src/constants';
 import classNames from 'classnames';
 import { getStudioHomeData } from '../data/selectors';
+import deleteCourseMessages from '../delete-course/messages';
 import messages from '../messages';
 
 export const PrevToNextName = ({ from, to }: { from: React.ReactNode; to?: React.ReactNode; }) => (
@@ -146,6 +147,7 @@ interface CardMenuProps {
   isShowRerunLink?: boolean;
   rerunLink: string | null;
   lmsLink: string | null;
+  onDelete?: () => void;
 }
 
 const CardMenu = ({
@@ -153,6 +155,7 @@ const CardMenu = ({
   isShowRerunLink,
   rerunLink,
   lmsLink,
+  onDelete,
 }: CardMenuProps) => {
   const intl = useIntl();
 
@@ -180,6 +183,14 @@ const CardMenu = ({
         <Dropdown.Item href={lmsLink}>
           <FormattedMessage {...messages.viewLiveBtnText} />
         </Dropdown.Item>
+        {onDelete && (
+          <>
+            <Dropdown.Divider />
+            <Dropdown.Item as="button" className="text-danger-700" onClick={onDelete}>
+              <FormattedMessage {...deleteCourseMessages.menuItem} />
+            </Dropdown.Item>
+          </>
+        )}
       </Dropdown.Menu>
     </Dropdown>
   );
@@ -228,6 +239,8 @@ interface BaseProps {
   itemId?: string;
   scrollIntoView?: boolean;
   exportUrl?: string;
+  /** Robbo: adds «Delete course» to the course menu (platform staff). */
+  onDelete?: () => void;
 }
 
 type Props =
@@ -266,6 +279,7 @@ export const CardItem: React.FC<Props> = ({
   cardStatusWidget,
   scrollIntoView = false,
   exportUrl,
+  onDelete,
 }) => {
   const {
     allowCourseReruns,
@@ -346,6 +360,7 @@ export const CardItem: React.FC<Props> = ({
                 isShowRerunLink={isShowRerunLink}
                 rerunLink={rerunLink}
                 lmsLink={lmsLink}
+                onDelete={onDelete}
               />
             )}
         />
