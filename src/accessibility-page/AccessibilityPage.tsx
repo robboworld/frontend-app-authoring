@@ -2,7 +2,6 @@ import { useIntl } from '@edx/frontend-platform/i18n';
 import { getExternalLinkUrl } from '@edx/frontend-platform';
 import { Helmet } from 'react-helmet';
 import { Container } from '@openedx/paragon';
-import { StudioFooterSlot } from '@edx/frontend-component-footer';
 
 import Header from '../header';
 import messages from './messages';
@@ -32,7 +31,6 @@ const AccessibilityPage = () => {
         />
         <AccessibilityForm accessibilityEmail={ACCESSIBILITY_EMAIL} />
       </Container>
-      <StudioFooterSlot />
     </>
   );
 };

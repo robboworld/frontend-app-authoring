@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { MailtoLink } from '@openedx/paragon';
+import { Hyperlink, MailtoLink } from '@openedx/paragon';
 import { useIntl } from '@edx/frontend-platform/i18n';
 
 import { COURSE_CREATOR_STATES } from '../../constants';
@@ -9,12 +9,13 @@ import { HelpSidebar, HelpSidebarLink } from '../../generic/help-sidebar';
 import { getStudioHomeData } from '../data/selectors';
 import messages from './messages';
 
+const ROBBO_SUPPORT_URL = 'https://support.robbo.world/';
+
 const HomeSidebar = () => {
   const intl = useIntl();
   const {
     studioName,
     platformName,
-    studioShortName,
     studioRequestEmail,
     techSupportEmail,
     courseCreatorStatus,
@@ -33,7 +34,13 @@ const HomeSidebar = () => {
         {intl.formatMessage(messages.aboutTitle, { studioName })}
       </h4>
       <p className="help-sidebar-about-descriptions">
-        {intl.formatMessage(messages.aboutDescription, { studioShortName })}
+        {intl.formatMessage(messages.robboSupportDescription, {
+          supportLink: (
+            <Hyperlink destination={ROBBO_SUPPORT_URL} target="_blank" showLaunchIcon={false}>
+              {intl.formatMessage(messages.robboSupportLink)}
+            </Hyperlink>
+          ),
+        })}
       </p>
       <HelpSidebarLink
         as="span"

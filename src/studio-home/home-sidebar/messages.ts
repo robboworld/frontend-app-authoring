@@ -5,9 +5,14 @@ const messages = defineMessages({
     id: 'course-authoring.studio-home.sidebar.about.title',
     defaultMessage: 'New to {studioName}?',
   },
-  aboutDescription: {
-    id: 'course-authoring.studio-home.sidebar.about.description',
-    defaultMessage: 'Click "Looking for help with Studio" at the bottom of the page to access our continually updated documentation and other {studioShortName} resources.',
+  // Robbo: Studio has no footer, so its help section moved here as a support link.
+  robboSupportDescription: {
+    id: 'course-authoring.studio-home.sidebar.robbo-support',
+    defaultMessage: 'If something does not work, contact {supportLink}.',
+  },
+  robboSupportLink: {
+    id: 'course-authoring.studio-home.sidebar.robbo-support.link',
+    defaultMessage: 'ROBBO support',
   },
   studioHomeLinkToGettingStarted: {
     id: 'course-authoring.studio-home.sidebar.about.getting-started',

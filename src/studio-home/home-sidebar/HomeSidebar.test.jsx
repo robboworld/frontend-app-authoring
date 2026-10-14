@@ -12,7 +12,6 @@ jest.mock('react-redux', () => ({
 
 const {
   studioName,
-  studioShortName,
 } = studioHomeMock;
 
 describe('<HomeSidebar />', () => {
@@ -23,13 +22,9 @@ describe('<HomeSidebar />', () => {
   it('renders about and other sidebar titles correctly', () => {
     useSelector.mockReturnValue(studioHomeMock);
 
-    const { getByText } = render(<HomeSidebar />);
+    const { getByText, getByRole } = render(<HomeSidebar />);
     expect(getByText(`New to ${studioName}?`)).toBeInTheDocument();
-    expect(
-      getByText(
-        `Click "Looking for help with Studio" at the bottom of the page to access our continually updated documentation and other ${studioShortName} resources.`,
-      ),
-    ).toBeInTheDocument();
+    expect(getByRole('link', { name: /ROBBO support/ })).toHaveAttribute('href', 'https://support.robbo.world/');
   });
 
   it('shows mail to get instruction', () => {

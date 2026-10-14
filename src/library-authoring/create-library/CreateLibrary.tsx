@@ -1,4 +1,3 @@
-import { StudioFooterSlot } from '@edx/frontend-component-footer';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import {
   ActionRow,
@@ -390,7 +389,6 @@ export const CreateLibrary = ({
         </Formik>
         {isError && <AlertError error={error} />}
       </Container>
-      {!showInModal && <StudioFooterSlot />}
     </>
   );
 };

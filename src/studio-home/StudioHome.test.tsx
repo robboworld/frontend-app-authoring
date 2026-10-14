@@ -231,10 +231,9 @@ describe('<StudioHome />', () => {
       });
     });
 
-    it('should show footer', () => {
+    it('should not show footer', () => {
       render(<StudioHome />, { path: '/home' });
-      expect(screen.getByText('Looking for help with Studio?')).toBeInTheDocument();
-      expect(screen.getByText('LMS')).toHaveAttribute('href', process.env.LMS_BASE_URL);
+      expect(screen.queryByText('Looking for help with Studio?')).not.toBeInTheDocument();
     });
   });
 });
