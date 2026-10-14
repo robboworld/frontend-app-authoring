@@ -1,3 +1,6 @@
+/**
+ * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
+ */
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useIntl } from '@edx/frontend-platform/i18n';
@@ -7,6 +10,8 @@ import {
   Icon,
 } from '@openedx/paragon';
 import { MoreHoriz } from '@openedx/paragon/icons';
+import { useRobboFileActions } from '../files-page/robbo-catalog/RobboFileActionsContext';
+import robboMessages from '../files-page/robbo-catalog/messages';
 import messages from './messages';
 
 const FileMenu = ({
@@ -25,6 +30,7 @@ const FileMenu = ({
   },
 }) => {
   const intl = useIntl();
+  const robboActions = useRobboFileActions();
   return (
     <Dropdown data-testid={`file-menu-dropdown-${id}`}>
       <Dropdown.Toggle
@@ -69,6 +75,12 @@ const FileMenu = ({
         <Dropdown.Item onClick={openAssetInfo}>
           {intl.formatMessage(messages.infoTitle)}
         </Dropdown.Item>
+        {/* Robbo: author folders in «Файлы» (no provider on the videos page) */}
+        {robboActions && permissions.canEditFiles && (
+          <Dropdown.Item onClick={() => robboActions.onMoveToFolder([id])}>
+            {intl.formatMessage(robboMessages.moveMenuItem)}
+          </Dropdown.Item>
+        )}
         {permissions.canDeleteFiles && (
           <>
             <Dropdown.Divider />

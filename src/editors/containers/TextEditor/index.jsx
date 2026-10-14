@@ -1,3 +1,6 @@
+/**
+ * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
+ */
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -18,6 +21,7 @@ import * as hooks from './hooks';
 import messages from './messages';
 import TinyMceWidget from '../../sharedComponents/TinyMceWidget';
 import { prepareEditorRef, replaceStaticWithAsset } from '../../sharedComponents/TinyMceWidget/hooks';
+import { setImageNameHint } from '../../sharedComponents/TinyMceWidget/robboImageAssets';
 
 const TextEditor = ({
   onClose,
@@ -32,9 +36,15 @@ const TextEditor = ({
   learningContextId,
   images,
   isLibrary,
+  imageNameHint,
 }) => {
   const intl = useIntl();
   const { editorRef, refReady, setEditorRef } = prepareEditorRef();
+  // Robbo: pasted screenshots are named after the unit in «Файлы» (robboImageAssets.ts)
+  React.useEffect(() => {
+    setImageNameHint(imageNameHint);
+    return () => setImageNameHint('');
+  }, [imageNameHint]);
   const initialContent = blockValue ? blockValue.data.data : '';
   const newContent = replaceStaticWithAsset({
     initialContent,
@@ -80,6 +90,12 @@ const TextEditor = ({
     <EditorContainer
       getContent={hooks.getContent({ editorRef, showRawEditor })}
       isDirty={hooks.isDirty({ editorRef, showRawEditor })}
+      prepareSave={hooks.moveBase64ImagesToFiles({
+        editorRef,
+        showRawEditor,
+        learningContextId,
+        blockId,
+      })}
       onClose={onClose}
       returnFunction={returnFunction}
     >
@@ -107,6 +123,7 @@ TextEditor.defaultProps = {
   blockValue: null,
   blockFinished: null,
   returnFunction: null,
+  imageNameHint: '',
 };
 TextEditor.propTypes = {
   onClose: PropTypes.func.isRequired,
@@ -123,6 +140,7 @@ TextEditor.propTypes = {
   learningContextId: PropTypes.string, // This should be required but is NULL when the store is in initial state :/
   images: PropTypes.shape({}).isRequired,
   isLibrary: PropTypes.bool.isRequired,
+  imageNameHint: PropTypes.string,
 };
 
 export const mapStateToProps = (state) => ({
@@ -135,6 +153,8 @@ export const mapStateToProps = (state) => ({
   learningContextId: selectors.app.learningContextId(state),
   images: selectors.app.images(state),
   isLibrary: selectors.app.isLibrary(state),
+  imageNameHint: selectors.app.unitUrl(state)?.data?.ancestors?.[0]?.display_name
+    || selectors.app.blockTitle(state) || '',
 });
 
 export const mapDispatchToProps = {
