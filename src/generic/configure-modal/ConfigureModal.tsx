@@ -1,3 +1,11 @@
+/**
+ * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
+ * Robbo: group access for sections and subsections (upstream offers it for units and components only),
+ * «show only to» / «hide from» the selected groups; group_access is sent only when the author changed it.
+ * Overflow is visible only on the «Basic» tab, so the taller «Visibility» tab scrolls.
+ * Group access of a block inside a restricted section, subsection or unit is locked (GroupAccessLocked).
+ */
+import { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import {
@@ -17,7 +25,8 @@ import messages from './messages';
 import BasicTab from './BasicTab';
 import VisibilityTab from './VisibilityTab';
 import AdvancedTab from './AdvancedTab';
-import { UnitTab } from './UnitTab';
+import GroupAccessLocked from '@src/generic/group-access-label/GroupAccessLocked';
+import { AccessEditComponent, UnitTab, buildGroupAccess } from './UnitTab';
 import { PUBLISH_TYPES } from '@src/course-unit/constants';
 
 interface Props {
@@ -44,6 +53,14 @@ const ConfigureModal = ({
   isOverflowVisible = false,
 }: Props) => {
   const intl = useIntl();
+  // Visible overflow (sections) lets the release date picker out of the modal, but a modal like that
+  // does not scroll: keep it for the «Basic» tab only. The modal starts there every time it opens.
+  const [activeTab, setActiveTab] = useState('basic');
+  useEffect(() => {
+    if (isOpen) {
+      setActiveTab('basic');
+    }
+  }, [isOpen]);
 
   if (!currentItemData) {
     return null;
@@ -62,6 +79,8 @@ const ConfigureModal = ({
     category: _category,
     format,
     userPartitionInfo,
+    groupAccessFrom,
+    ownGroupAccess,
     ancestorHasStaffLock,
     isPrereq,
     prereqs,
@@ -119,6 +138,9 @@ const ConfigureModal = ({
     // by default it is -1 i.e. accessible to all learners & staff
     selectedPartitionIndex: userPartitionInfo?.selectedPartitionIndex,
     selectedGroups: getSelectedGroups(),
+    accessMode: userPartitionInfo?.accessMode ?? 'allow',
+    // Robbo: locked block — remove its own rule on «Save» (GroupAccessLocked)
+    clearOwnGroupAccess: false,
     discussionEnabled,
   };
 
@@ -149,8 +171,63 @@ const ConfigureModal = ({
     ).nullable(true),
     selectedPartitionIndex: Yup.number().integer(),
     selectedGroups: Yup.array().of(Yup.string()),
+    accessMode: Yup.string().oneOf(['allow', 'deny']),
     discussionEnabled: Yup.boolean(),
   });
+
+  // group_access is an inherited field: the modal of a subsection or unit inside a restricted section
+  // shows the section's groups as selected. Saving them back unchanged would pin the inherited
+  // restriction on the child, and it would stay after the section is opened up again.
+  const getChangedGroupAccess = (data: Record<string, any>) => {
+    if (groupAccessFrom) {
+      return undefined; // locked: the restriction of the unit above applies (own rule: clearOwnGroupAccess)
+    }
+    const sortedGroups = (groups: string[] = []) => [...groups].sort().join();
+    if (
+      data.selectedPartitionIndex === initialValues.selectedPartitionIndex
+      && sortedGroups(data.selectedGroups) === sortedGroups(initialValues.selectedGroups)
+      && data.accessMode === initialValues.accessMode
+    ) {
+      return undefined;
+    }
+    return buildGroupAccess(userPartitionInfo, data.selectedPartitionIndex, data.selectedGroups, data.accessMode);
+  };
+
+  const renderGroupAccess = (values: any, setFieldValue: any, isSubsection: boolean) => (
+    groupAccessFrom ? (
+      <>
+        <h5 className="mt-4 text-gray-700">
+          {intl.formatMessage(isSubsection ? messages.subsectionAccess : messages.sectionAccess)}
+        </h5>
+        <hr />
+        <GroupAccessLocked
+          source={groupAccessFrom}
+          itemCategory={category}
+          own={ownGroupAccess}
+          ownCleared={values.clearOwnGroupAccess}
+          onClearOwn={() => setFieldValue('clearOwnGroupAccess', true)}
+          onUndoClearOwn={() => setFieldValue('clearOwnGroupAccess', false)}
+        />
+      </>
+    ) : (userPartitionInfo?.selectablePartitions.length || 0) > 0 && (
+      <Form.Group controlId="groupSelect" className="mb-0">
+        <h5 className="mt-4 text-gray-700">
+          {intl.formatMessage(isSubsection ? messages.subsectionAccess : messages.sectionAccess)}
+        </h5>
+        <hr />
+        <AccessEditComponent
+          selectedPartitionIndex={values.selectedPartitionIndex}
+          setFieldValue={setFieldValue}
+          userPartitionInfo={userPartitionInfo}
+          selectedGroups={values.selectedGroups}
+          accessMode={values.accessMode}
+        />
+        <Form.Text className="mt-2">
+          {intl.formatMessage(isSubsection ? messages.subsectionAccessHint : messages.sectionAccessHint)}
+        </Form.Text>
+      </Form.Group>
+    )
+  );
 
   const dialogTitle = isXBlockComponent
     ? intl.formatMessage(messages.componentTitle, { title: displayName })
@@ -165,10 +242,11 @@ const ConfigureModal = ({
         onConfigureSubmit({
           isVisibleToStaffOnly: data.isVisibleToStaffOnly,
           startDatetime: data.releaseDate || null,
+          groupAccess: getChangedGroupAccess(data),
         });
       },
       renderBody: (values, setFieldValue) => (
-        <Tabs>
+        <Tabs activeKey={activeTab} onSelect={(key) => setActiveTab(key || 'basic')}>
           <Tab eventKey="basic" title={intl.formatMessage(messages.basicTabTitle)}>
             <BasicTab
               values={values}
@@ -185,6 +263,7 @@ const ConfigureModal = ({
               category={category}
               isSubsection={false}
               showWarning={visibilityState === VisibilityTypes.STAFF_ONLY}
+              groupAccess={renderGroupAccess(values, setFieldValue, false)}
             />
           </Tab>
         </Tabs>
@@ -209,10 +288,12 @@ const ConfigureModal = ({
           prereqUsageKey: data.prereqUsageKey,
           prereqMinScore: data.prereqMinScore,
           prereqMinCompletion: data.prereqMinCompletion,
+          groupAccess: getChangedGroupAccess(data),
+          clearGroupAccess: !!groupAccessFrom && data.clearOwnGroupAccess,
         });
       },
       renderBody: (values, setFieldValue) => (
-        <Tabs>
+        <Tabs activeKey={activeTab} onSelect={(key) => setActiveTab(key || 'basic')}>
           <Tab eventKey="basic" title={intl.formatMessage(messages.basicTabTitle)}>
             <BasicTab
               values={values}
@@ -230,6 +311,7 @@ const ConfigureModal = ({
               isSubsection
               showWarning={visibilityState === VisibilityTypes.STAFF_ONLY}
               isSelfPaced={isSelfPaced}
+              groupAccess={renderGroupAccess(values, setFieldValue, true)}
             />
           </Tab>
           <Tab eventKey="advanced" title={intl.formatMessage(messages.advancedTabTitle)}>
@@ -257,15 +339,11 @@ const ConfigureModal = ({
   // Node-content handler shared by vertical, libraryContent, splitTest, component
   const nodeHandler = {
     handleSave: (data: Record<string, any>) => {
-      const groupAccess: Record<string, any> = {};
-      if (data.selectedPartitionIndex >= 0) {
-        const partitionId = userPartitionInfo!.selectablePartitions[data.selectedPartitionIndex].id;
-        groupAccess[partitionId] = data.selectedGroups.map((g: string) => parseInt(g, 10));
-      }
       onConfigureSubmit({
         isVisibleToStaffOnly: data.isVisibleToStaffOnly,
         type: PUBLISH_TYPES.republish,
-        groupAccess,
+        groupAccess: getChangedGroupAccess(data),
+        clearGroupAccess: !!groupAccessFrom && data.clearOwnGroupAccess,
         discussionEnabled: data.discussionEnabled,
       });
     },
@@ -277,6 +355,8 @@ const ConfigureModal = ({
         setFieldValue={setFieldValue}
         showWarning={visibilityState === VisibilityTypes.STAFF_ONLY && !ancestorHasStaffLock}
         userPartitionInfo={userPartitionInfo}
+        groupAccessFrom={groupAccessFrom}
+        ownGroupAccess={ownGroupAccess}
       />
     ),
   };
@@ -311,7 +391,7 @@ const ConfigureModal = ({
       onClose={onClose}
       hasCloseButton
       isFullscreenOnMobile
-      isOverflowVisible={isOverflowVisible}
+      isOverflowVisible={isOverflowVisible && activeTab === 'basic'}
     >
       <div data-testid="configure-modal">
         <ModalDialog.Header className="configure-modal__header">

@@ -45,6 +45,11 @@ const messages = defineMessages({
     id: 'course-authoring.course-outline.card.menu.configure',
     defaultMessage: 'Configure',
   },
+  menuResetGroupAccess: {
+    id: 'course-authoring.course-outline.card.menu.reset-group-access',
+    defaultMessage: 'Reset access restrictions',
+    description: 'Robbo: section menu item that removes the group restrictions of the section and its content',
+  },
   menuDuplicate: {
     id: 'course-authoring.course-outline.card.menu.duplicate',
     defaultMessage: 'Duplicate',

@@ -1,3 +1,7 @@
+/**
+ * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
+ * Robbo: passes the group access lock source to the settings form.
+ */
 import { useContext, useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -92,6 +96,8 @@ export const UnitInfoSettings = () => {
     visibilityState,
     discussionEnabled,
     userPartitionInfo,
+    groupAccessFrom,
+    ownGroupAccess,
   } = useSelector(getCourseUnitData);
 
   const updateCallback = () => {
@@ -104,6 +110,8 @@ export const UnitInfoSettings = () => {
       visibilityState={visibilityState}
       discussionEnabled={discussionEnabled}
       userPartitionInfo={userPartitionInfo}
+      groupAccessFrom={groupAccessFrom}
+      ownGroupAccess={ownGroupAccess}
       updateCallback={updateCallback}
       configureHook={useConfigureUnitWithPageUpdates}
     />

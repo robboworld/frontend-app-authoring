@@ -1,3 +1,8 @@
+/**
+ * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
+ * Robbo: «show only to» / «hide from» the selected groups (AccessEditComponent, buildGroupAccess);
+ * locked group access of a unit or component inside a restricted unit above (GroupAccessLocked).
+ */
 import { Alert, Form } from '@openedx/paragon';
 import {
   FormattedMessage,
@@ -7,6 +12,8 @@ import { Field } from 'formik';
 import classNames from 'classnames';
 
 import { COURSE_BLOCK_NAMES } from '../../constants';
+import type { AccessMode, GroupAccessSource, OwnGroupAccess } from '../../data/types';
+import GroupAccessLocked from '../group-access-label/GroupAccessLocked';
 import messages from './messages';
 
 export type UserPartitionInfo = {
@@ -20,9 +27,31 @@ export type UserPartitionInfo = {
     id: number;
     name: string;
     scheme: string;
+    accessMode?: AccessMode;
   }[];
   selectedGroupsLabel?: string;
   selectedPartitionIndex: number;
+  accessMode?: AccessMode;
+};
+
+/**
+ * group_access for the form values: the selected groups under the partition id, or under the negated one
+ * when the block is hidden from them (openedx-platform openedx/core/lib/robbo_group_access.py).
+ * No partition selected: {} (all learners).
+ */
+export const buildGroupAccess = (
+  userPartitionInfo: UserPartitionInfo | undefined,
+  selectedPartitionIndex: number,
+  selectedGroups: string[],
+  accessMode: AccessMode = 'allow',
+): Record<string, number[]> => {
+  const groupAccess: Record<string, number[]> = {};
+  if (userPartitionInfo && selectedPartitionIndex >= 0) {
+    const partitionId = userPartitionInfo.selectablePartitions[selectedPartitionIndex].id;
+    const key = accessMode === 'deny' && partitionId > 0 ? -partitionId : partitionId;
+    groupAccess[key] = selectedGroups.map((g) => parseInt(g, 10));
+  }
+  return groupAccess;
 };
 
 export interface UnitTabProps {
@@ -33,10 +62,14 @@ export interface UnitTabProps {
     discussionEnabled: boolean;
     selectedPartitionIndex: number;
     selectedGroups: string[];
+    accessMode?: AccessMode;
+    clearOwnGroupAccess?: boolean;
   };
   setFieldValue: (key: string, value: any) => void;
   showWarning: boolean;
   userPartitionInfo?: UserPartitionInfo;
+  groupAccessFrom?: GroupAccessSource | null;
+  ownGroupAccess?: OwnGroupAccess | null;
 }
 
 export const DiscussionEditComponent = ({
@@ -61,6 +94,7 @@ export interface AccessEditComponentProps {
   setFieldValue: (key: string, value: any) => void;
   userPartitionInfo?: UserPartitionInfo;
   selectedGroups: string[];
+  accessMode?: AccessMode;
 }
 
 export const AccessEditComponent = ({
@@ -68,6 +102,7 @@ export const AccessEditComponent = ({
   setFieldValue,
   userPartitionInfo,
   selectedGroups,
+  accessMode = 'allow',
 }: AccessEditComponentProps) => {
   const intl = useIntl();
   const checkIsDeletedGroup = (group) => {
@@ -108,6 +143,30 @@ export const AccessEditComponent = ({
         ))}
       </Form.Control>
 
+      {selectedPartitionIndex !== undefined
+        && selectedPartitionIndex >= 0 && userPartitionInfo?.selectablePartitions.length
+        && userPartitionInfo.selectablePartitions[selectedPartitionIndex].id > 0 && (
+        <Form.RadioSet
+          name="accessMode"
+          className="mt-3"
+          value={accessMode}
+          onChange={(e) => setFieldValue('accessMode', e.target.value)}
+          data-testid="group-access-mode"
+        >
+          <Form.Radio value="allow">
+            <FormattedMessage {...messages.accessModeAllow} />
+          </Form.Radio>
+          <Form.Text className="mb-2">
+            <FormattedMessage {...messages.accessModeAllowDescription} />
+          </Form.Text>
+          <Form.Radio value="deny">
+            <FormattedMessage {...messages.accessModeDeny} />
+          </Form.Radio>
+          <Form.Text className="mb-3">
+            <FormattedMessage {...messages.accessModeDenyDescription} />
+          </Form.Text>
+        </Form.RadioSet>
+      )}
       {selectedPartitionIndex !== undefined
         && selectedPartitionIndex >= 0 && userPartitionInfo?.selectablePartitions.length && (
         <Form.Group controlId="select-groups-checkboxes">
@@ -162,6 +221,8 @@ export const UnitTab = ({
   setFieldValue,
   showWarning,
   userPartitionInfo,
+  groupAccessFrom,
+  ownGroupAccess,
 }: UnitTabProps) => {
   const {
     isVisibleToStaffOnly,
@@ -211,7 +272,23 @@ export const UnitTab = ({
           )}
         </>
       )}
-      {(userPartitionInfo?.selectablePartitions.length || 0) > 0 && (
+      {groupAccessFrom && (
+        <>
+          <h4 className="mt-3">
+            <FormattedMessage {...getAccessBlockTitle()} />
+          </h4>
+          <hr />
+          <GroupAccessLocked
+            source={groupAccessFrom}
+            itemCategory={isXBlockComponent ? 'component' : category}
+            own={ownGroupAccess}
+            ownCleared={values.clearOwnGroupAccess}
+            onClearOwn={() => setFieldValue('clearOwnGroupAccess', true)}
+            onUndoClearOwn={() => setFieldValue('clearOwnGroupAccess', false)}
+          />
+        </>
+      )}
+      {!groupAccessFrom && (userPartitionInfo?.selectablePartitions.length || 0) > 0 && (
         <Form.Group controlId="groupSelect">
           <h4 className="mt-3">
             <FormattedMessage {...getAccessBlockTitle()} />
@@ -222,6 +299,7 @@ export const UnitTab = ({
             setFieldValue={setFieldValue}
             userPartitionInfo={userPartitionInfo}
             selectedGroups={selectedGroups}
+            accessMode={values.accessMode}
           />
         </Form.Group>
       )}

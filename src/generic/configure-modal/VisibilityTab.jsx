@@ -1,3 +1,7 @@
+/**
+ * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
+ * Robbo: `groupAccess` slot right under the visibility options, above the long assessment results list.
+ */
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Alert, Form } from '@openedx/paragon';
@@ -12,6 +16,7 @@ const VisibilityTab = ({
   showWarning,
   isSubsection,
   isSelfPaced,
+  groupAccess,
 }) => {
   const intl = useIntl();
   const visibilityTitle = COURSE_BLOCK_NAMES[category]?.name;
@@ -99,6 +104,7 @@ const VisibilityTab = ({
                 <FormattedMessage {...messages.subsectionVisibilityWarning} />
               </Alert>
             )}
+            {groupAccess}
             <h5 className="mt-4 text-gray-700">
               <FormattedMessage {...messages.assessmentResultsVisibility} />
             </h5>
@@ -144,6 +150,7 @@ const VisibilityTab = ({
           <FormattedMessage {...messages.sectionVisibilityWarning} />
         </Alert>
       )}
+      {!isSubsection && groupAccess}
     </>
   );
 };
@@ -159,10 +166,12 @@ VisibilityTab.propTypes = {
   showWarning: PropTypes.bool.isRequired,
   isSubsection: PropTypes.bool.isRequired,
   isSelfPaced: PropTypes.bool,
+  groupAccess: PropTypes.node,
 };
 
 VisibilityTab.defaultProps = {
   isSelfPaced: false,
+  groupAccess: null,
 };
 
 export default VisibilityTab;

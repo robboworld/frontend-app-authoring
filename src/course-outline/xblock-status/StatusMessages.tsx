@@ -1,3 +1,8 @@
+/**
+ * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
+ * Robbo: sections and subsections restricted to groups show it too, all as «Доступ ограничен: **…**»
+ * (GroupAccessLabel: the groups, or «всем, кроме …» for content hidden from them).
+ */
 import React from 'react';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { Icon } from '@openedx/paragon';
@@ -7,6 +12,7 @@ import {
 } from '@openedx/paragon/icons';
 
 import { UserPartitionInfoTypes, XBlockPrereqs } from '@src/data/types';
+import GroupAccessLabel from '@src/generic/group-access-label';
 import messages from './messages';
 
 interface StatusMessagesProps {
@@ -19,8 +25,9 @@ interface StatusMessagesProps {
 }
 
 interface StatusMessagesText {
+  key: string;
   icon: React.ComponentType;
-  text: string;
+  text: React.ReactNode;
 }
 
 const StatusMessages = ({
@@ -42,33 +49,37 @@ const StatusMessages = ({
       }
     });
     statusMessages.push({
+      key: 'prereq',
       icon: LockIcon,
       text: intl.formatMessage(messages.prerequisiteLabel, { prereqDisplayName }),
     });
   }
 
+  const groupAccess = (
+    <GroupAccessLabel groups={userPartitionInfo?.selectedGroupsLabel} accessMode={userPartitionInfo?.accessMode} />
+  );
   if (!staffOnlyMessage && isVertical) {
-    const { selectedPartitionIndex, selectedGroupsLabel } = userPartitionInfo || {};
+    const { selectedPartitionIndex } = userPartitionInfo || {};
     if (selectedPartitionIndex !== -1 && !Number.isNaN(selectedPartitionIndex)) {
-      statusMessages.push({
-        icon: GroupsIcon,
-        text: intl.formatMessage(messages.restrictedUnitAccess, { selectedGroupsLabel }),
-      });
+      statusMessages.push({ key: 'group-access', icon: GroupsIcon, text: groupAccess });
     } else if (hasPartitionGroupComponents) {
       statusMessages.push({
+        key: 'group-access-some',
         icon: GroupsIcon,
         text: intl.formatMessage(messages.restrictedUnitAccessToSomeContent),
       });
     }
+  } else if (!staffOnlyMessage && userPartitionInfo && userPartitionInfo.selectedPartitionIndex >= 0) {
+    statusMessages.push({ key: 'group-access', icon: GroupsIcon, text: groupAccess });
   }
 
   if (statusMessages.length > 0) {
     return (
       <div className="border-top border-light mt-2 text-dark" data-testid="status-messages-div">
-        {statusMessages.map(({ icon, text }) => (
-          <div key={text} className="d-flex align-items-center pt-1">
+        {statusMessages.map(({ key, icon, text }) => (
+          <div key={key} className="d-flex align-items-center pt-1">
             <Icon className="mr-1" size="sm" src={icon} />
-            {text}
+            <span>{text}</span>
           </div>
         ))}
       </div>

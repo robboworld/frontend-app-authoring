@@ -1,3 +1,7 @@
+/**
+ * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
+ * Robbo: useResetSectionGroupAccess.
+ */
 import { containerComparisonQueryKeys } from '@src/container-comparison/data/apiHooks';
 import { courseOutlineQueryKeys } from './queryKeys';
 import { useOutlineMutation } from './useOutlineMutation';
@@ -41,6 +45,7 @@ import {
   getCourseLaunch,
   publishCourseItem,
   configureCourseSection,
+  resetSectionGroupAccess,
   configureCourseSubsection,
   configureCourseUnit,
   restartIndexingOnCourse,
@@ -214,6 +219,15 @@ export const useDeleteCourseItem = (courseId?: string) =>
       }
     },
   });
+
+// Robbo: section menu «Сбросить ограничения доступа»; the whole course outline is refetched afterwards
+export const useResetSectionGroupAccess = (courseId?: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (sectionId: string) => resetSectionGroupAccess(sectionId),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: courseOutlineQueryKeys.course(courseId) }),
+  });
+};
 
 export const useConfigureSection = (courseId?: string) =>
   useOutlineMutation<ConfigureSectionData & ParentIds, unknown>(courseId, {

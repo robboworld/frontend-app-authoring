@@ -46,6 +46,22 @@ const messages = defineMessages({
     id: 'course-authoring.course-outline.configure-modal.visibility-tab.unit-access',
     defaultMessage: 'Unit access',
   },
+  sectionAccess: {
+    id: 'course-authoring.course-outline.configure-modal.visibility-tab.section-access',
+    defaultMessage: 'Section access',
+  },
+  sectionAccessHint: {
+    id: 'course-authoring.course-outline.configure-modal.visibility-tab.section-access-hint',
+    defaultMessage: 'The restriction also applies to the subsections and units of the section.',
+  },
+  subsectionAccess: {
+    id: 'course-authoring.course-outline.configure-modal.visibility-tab.subsection-access',
+    defaultMessage: 'Subsection access',
+  },
+  subsectionAccessHint: {
+    id: 'course-authoring.course-outline.configure-modal.visibility-tab.subsection-access-hint',
+    defaultMessage: 'The restriction also applies to the units of the subsection.',
+  },
   libraryContentAccess: {
     id: 'course-authoring.course-outline.configure-modal.visibility-tab.library-content-access',
     defaultMessage: 'Library content access',
@@ -85,6 +101,22 @@ const messages = defineMessages({
   subsectionVisibilityWarning: {
     id: 'course-authoring.course-outline.configure-modal.unit-tab.subsection-visibility-warning',
     defaultMessage: 'If you select an option other than "Hide entire subsection", published units in this subsection will become available to learners unless they are explicitly hidden.',
+  },
+  accessModeAllow: {
+    id: 'course-authoring.course-outline.configure-modal.access-mode.allow',
+    defaultMessage: 'Show only to the selected groups',
+  },
+  accessModeAllowDescription: {
+    id: 'course-authoring.course-outline.configure-modal.access-mode.allow-description',
+    defaultMessage: 'Other learners, those without a group included, do not see it.',
+  },
+  accessModeDeny: {
+    id: 'course-authoring.course-outline.configure-modal.access-mode.deny',
+    defaultMessage: 'Hide from the selected groups',
+  },
+  accessModeDenyDescription: {
+    id: 'course-authoring.course-outline.configure-modal.access-mode.deny-description',
+    defaultMessage: 'Other learners, those without a group included, see it.',
   },
   unitSelectGroup: {
     id: 'course-authoring.course-outline.configure-modal.unit-tab.unit-select-group',

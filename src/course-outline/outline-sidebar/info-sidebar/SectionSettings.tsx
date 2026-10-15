@@ -1,3 +1,7 @@
+/**
+ * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
+ * Robbo: «Ограничения доступа» of the section (GroupAccessSection).
+ */
 import {
   useConfigureSection,
   useCourseDetails,
@@ -11,6 +15,7 @@ import { VisibilityTypes } from '@src/data/constants';
 import { HighlightData, HighlightsCard } from '@src/course-outline/highlights-modal/HighlightsModal';
 import { VisibilitySection } from './sharedSettings/VisibilitySection';
 import { ReleaseSection } from './sharedSettings/ReleaseSection';
+import { GroupAccessSection } from './sharedSettings/GroupAccessSection';
 
 interface Props {
   sectionId: string;
@@ -59,6 +64,7 @@ export const SectionSettings = ({ sectionId }: Props) => {
         itemId={sectionId}
         onChange={onChange}
       />
+      <GroupAccessSection itemId={sectionId} onSave={(groupAccess) => onChange({ groupAccess })} />
     </SidebarContent>
   );
 };

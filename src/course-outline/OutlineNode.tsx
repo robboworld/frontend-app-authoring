@@ -1,5 +1,8 @@
 /**
  * OutlineNode — unified card renderer for all three outline levels.
+ *
+ * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
+ * Robbo: «Сбросить ограничения доступа» in the section menu (confirmation, request, toast).
  */
 import {
   useCallback,
@@ -11,6 +14,7 @@ import {
 } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Bubble, Button, useToggle } from '@openedx/paragon';
+import { Warning } from '@openedx/paragon/icons';
 import { useQueryClient } from '@tanstack/react-query';
 import classNames from 'classnames';
 import moment from 'moment';
@@ -33,7 +37,14 @@ import { useCourseAuthoringContext } from '@src/CourseAuthoringContext';
 import { useCourseOutlineContext } from './CourseOutlineContext';
 import { useOutlineSidebarContext } from './outline-sidebar/OutlineSidebarContext';
 import { courseOutlineQueryKeys } from './data/queryKeys';
-import { useCourseItemData, useScrollState, useDuplicateItem } from './data';
+import {
+  useCourseItemData,
+  useScrollState,
+  useDuplicateItem,
+  useResetSectionGroupAccess,
+} from './data';
+import ModalNotification from '@src/generic/modal-notification';
+import { useToastContext } from '@src/generic/toast-context';
 import type { MoveDetails } from './drag-helper/utils';
 import OutlineAddChildButtons from './OutlineAddChildButtons';
 import CourseOutlineSubsectionCardExtraActionsSlot from '@src/plugin-slots/CourseOutlineSubsectionCardExtraActionsSlot';
@@ -102,11 +113,14 @@ const OutlineNode = ({
   // re-scroll on every re-render (sidebar selection, context changes, etc.)
   const scrolledToShowRef = useRef<string | null>(null);
   const [isSyncModalOpen, openSyncModal, closeSyncModal] = useToggle(false);
+  const [isResetAccessModalOpen, openResetAccessModal, closeResetAccessModal] = useToggle(false);
 
   const { activeId, overId } = useContext(DragContext);
   const { selectedContainerState, openContainerSidebar, setSelectedContainerState } = useOutlineSidebarContext();
   const { courseId, openUnlinkModal, getUnitUrl } = useCourseAuthoringContext();
   const duplicateMutation = useDuplicateItem(courseId);
+  const resetAccessMutation = useResetSectionGroupAccess(courseId);
+  const { showToast } = useToastContext();
   const { openPublishModal } = useCourseOutlineContext();
   const queryClient = useQueryClient();
   const { sharedClipboardData, showPasteUnit, copyToClipboard } = useClipboard();
@@ -318,6 +332,7 @@ const OutlineNode = ({
                 onClickPublish={() => openPublishModal(model.publishPayload(liveBlock))}
                 onClickConfigure={() => onOpenConfigureModal(model.actionSelection())}
                 onClickDelete={() => onOpenDeleteModal(model.actionSelection())}
+                onClickResetGroupAccess={depth === 0 ? openResetAccessModal : undefined}
                 onClickUnlink={() => openUnlinkModal(model.unlinkPayload(liveBlock))}
                 onClickMoveUp={handleMoveUp}
                 onClickMoveDown={handleMoveDown}
@@ -403,6 +418,28 @@ const OutlineNode = ({
           )}
         </div>
       </SortableItem>
+      {depth === 0 && (
+        <ModalNotification
+          isOpen={isResetAccessModalOpen}
+          title={intl.formatMessage(outlineNodeMessages.resetGroupAccessTitle)}
+          message={intl.formatMessage(outlineNodeMessages.resetGroupAccessMessage, { sectionName: blk.displayName })}
+          actionButtonText={intl.formatMessage(outlineNodeMessages.resetGroupAccessConfirm)}
+          cancelButtonText={intl.formatMessage(outlineNodeMessages.resetGroupAccessCancel)}
+          handleCancel={closeResetAccessModal}
+          handleAction={() => {
+            closeResetAccessModal();
+            resetAccessMutation.mutate(blk.id, {
+              onSuccess: ({ cleared }) => showToast(intl.formatMessage(
+                cleared ? outlineNodeMessages.resetGroupAccessDone : outlineNodeMessages.resetGroupAccessNothing,
+                { count: cleared },
+              )),
+              onError: () => showToast(intl.formatMessage(outlineNodeMessages.resetGroupAccessError)),
+            });
+          }}
+          variant="warning"
+          icon={Warning}
+        />
+      )}
       {blockSyncData && (
         <PreviewLibraryXBlockChanges
           blockData={blockSyncData}
