@@ -25,9 +25,33 @@ export type UserPartitionInfoTypes = {
     id: number;
     name: string;
     scheme: string;
+    // Robbo: 'deny' when the selected groups are the ones the block is hidden from
+    accessMode?: AccessMode;
   }>;
   selectedPartitionIndex: number;
   selectedGroupsLabel: string;
+  accessMode?: AccessMode;
+};
+
+// Robbo: 'allow' shows a block only to the selected groups (upstream), 'deny' hides it from them
+// (openedx-platform openedx/core/lib/robbo_group_access.py: the rule is stored under the negated partition id).
+export type AccessMode = 'allow' | 'deny';
+
+// Robbo: the nearest section, subsection or unit above a block that restricts access by groups
+// (openedx-platform cms/djangoapps/contentstore/utils.py get_group_access_source_info); while there is one,
+// Studio locks the block's own group access settings.
+export type GroupAccessSource = {
+  category: string;
+  displayName: string;
+  selectedGroupsLabel: string;
+  accessMode?: AccessMode;
+};
+
+// Robbo: the rule a locked block sets itself (cms/djangoapps/contentstore/utils.py get_own_group_access_info),
+// e.g. one set before the unit above was restricted; the lock offers to remove it.
+export type OwnGroupAccess = {
+  selectedGroupsLabel: string;
+  accessMode?: AccessMode;
 };
 
 export interface XBlockActions {
@@ -106,6 +130,8 @@ export interface XBlockBase {
   staffOnlyMessage: boolean;
   hasPartitionGroupComponents: boolean;
   userPartitionInfo?: UserPartitionInfoTypes;
+  groupAccessFrom?: GroupAccessSource | null;
+  ownGroupAccess?: OwnGroupAccess | null;
   enableCopyPasteUnits: boolean;
   isHeaderVisible: boolean;
   proctoringExamConfigurationLink?: string;
@@ -207,6 +233,8 @@ type AccessManagedOptional = Partial<
     | 'category'
     | 'format'
     | 'userPartitionInfo'
+    | 'groupAccessFrom'
+    | 'ownGroupAccess'
     | 'ancestorHasStaffLock'
     | 'isPrereq'
     | 'prereqs'

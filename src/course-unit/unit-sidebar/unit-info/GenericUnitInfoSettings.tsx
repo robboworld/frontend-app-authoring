@@ -1,8 +1,13 @@
+/**
+ * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
+ * Robbo: «show only to» / «hide from» the selected groups; locked inside a restricted subsection or section.
+ */
 import { FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
 import { Button, ButtonGroup, useToggle } from '@openedx/paragon';
 import { PUBLISH_TYPES, UNIT_VISIBILITY_STATES } from '@src/course-unit/constants';
-import { UserPartitionInfoTypes } from '@src/data/types';
-import { AccessEditComponent, DiscussionEditComponent } from '@src/generic/configure-modal/UnitTab';
+import { AccessMode, GroupAccessSource, OwnGroupAccess, UserPartitionInfoTypes } from '@src/data/types';
+import GroupAccessLocked from '@src/generic/group-access-label/GroupAccessLocked';
+import { AccessEditComponent, DiscussionEditComponent, buildGroupAccess } from '@src/generic/configure-modal/UnitTab';
 import { SidebarContent, SidebarSection } from '@src/generic/sidebar';
 import { Form, Formik } from 'formik';
 import { useMemo } from 'react';
@@ -18,6 +23,8 @@ interface UnitInfoSettingsProps {
   visibilityState: string;
   discussionEnabled?: boolean;
   userPartitionInfo?: UserPartitionInfoTypes;
+  groupAccessFrom?: GroupAccessSource | null;
+  ownGroupAccess?: OwnGroupAccess | null;
   updateCallback?: () => void;
   sectionId?: string;
   subsectionId?: string;
@@ -36,6 +43,8 @@ export const GenericUnitInfoSettings = (props: UnitInfoSettingsProps) => {
     visibilityState,
     discussionEnabled,
     userPartitionInfo,
+    groupAccessFrom,
+    ownGroupAccess,
     sectionId,
     subsectionId,
     configureHook = useConfigureUnit,
@@ -76,14 +85,16 @@ export const GenericUnitInfoSettings = (props: UnitInfoSettingsProps) => {
   });
 
   const handleSaveGroups = async (data: {
-    selectedPartitionIndex: number;
-    selectedGroups: any[];
+    selectedPartitionIndex?: number;
+    selectedGroups: string[];
+    accessMode?: AccessMode;
   }, { resetForm }: any) => {
-    const groupAccess = {};
-    if (userPartitionInfo && data.selectedPartitionIndex >= 0) {
-      const partitionId = userPartitionInfo.selectablePartitions[data.selectedPartitionIndex].id;
-      groupAccess[partitionId] = data.selectedGroups.map(g => parseInt(g, 10));
-    }
+    const groupAccess = buildGroupAccess(
+      userPartitionInfo,
+      data.selectedPartitionIndex ?? -1,
+      data.selectedGroups,
+      data.accessMode,
+    );
     handleUpdate(visibleToStaffOnly, groupAccess, !!discussionEnabled);
     resetForm({ values: data });
   };
@@ -110,6 +121,7 @@ export const GenericUnitInfoSettings = (props: UnitInfoSettingsProps) => {
     {
       selectedPartitionIndex: userPartitionInfo?.selectedPartitionIndex,
       selectedGroups: getSelectedGroups(),
+      accessMode: userPartitionInfo?.accessMode ?? 'allow',
     }
   ), [userPartitionInfo]);
 
@@ -137,6 +149,23 @@ export const GenericUnitInfoSettings = (props: UnitInfoSettingsProps) => {
         <SidebarSection
           title={intl.formatMessage(messages.sidebarInfoAccessTitle)}
         >
+          {groupAccessFrom ? (
+            <GroupAccessLocked
+              source={groupAccessFrom}
+              itemCategory="vertical"
+              own={ownGroupAccess}
+              onClearOwn={() => mutateFn.mutate({
+                unitId: id,
+                type: PUBLISH_TYPES.republish,
+                isVisibleToStaffOnly: visibleToStaffOnly,
+                groupAccess: null,
+                clearGroupAccess: true,
+                discussionEnabled: !!discussionEnabled,
+                sectionId,
+                subsectionId,
+              }, { onSuccess: () => props.updateCallback?.() })}
+            />
+          ) : (
           <Formik
             initialValues={initialValues}
             onSubmit={handleSaveGroups}
@@ -152,6 +181,7 @@ export const GenericUnitInfoSettings = (props: UnitInfoSettingsProps) => {
                   setFieldValue={setFieldValue}
                   userPartitionInfo={userPartitionInfo}
                   selectedGroups={values.selectedGroups}
+                  accessMode={values.accessMode}
                 />
                 {dirty && (
                   <Button className="mt-3" type="submit" variant="primary">
@@ -161,6 +191,7 @@ export const GenericUnitInfoSettings = (props: UnitInfoSettingsProps) => {
               </Form>
             )}
           </Formik>
+          )}
         </SidebarSection>
         <SidebarSection
           title={intl.formatMessage(configureMessages.discussionEnabledSectionTitle)}

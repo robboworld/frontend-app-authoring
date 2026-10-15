@@ -3180,7 +3180,9 @@ describe('<CourseUnit />', () => {
       });
     await executeThunk(fetchCourseSectionVerticalData(blockId), store.dispatch);
     render(<RootWrapper />);
-    expect(await screen.findByText('Access: Visibility group 1')).toBeInTheDocument();
+    // Robbo: the groups part is in <strong>, so match the whole label
+    expect(await screen.findByText((_, element) => element?.tagName === 'SPAN'
+      && element.textContent === 'Access restricted: Visibility group 1')).toBeInTheDocument();
   });
 
   it('displays group access with multiple groups in the status bar', async () => {
@@ -3227,7 +3229,9 @@ describe('<CourseUnit />', () => {
       });
     await executeThunk(fetchCourseSectionVerticalData(blockId), store.dispatch);
     render(<RootWrapper />);
-    expect(await screen.findByText('Access: 3 Groups')).toBeInTheDocument();
+    // Robbo: the groups part is in <strong>, so match the whole label
+    expect(await screen.findByText((_, element) => element?.tagName === 'SPAN'
+      && element.textContent === 'Access restricted: 3 groups')).toBeInTheDocument();
   });
 
   it('opens the align sidebar on postMessage event', async () => {

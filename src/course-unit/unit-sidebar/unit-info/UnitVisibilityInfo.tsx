@@ -1,3 +1,7 @@
+/**
+ * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
+ * Robbo: a unit hidden from groups is «visible to: everyone except …».
+ */
 import { useSelector } from 'react-redux';
 import {
   Form,
@@ -13,6 +17,7 @@ import { PUBLISH_TYPES } from '@src/course-unit/constants';
 import { isUnitPageNewDesignEnabled } from '@src/course-unit/utils';
 import { Edit, Groups, Lock } from '@openedx/paragon/icons';
 import { useConfigureUnitWithPageUpdates } from '@src/course-unit/data/apiHooks';
+import type { AccessMode } from '@src/data/types';
 import messages from './messages';
 import { useUnitSidebarContext } from '../UnitSidebarContext';
 
@@ -32,6 +37,7 @@ interface UnitVisibilityInfoContentProps {
     selectablePartitions: Record<string, any>[];
     selectedGroupsLabel: string;
     selectedPartitionIndex: number;
+    accessMode?: AccessMode;
   };
 }
 
@@ -101,7 +107,8 @@ const UnitVisibilityInfoContent = ({
   const intl = useIntl();
   const { setCurrentTabKey } = useUnitSidebarContext();
 
-  const { selectedPartitionIndex, selectedGroupsLabel } = userPartitionInfo ?? {};
+  const { selectedPartitionIndex, selectedGroupsLabel, accessMode } = userPartitionInfo ?? {};
+  const isHiddenFromGroups = accessMode === 'deny';
   const hasGroups = selectedPartitionIndex !== -1 && !Number.isNaN(selectedPartitionIndex) && selectedGroupsLabel;
   let groupsCount = 0;
   if (hasGroups) {
@@ -113,6 +120,9 @@ const UnitVisibilityInfoContent = ({
 
   if (visibleToStaffOnly) {
     labelMessages = intl.formatMessage(messages.visibilityStaffOnlyTitle);
+  } else if (hasGroups && isHiddenFromGroups) {
+    labelMessages = intl.formatMessage(messages.visibilityHiddenFromTitle, { groupNames: selectedGroupsLabel });
+    secondLabelMessages = intl.formatMessage(messages.visibilityHiddenFromDetails);
   } else if (hasGroups) {
     if (groupsCount === 1) {
       labelMessages = selectedGroupsLabel;

@@ -89,6 +89,8 @@ export interface ConfigureSectionData {
   sectionId: string;
   isVisibleToStaffOnly: boolean;
   startDatetime: string;
+  // Robbo: section group access; undefined leaves it as is
+  groupAccess?: Record<string, number[]>;
 }
 
 export interface ConfigureSubsectionData {
@@ -109,6 +111,10 @@ export interface ConfigureSubsectionData {
   prereqUsageKey?: string;
   prereqMinScore?: number;
   prereqMinCompletion?: number;
+  // Robbo: subsection group access; undefined leaves it as is
+  groupAccess?: Record<string, number[]>;
+  // Robbo: remove the subsection's own rule, so it inherits again (locked inside a restricted section)
+  clearGroupAccess?: boolean;
 }
 
 export interface ConfigureUnitData {
@@ -116,6 +122,8 @@ export interface ConfigureUnitData {
   isVisibleToStaffOnly: boolean;
   type: typeof PUBLISH_TYPES[keyof typeof PUBLISH_TYPES];
   groupAccess: Record<string, any> | null;
+  // Robbo: remove the unit's or component's own rule, so it inherits again (locked inside a restricted unit)
+  clearGroupAccess?: boolean;
   discussionEnabled?: boolean;
 }
 
@@ -130,6 +138,7 @@ export type ChapterConfigurePayload = {
   sectionId: string;
   isVisibleToStaffOnly: boolean;
   startDatetime: string;
+  groupAccess?: Record<string, number[]>;
 };
 
 export type SequentialConfigurePayload = {

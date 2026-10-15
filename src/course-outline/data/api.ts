@@ -1,3 +1,7 @@
+/**
+ * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
+ * Robbo: group access of sections and subsections, reset of a section's access restrictions.
+ */
 import { camelCaseObject, getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { courseIDtoBlockID, pickDefined } from '@src/course-outline/utils';
@@ -228,6 +232,16 @@ export async function publishCourseItem(itemId: string): Promise<CourseItemUpdat
 }
 
 /**
+ * Robbo: «Сбросить ограничения доступа» of a section — removes the group access rules of the section and of
+ * everything inside it (openedx-platform cms/djangoapps/contentstore/robbo_group_access.py).
+ */
+export async function resetSectionGroupAccess(sectionId: string): Promise<{ cleared: number }> {
+  const { data } = await getAuthenticatedHttpClient()
+    .post(`${getApiBaseUrl()}/robbo/group-access/reset/${sectionId}`);
+  return data;
+}
+
+/**
  * Configure course section
  */
 export async function configureCourseSection(variables: ConfigureSectionData): Promise<object> {
@@ -238,6 +252,8 @@ export async function configureCourseSection(variables: ConfigureSectionData): P
         // The backend expects metadata.visible_to_staff_only to either true or null
         visible_to_staff_only: variables.isVisibleToStaffOnly ? true : null,
         start: variables.startDatetime,
+        // Robbo: section group access (configure modal → «Видимость»)
+        ...(variables.groupAccess != null && { group_access: variables.groupAccess }),
       },
     });
 
@@ -268,6 +284,8 @@ export async function configureCourseSubsection(
     prereqUsageKey,
     prereqMinScore,
     prereqMinCompletion,
+    groupAccess,
+    clearGroupAccess,
   } = variables;
 
   const metadata = pickDefined({
@@ -291,6 +309,8 @@ export async function configureCourseSubsection(
     default_time_limit_minutes: defaultTimeLimitMinutes,
     is_onboarding_exam: isOnboardingExam,
     start: releaseDate,
+    // Robbo: subsection group access; null removes the own rule (pickDefined keeps null)
+    group_access: clearGroupAccess ? null : groupAccess,
   });
 
   const body = pickDefined({
@@ -323,6 +343,8 @@ export async function configureCourseUnit(variables: ConfigureUnitData): Promise
             discussion_enabled: variables.discussionEnabled,
           }),
           ...(variables.groupAccess != null && { group_access: variables.groupAccess }),
+          // Robbo: null removes the own rule, the block inherits again
+          ...(variables.clearGroupAccess && { group_access: null }),
         },
       } :
       {}),

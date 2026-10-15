@@ -1,3 +1,7 @@
+/**
+ * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
+ * Robbo: «Ограничения доступа» of the subsection (GroupAccessSection).
+ */
 import { FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
 import {
   Button,
@@ -22,6 +26,7 @@ import {
 import { ReleaseSection } from './sharedSettings/ReleaseSection';
 import messages from './messages';
 import { VisibilitySection } from './sharedSettings/VisibilitySection';
+import { GroupAccessSection } from './sharedSettings/GroupAccessSection';
 
 interface Props {
   subsectionId: string;
@@ -271,6 +276,12 @@ export const SubsectionSettings = ({ subsectionId }: Props) => {
         itemId={subsectionId}
         isSubsection
         onChange={onChange}
+      />
+      <GroupAccessSection
+        itemId={subsectionId}
+        isSubsection
+        onSave={(groupAccess) => onChange({ groupAccess })}
+        onClearOwn={() => onChange({ clearGroupAccess: true })}
       />
       <AssessmentResultVisibilitySection
         subsectionId={subsectionId}

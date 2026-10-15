@@ -1,3 +1,7 @@
+/**
+ * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
+ * Robbo: «Сбросить ограничения доступа» in the section menu (onClickResetGroupAccess).
+ */
 import {
   type ReactNode,
   useCallback,
@@ -44,6 +48,7 @@ interface CardHeaderProps {
   onClickPublish: () => void;
   onClickConfigure: () => void;
   onClickDelete: () => void;
+  onClickResetGroupAccess?: () => void;
   renameSectionId?: string;
   renameSubsectionId?: string;
   onClickUnlink: () => void;
@@ -84,6 +89,7 @@ const CardHeader = ({
   onClickPublish,
   onClickConfigure,
   onClickDelete,
+  onClickResetGroupAccess,
   renameSectionId,
   renameSubsectionId,
   onClickUnlink,
@@ -349,6 +355,15 @@ const CardHeader = ({
               >
                 {intl.formatMessage(messages.menuConfigure)}
               </Dropdown.Item>
+              {onClickResetGroupAccess && (
+                <Dropdown.Item
+                  data-testid={`${namePrefix}-card-header__menu-reset-group-access-button`}
+                  disabled={editMutation.isPending}
+                  onClick={onClickResetGroupAccess}
+                >
+                  {intl.formatMessage(messages.menuResetGroupAccess)}
+                </Dropdown.Item>
+              )}
               {getConfig().ENABLE_TAGGING_TAXONOMY_PAGES === 'true' && (
                 <Dropdown.Item
                   data-testid={`${namePrefix}-card-header__menu-manage-tags-button`}

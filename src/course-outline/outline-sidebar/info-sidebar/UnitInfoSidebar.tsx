@@ -1,3 +1,7 @@
+/**
+ * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
+ * Robbo: passes the group access lock source to the settings form.
+ */
 import { useContext } from 'react';
 import { useDefaultTab } from '@src/hooks/useDefaultTab';
 
@@ -63,6 +67,8 @@ const UnitSettingsTab = ({ unitId }: Props) => {
       visibilityState={unitData.visibilityState}
       discussionEnabled={unitData.discussionEnabled}
       userPartitionInfo={unitData.userPartitionInfo}
+      groupAccessFrom={unitData.groupAccessFrom}
+      ownGroupAccess={unitData.ownGroupAccess}
       updateCallback={onUpdate}
       subsectionId={selectedContainerState?.subsectionId}
       sectionId={selectedContainerState?.sectionId}
