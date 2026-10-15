@@ -1,3 +1,8 @@
+/**
+ * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
+ * Robbo: group access in the status bar reads «Доступ ограничен: **…**» (GroupAccessLabel: the groups,
+ * or «всем, кроме …» for a unit hidden from them).
+ */
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import type { MessageDescriptor } from 'react-intl';
@@ -49,9 +54,10 @@ import { UnitSidebarPagesProvider } from './unit-sidebar/UnitSidebarPagesContext
 import { UNIT_VISIBILITY_STATES } from './constants';
 import { isUnitPageNewDesignEnabled } from './utils';
 import { useHelpUrls } from '@src/help-urls/hooks';
+import GroupAccessLabel from '@src/generic/group-access-label';
 
 const StatusBar = ({ courseUnit }: { courseUnit: any; }) => {
-  const { selectedPartitionIndex, selectedGroupsLabel } = courseUnit.userPartitionInfo ?? {};
+  const { selectedPartitionIndex, selectedGroupsLabel, accessMode } = courseUnit.userPartitionInfo ?? {};
   const hasGroups = selectedPartitionIndex !== -1 && !Number.isNaN(selectedPartitionIndex) && selectedGroupsLabel;
   let groupsCount = 0;
   if (hasGroups) {
@@ -120,12 +126,7 @@ const StatusBar = ({ courseUnit }: { courseUnit: any; }) => {
         <Stack direction="horizontal" gap={1}>
           <Icon src={Groups} />
           <span>
-            <FormattedMessage
-              {...messages.statusBarGroupAccessOneGroup}
-              values={{
-                groupName: selectedGroupsLabel,
-              }}
-            />
+            <GroupAccessLabel groups={selectedGroupsLabel} accessMode={accessMode} />
           </span>
         </Stack>
       )}
@@ -141,12 +142,7 @@ const StatusBar = ({ courseUnit }: { courseUnit: any; }) => {
           <Stack direction="horizontal" gap={1}>
             <Icon src={Groups} />
             <span>
-              <FormattedMessage
-                {...messages.statusBarGroupAccessMultipleGroup}
-                values={{
-                  groupsCount,
-                }}
-              />
+              <GroupAccessLabel groupsCount={groupsCount} accessMode={accessMode} />
             </span>
           </Stack>
         </OverlayTrigger>

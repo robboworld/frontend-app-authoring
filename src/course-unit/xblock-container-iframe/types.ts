@@ -1,4 +1,4 @@
-import { UserPartitionTypes } from '@src/data/types';
+import { GroupAccessSource, OwnGroupAccess, UserPartitionTypes } from '@src/data/types';
 
 export interface XBlockActionsTypes {
   canCopy: boolean;
@@ -19,6 +19,8 @@ export interface XBlockTypes {
     selectedGroupsLabel: string;
   };
   userPartitions: Array<UserPartitionTypes>;
+  groupAccessFrom?: GroupAccessSource | null; // Robbo
+  ownGroupAccess?: OwnGroupAccess | null; // Robbo
   upstreamLink: string | null;
   actions: XBlockActionsTypes;
   validationMessages: any[];

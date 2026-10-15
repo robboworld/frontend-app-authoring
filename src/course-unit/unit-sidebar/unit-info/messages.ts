@@ -74,6 +74,16 @@ const messages = defineMessages({
     defaultMessage: 'All Learners & Staff',
     description: 'Label for the all learners state',
   },
+  visibilityHiddenFromTitle: {
+    id: 'course-authoring.course-unit.visibility.hidden-from.title',
+    defaultMessage: 'Everyone except {groupNames}',
+    description: 'Who sees the unit (under «Visible to») when it is hidden from the selected groups',
+  },
+  visibilityHiddenFromDetails: {
+    id: 'course-authoring.course-unit.visibility.hidden-from.details',
+    defaultMessage: 'Learners of these groups do not see this unit, everyone else does.',
+    description: 'Details text when the unit is hidden from the selected groups',
+  },
   visibilitySingleGroupDetails: {
     id: 'course-authoring.course-unit.visibility.single-group.details',
     defaultMessage: 'This unit is restricted to {groupName} and Staff',

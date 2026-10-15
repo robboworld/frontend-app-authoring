@@ -14,6 +14,9 @@ export const formatAccessManagedXBlockData = (
   category: COURSE_BLOCK_NAMES.component.id,
   displayName: xblock.name,
   userPartitionInfo: xblock.userPartitionInfo,
+  // Robbo: a restriction of the unit or higher locks the component's own one
+  groupAccessFrom: xblock.groupAccessFrom,
+  ownGroupAccess: xblock.ownGroupAccess,
   showCorrectness: 'always',
   id: usageId,
 });
