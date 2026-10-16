@@ -40,6 +40,7 @@ import { TaxonomyLayout, TaxonomyDetailPage, TaxonomyListPage } from './taxonomy
 import { ContentTagsDrawer } from './content-tags-drawer';
 import AccessibilityPage from './accessibility-page';
 import { ToastProvider } from './generic/toast-context';
+import { ensureStudioSession } from './generic/robboStudioSession';
 import { ContentType } from './library-authoring/routes';
 
 import 'react-datepicker/dist/react-datepicker.css';
@@ -193,6 +194,8 @@ initialize({
         ADMIN_CONSOLE_URL: process.env.ADMIN_CONSOLE_URL || null,
       }, 'CourseAuthoringConfig');
     },
+    // Robbo: legacy Studio views need the Studio session, not only the LMS JWT.
+    ready: ensureStudioSession,
   },
   messages,
   requireAuthenticatedUser: true,
