@@ -3182,7 +3182,7 @@ describe('<CourseUnit />', () => {
     render(<RootWrapper />);
     // Robbo: the groups part is in <strong>, so match the whole label
     expect(await screen.findByText((_, element) => element?.tagName === 'SPAN'
-      && element.textContent === 'Access restricted: Visibility group 1')).toBeInTheDocument();
+      && element.textContent === 'Visible only to groups: Visibility group 1')).toBeInTheDocument();
   });
 
   it('displays group access with multiple groups in the status bar', async () => {
@@ -3231,7 +3231,7 @@ describe('<CourseUnit />', () => {
     render(<RootWrapper />);
     // Robbo: the groups part is in <strong>, so match the whole label
     expect(await screen.findByText((_, element) => element?.tagName === 'SPAN'
-      && element.textContent === 'Access restricted: 3 groups')).toBeInTheDocument();
+      && element.textContent === 'Visible only to 3 groups')).toBeInTheDocument();
   });
 
   it('opens the align sidebar on postMessage event', async () => {

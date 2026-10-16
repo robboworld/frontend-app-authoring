@@ -4,11 +4,12 @@
  *
  * Part of the Robbo Open edX distribution (course groups). See NOTICE at repository root.
  *
- * «Доступ ограничен: **5Б**» for content shown only to the groups and «Доступ ограничен: **всем, кроме 5Б**»
+ * «Видно только группам: **5Б**» for content shown only to the groups and «Скрыто от групп: **5Б**»
  * for content hidden from them (openedx-platform openedx/core/lib/robbo_group_access.py).
  * Pass the group names, or their number when there are too many to list.
  */
-import { FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
+import type { ReactNode } from 'react';
+import { FormattedMessage } from '@edx/frontend-platform/i18n';
 
 import type { AccessMode } from '@src/data/types';
 import messages from './messages';
@@ -19,19 +20,24 @@ interface GroupAccessLabelProps {
   accessMode?: AccessMode;
 }
 
+const bold = (chunks: ReactNode[]) => <strong>{chunks}</strong>;
+
 const GroupAccessLabel = ({ groups = '', groupsCount, accessMode }: GroupAccessLabelProps) => {
-  const intl = useIntl();
   const isHidden = accessMode === 'deny';
-  let who: string;
   if (groupsCount !== undefined) {
-    who = intl.formatMessage(
-      isHidden ? messages.everyoneExceptGroupsCount : messages.groupsCount,
-      { count: groupsCount },
+    return (
+      <FormattedMessage
+        {...(isHidden ? messages.hiddenFromCount : messages.shownToCount)}
+        values={{ count: groupsCount, b: bold }}
+      />
     );
-  } else {
-    who = isHidden ? intl.formatMessage(messages.everyoneExcept, { groups }) : groups;
   }
-  return <FormattedMessage {...messages.accessRestricted} values={{ groups: <strong>{who}</strong> }} />;
+  return (
+    <FormattedMessage
+      {...(isHidden ? messages.hiddenFrom : messages.shownTo)}
+      values={{ groups, b: bold }}
+    />
+  );
 };
 
 export default GroupAccessLabel;
