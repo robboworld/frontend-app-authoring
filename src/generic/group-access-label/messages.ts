@@ -7,25 +7,25 @@
 import { defineMessages } from '@edx/frontend-platform/i18n';
 
 const messages = defineMessages({
-  accessRestricted: {
-    id: 'course-authoring.group-access-label.access-restricted',
-    defaultMessage: 'Access restricted: {groups}',
-    description: 'Group restriction of a section, subsection or unit; {groups} is shown in bold',
+  shownTo: {
+    id: 'course-authoring.group-access-label.shown-to',
+    defaultMessage: 'Visible only to groups: <b>{groups}</b>',
+    description: 'Section, subsection or unit shown only to the listed groups',
   },
-  everyoneExcept: {
-    id: 'course-authoring.group-access-label.everyone-except',
-    defaultMessage: 'everyone except {groups}',
-    description: 'Who has access when the content is hidden from the listed groups',
+  hiddenFrom: {
+    id: 'course-authoring.group-access-label.hidden-from',
+    defaultMessage: 'Hidden from groups: <b>{groups}</b>',
+    description: 'Section, subsection or unit hidden from the listed groups, everyone else sees it',
   },
-  groupsCount: {
-    id: 'course-authoring.group-access-label.groups-count',
-    defaultMessage: '{count, plural, one {# group} other {# groups}}',
-    description: 'Who has access: a number of groups',
+  shownToCount: {
+    id: 'course-authoring.group-access-label.shown-to-count',
+    defaultMessage: 'Visible only to <b>{count, plural, one {# group} other {# groups}}</b>',
+    description: 'Shown only to a number of groups; their names are in a tooltip',
   },
-  everyoneExceptGroupsCount: {
-    id: 'course-authoring.group-access-label.everyone-except-groups-count',
-    defaultMessage: 'everyone except {count, plural, one {# group} other {# groups}}',
-    description: 'Who has access when the content is hidden from a number of groups',
+  hiddenFromCount: {
+    id: 'course-authoring.group-access-label.hidden-from-count',
+    defaultMessage: 'Hidden from <b>{count, plural, one {# group} other {# groups}}</b>',
+    description: 'Hidden from a number of groups; their names are in a tooltip',
   },
   lockedTitle: {
     id: 'course-authoring.group-access-label.locked.title',

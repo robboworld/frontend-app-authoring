@@ -492,7 +492,7 @@ describe('<XBlockStatus /> for unit', () => {
     // check status messages for partition info
     const statusDiv = queryByTestId('status-messages-div');
     expect(statusDiv).toBeInTheDocument();
-    expect(statusDiv).toHaveTextContent('Access restricted:');
+    expect(statusDiv).toHaveTextContent('Visible only to groups:');
   });
 
   it('renders XBlockStatus with status messages', () => {
