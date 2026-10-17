@@ -401,7 +401,7 @@
   "course-authoring.certificates.signatories.image.label": "Изображение подписи",
   "course-authoring.certificates.signatories.image.placeholder": "Путь к изображению подписи",
   "course-authoring.certificates.signatories.image.description": "Изображение должно быть в формате PNG",
-  "course-authoring.certificates.signatories.upload.image.button": "Изображение подписи {uploadText}",
+  "course-authoring.certificates.signatories.upload.image.button": "{uploadText} изображение подписи",
   "course-authoring.certificates.signatories.upload.modal": "Загрузить",
   "course-authoring.certificates.signatories.upload.modal.replace": "Заменить",
   "course-authoring.certificates.signatories.confirm-modal": "Удалить «{name}» из списка подписантов?",
