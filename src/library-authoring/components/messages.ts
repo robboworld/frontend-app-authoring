@@ -111,6 +111,12 @@ const messages = defineMessages({
     defaultMessage: 'Delete',
     description: 'Menu item to delete a collection.',
   },
+  // Robbo: own title; DeleteModal turns an unknown category like 'collection' into "component".
+  deleteCollectionTitle: {
+    id: 'course-authoring.library-authoring.collection.robbo-delete-title',
+    defaultMessage: 'Delete this collection?',
+    description: 'Title of the confirmation dialog before deleting a collection',
+  },
   deleteCollectionConfirm: {
     id: 'course-authoring.library-authoring.collection.delete-confirmation-text',
     defaultMessage: 'Are you sure you want to delete collection: {collectionTitle}?',
