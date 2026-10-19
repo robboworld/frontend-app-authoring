@@ -105,6 +105,7 @@ const CollectionMenu = ({ hit }: CollectionMenuProps) => {
         variant="danger"
         icon={Delete}
         category={type}
+        title={intl.formatMessage(messages.deleteCollectionTitle)}
         description={intl.formatMessage(messages.deleteCollectionConfirm, {
           collectionTitle: displayName,
         })}

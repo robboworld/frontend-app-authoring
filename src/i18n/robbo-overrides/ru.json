@@ -2857,6 +2857,7 @@
   "course-authoring.library-authoring.component.undo-delete-component-failed": "Не удалось отменить удаление компонента",
   "course-authoring.library-authoring.collection.delete-menu-text": "Удалить",
   "course-authoring.library-authoring.collection.delete-confirmation-text": "Вы действительно хотите удалить коллекцию «{collectionTitle}»?",
+  "course-authoring.library-authoring.collection.robbo-delete-title": "Удалить эту коллекцию?",
   "course-authoring.library-authoring.collection.delete-failed-error": "Не удалось удалить коллекцию",
   "course-authoring.library-authoring.collection.delete-error-success": "Коллекция удалена",
   "course-authoring.library-authoring.collection.undo-delete-collection-toast-button": "Отменить",
