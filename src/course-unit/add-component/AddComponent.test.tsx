@@ -72,6 +72,11 @@ const renderComponent = (props?: AddComponentProps) =>
     </IframeProvider>,
   );
 
+// Robbo: button labels come from local type messages (getComponentTypeLabel), not the CMS display_name.
+const getButtonLabel = ({ type, display_name: displayName }: { type: string; display_name: string; }) => (
+  type === COMPONENT_TYPES.library ? messages.typeLegacyLibrary.defaultMessage : displayName
+);
+
 describe('<AddComponent />', () => {
   beforeEach(async () => {
     const mocks = initializeMocks();
@@ -92,7 +97,7 @@ describe('<AddComponent />', () => {
       const btn = getByRole('button', {
         name: new RegExp(
           `${componentTemplates[component].type} ${messages.buttonText.defaultMessage} ${
-            componentTemplates[component].display_name
+            getButtonLabel(componentTemplates[component])
           }`,
           'i',
         ),
@@ -144,14 +149,17 @@ describe('<AddComponent />', () => {
     Object.keys(componentTemplates).map((component) => {
       if (componentTemplates[component].type === COMPONENT_TYPES.discussion) {
         return expect(queryByRole('button', {
-          name: new RegExp(`${messages.buttonText.defaultMessage} ${componentTemplates[component].display_name}`, 'i'),
+          name: new RegExp(
+            `${messages.buttonText.defaultMessage} ${getButtonLabel(componentTemplates[component])}`,
+            'i',
+          ),
         })).not.toBeInTheDocument();
       }
 
       return expect(getByRole('button', {
         name: new RegExp(
           `${componentTemplates[component].type} ${messages.buttonText.defaultMessage} ${
-            componentTemplates[component].display_name
+            getButtonLabel(componentTemplates[component])
           }`,
           'i',
         ),
@@ -275,7 +283,7 @@ describe('<AddComponent />', () => {
     const { getByRole } = renderComponent();
 
     const libraryButton = getByRole('button', {
-      name: new RegExp(`${messages.buttonText.defaultMessage} Legacy Library Content`, 'i'),
+      name: new RegExp(`${messages.buttonText.defaultMessage} ${messages.typeLegacyLibrary.defaultMessage}`, 'i'),
     });
 
     await user.click(libraryButton);
