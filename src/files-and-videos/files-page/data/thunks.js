@@ -2,6 +2,7 @@ import { isEmpty } from 'lodash';
 import { camelCaseObject } from '@edx/frontend-platform';
 
 import { RequestStatus } from '../../../data/constants';
+import { describeError } from '../../../robbo-errors';
 import {
   addModel,
   addModels,
@@ -126,12 +127,10 @@ export function addAssetFile(courseId, file, isOverwrite) {
       }
       dispatch(updateEditStatus({ editType: 'add', status: RequestStatus.SUCCESSFUL }));
     } catch (error) {
-      if (error.response && error.response.status === 413) {
-        const message = error.response.data.error;
-        dispatch(updateErrors({ error: 'add', message }));
-      } else {
-        dispatch(updateErrors({ error: 'add', message: `Failed to add ${file.name}.` }));
-      }
+      // Robbo: the file's name and the human text with the code and number (src/robbo-errors) for any
+      // failure, the size limit included — not "Failed to add …" in English.
+      describeError(error); // error.message: the title, the text and the code (once, see robbo-errors)
+      dispatch(updateErrors({ error: 'add', message: `${file.name}: ${error.message}` }));
       dispatch(updateEditStatus({ editType: 'add', status: RequestStatus.FAILED }));
     }
   };
