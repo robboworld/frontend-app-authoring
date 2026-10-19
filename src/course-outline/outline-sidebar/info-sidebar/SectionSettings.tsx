@@ -1,6 +1,6 @@
 /**
  * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
- * Robbo: «Ограничения доступа» of the section (GroupAccessSection).
+ * Robbo: «Ограничения доступа» of the section (GroupAccessSection), «Настройки задач» (ProblemSettingsSection).
  */
 import {
   useConfigureSection,
@@ -16,6 +16,7 @@ import { HighlightData, HighlightsCard } from '@src/course-outline/highlights-mo
 import { VisibilitySection } from './sharedSettings/VisibilitySection';
 import { ReleaseSection } from './sharedSettings/ReleaseSection';
 import { GroupAccessSection } from './sharedSettings/GroupAccessSection';
+import { ProblemSettingsSection } from '@src/generic/problem-settings';
 
 interface Props {
   sectionId: string;
@@ -65,6 +66,7 @@ export const SectionSettings = ({ sectionId }: Props) => {
         onChange={onChange}
       />
       <GroupAccessSection itemId={sectionId} onSave={(groupAccess) => onChange({ groupAccess })} />
+      <ProblemSettingsSection blockId={sectionId} name={itemData?.displayName ?? ''} category="chapter" />
     </SidebarContent>
   );
 };

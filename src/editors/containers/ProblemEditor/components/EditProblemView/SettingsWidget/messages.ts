@@ -66,6 +66,31 @@ const messages = defineMessages({
     defaultMessage: 'Determines whether a \'Reset\' button is shown so the user may reset their answer, generally for use in practice or formative assessments.',
     description: 'Reset settings card text',
   },
+  shuffleSettingsTitle: {
+    id: 'authoring.problemeditor.settings.robbo-shuffle.title',
+    defaultMessage: 'Shuffle answer choices',
+    description: 'Shuffle answer choices settings card title',
+  },
+  shuffleSettingsOff: {
+    id: 'authoring.problemeditor.settings.robbo-shuffle.off',
+    defaultMessage: 'No',
+    description: 'Option: answer choices keep the authored order',
+  },
+  shuffleSettingsPerStudent: {
+    id: 'authoring.problemeditor.settings.robbo-shuffle.per-student',
+    defaultMessage: 'Own order for each learner',
+    description: 'Option: each learner gets their own order of answer choices, the same on every attempt',
+  },
+  shuffleSettingsEveryAttempt: {
+    id: 'authoring.problemeditor.settings.robbo-shuffle.every-attempt',
+    defaultMessage: 'New order on every attempt',
+    description: 'Option: answer choices are shuffled again on every attempt',
+  },
+  shuffleSettingText: {
+    id: 'authoring.problemeditor.settings.robbo-shuffle.text',
+    defaultMessage: 'Each learner sees the answer choices in their own random order. With a new order on every attempt, the learner presses \'Reset\' after answering to try again, and the choices are shuffled anew.',
+    description: 'Shuffle answer choices settings card text',
+  },
   scoringSettingsTitle: {
     id: 'authoring.problemeditor.settings.scoring.title',
     defaultMessage: 'Scoring',
