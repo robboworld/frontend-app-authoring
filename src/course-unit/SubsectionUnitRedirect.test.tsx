@@ -67,13 +67,14 @@ describe('SubsectionUnitRedirect', () => {
       // Confirm redirection by checking the final URL
       const mockNavigate = screen.getByTestId('mock-navigate');
       expect(mockNavigate).toBeInTheDocument();
+      // Robbo: the subsection goes into the URL too, so the unit page does not redirect once more.
       expect(mockNavigate).toHaveAttribute(
         'data-to',
         `/course/${courseId}/container/${
           encodeURIComponent(
             'block-v1:edX+DemoX+Demo_Course+type@vertical+block@1',
           )
-        }`,
+        }/${encodeURIComponent(subsectionId)}`,
       );
     });
   });

@@ -17,7 +17,9 @@ jest.mock('react-redux', () => ({
 }));
 
 describe('CoursesFilters', () => {
-  const dispatchMock = jest.fn();
+  // A fresh mock per test: the debounced search of a previous test (lodash debounce outlives unmount, and the
+  // SearchField re-sends its value when onChange changes) can still fire and must not count as this test's call.
+  let dispatchMock;
 
   // eslint-disable-next-line react/prop-types
   const IntlProviderWrapper = ({ children }) => (
@@ -38,6 +40,7 @@ describe('CoursesFilters', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    dispatchMock = jest.fn();
     useSelector.mockReturnValue({
       currentPage: 1,
       order: 'display_name',

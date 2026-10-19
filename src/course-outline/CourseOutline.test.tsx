@@ -3318,6 +3318,8 @@ describe('<CourseOutline />', () => {
     expect(axiosMock.history.delete[0].url).toBe(getDownstreamApiUrl(courseSectionMock.id));
   });
 
+  // Cheap alone (~0.3 s), but it runs last in this long file, around the worker's major GC (heap ~2 GB); under
+  // CPU load it has run past the 5 s default while heavier tests here passed, so it gets an explicit budget.
   it('check that the new status bar and expand bar is shown when flag is set', async () => {
     useTestOutline({
       overrides: {
@@ -3334,5 +3336,5 @@ describe('<CourseOutline />', () => {
     const user = userEvent.setup();
     await user.click(btn);
     expect(await screen.findByRole('button', { name: 'Expand all' })).toBeInTheDocument();
-  });
+  }, 15000);
 });

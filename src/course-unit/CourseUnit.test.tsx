@@ -3597,9 +3597,13 @@ describe('<CourseUnit />', () => {
       setConfig({ ...getConfig(), ENABLE_UNIT_PAGE_NEW_DESIGN: 'true' });
       axiosMock.onGet(getXBlockApiUrl(componentId)).reply(200, data);
       render(<RootWrapper />);
-      await screen.findByTitle(xblockContainerIframeMessages.xblockIframeTitle.defaultMessage);
+      // Each wait needs a mocked request and a re-render of the whole unit page (~0.1 s alone); late in this long
+      // file (jest worker heap ~2 GB, major GCs) and under CPU load that has taken over the default 1 s.
+      await screen.findByTitle(xblockContainerIframeMessages.xblockIframeTitle.defaultMessage, undefined, {
+        timeout: 5000,
+      });
       simulatePostMessageEvent(messageTypes.xblockSelected, { contentId: componentId });
-      await screen.findByText(data.displayName);
+      await screen.findByText(data.displayName, undefined, { timeout: 5000 });
     };
 
     it('duplicates component from sidebar menu', async () => {
@@ -3669,7 +3673,7 @@ describe('<CourseUnit />', () => {
           moveModalMessages.moveModalTitle.defaultMessage.replace('{displayName}', componentData.displayName),
         ),
       ).toBeInTheDocument();
-    });
+    }, 15000); // ~0.3 s alone; room for the slow waits of renderComponentSidebar under load
 
     it('opens unlink modal and unlinks component from sidebar menu', async () => {
       const user = userEvent.setup();

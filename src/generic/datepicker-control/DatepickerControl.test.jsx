@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
+import { initializeMocks } from '@src/testUtils';
 
 import { convertToStringFromDate } from '../../utils';
 import { DatepickerControl, DATEPICKER_TYPES } from '.';
@@ -9,6 +10,12 @@ import { DATE_FORMAT } from '../../constants';
 
 describe('<DatepickerControl />', () => {
   const onChangeMock = jest.fn();
+
+  // Robbo: DatepickerControl picks the date format from getLocale(), which needs configured i18n.
+  beforeEach(() => {
+    initializeMocks();
+  });
+
   const RootWrapper = (props) => (
     <IntlProvider locale="en">
       <DatepickerControl {...props} />

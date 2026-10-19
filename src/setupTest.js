@@ -1,6 +1,12 @@
 import '@testing-library/jest-dom';
+import { TextDecoder, TextEncoder } from 'util';
 
 import { mergeConfig } from '@edx/frontend-platform';
+
+// Robbo: jsdom has no TextEncoder/TextDecoder; card crop metadata and the course archive reader create them on import.
+if (typeof global.TextEncoder === 'undefined') {
+  Object.assign(global, { TextEncoder, TextDecoder });
+}
 
 /* need to mock window for tinymce on import, as it is JSDOM incompatible */
 

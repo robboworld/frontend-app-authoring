@@ -2,7 +2,7 @@ import userEvent from '@testing-library/user-event';
 import ReactDOM from 'react-dom';
 import { saveAs } from 'file-saver';
 
-import { camelCaseObject } from '@edx/frontend-platform';
+import { camelCaseObject, getConfig } from '@edx/frontend-platform';
 
 import {
   render,
@@ -37,7 +37,7 @@ import {
 } from './data/thunks';
 import { getAssetsUrl } from './data/api';
 import messages from '../generic/messages';
-import filesPageMessages from './messages';
+import robboMessages from './robbo-catalog/messages';
 import { updateFileValues } from './data/utils';
 
 let axiosMock;
@@ -83,6 +83,35 @@ const mockStore = async (
   }
   renderComponent();
   await executeThunk(fetchAssets(courseId), store.dispatch);
+};
+
+// Robbo: the catalog upload asks the server which names are taken (robbo-catalog/api.ts checkUploads).
+const mockUploadCheckConflict = (name) => {
+  const uploadCheckUrl = `${getConfig().STUDIO_BASE_URL}/api/contentstore/v1/robbo/assets/${courseId}/upload-check`;
+  axiosMock.onPost(uploadCheckUrl).reply(200, {
+    files: [{
+      name,
+      asset_name: name,
+      exists: true,
+      suggested_name: `${name}-2`,
+      existing: {
+        id: name,
+        display_name: name,
+        file_size: 1234,
+        same_size: false,
+        robbo_folder: '',
+        usage_locations: [],
+      },
+    }],
+  });
+};
+
+// user.upload's FileList stand-in has enumerable `length`/`item`, which Object.values in FileInput would pass on
+// as files; the Robbo upload reads every name, so hand the input a plain array like a browser FileList yields.
+const uploadThroughInput = (uploadFile) => {
+  fireEvent.change(screen.getByLabelText(messages.fileInputAriaLabel.defaultMessage), {
+    target: { files: [uploadFile] },
+  });
 };
 
 const emptyMockStore = async (status) => {
@@ -216,18 +245,17 @@ describe('FilesAndUploads', () => {
           });
         });
 
+        // Robbo: a taken name opens the catalog's conflict dialog (robbo-catalog/UploadConflictModal) after
+        // the upload-check request, not the upstream overwrite modal fed by validateAssetFiles.
         it('should show duplicate file modal', async () => {
-          const user = userEvent.setup();
           file = new File(['(⌐□_□)'], 'mOckID6', { type: 'image/png' });
 
           await mockStore(RequestStatus.SUCCESSFUL);
-          axiosMock.onGet(
-            `${getAssetsUrl(courseId)}?display_name=mOckID6&page_size=1`,
-          ).reply(200, { assets: [{ display_name: 'mOckID6' }] });
-          const addFilesButton = screen.getByLabelText(messages.fileInputAriaLabel.defaultMessage);
-          await user.upload(addFilesButton, file);
-          await executeThunk(validateAssetFiles(courseId, [file]), store.dispatch);
-          expect(screen.getByText(filesPageMessages.overwriteConfirmMessage.defaultMessage)).toBeVisible();
+          mockUploadCheckConflict('mOckID6');
+          uploadThroughInput(file);
+
+          expect(await screen.findByText(robboMessages.conflictIntro.defaultMessage)).toBeVisible();
+          expect(screen.getByRole('radio', { name: 'Save as a copy: "mOckID6-2"' })).toBeChecked();
         });
 
         it('should overwrite duplicate file', async () => {
@@ -235,9 +263,7 @@ describe('FilesAndUploads', () => {
           file = new File(['(⌐□_□)'], 'mOckID6', { type: 'image/png' });
 
           await mockStore(RequestStatus.SUCCESSFUL);
-          axiosMock.onGet(
-            `${getAssetsUrl(courseId)}?display_name=mOckID6&page_size=1`,
-          ).reply(200, { assets: [{ display_name: 'mOckID6' }] });
+          mockUploadCheckConflict('mOckID6');
           const { asset: newDefaultAssetResponse } = generateNewAssetApiResponse();
           const responseData = {
             asset: {
@@ -247,14 +273,14 @@ describe('FilesAndUploads', () => {
           };
 
           axiosMock.onPost(getAssetsUrl(courseId)).reply(200, responseData);
-          const addFilesButton = screen.getByLabelText(messages.fileInputAriaLabel.defaultMessage);
-          await user.upload(addFilesButton, file);
-          await executeThunk(validateAssetFiles(courseId, [file]), store.dispatch);
+          uploadThroughInput(file);
 
-          const overwriteButton = screen.getByText(filesPageMessages.confirmOverwriteButtonLabel.defaultMessage);
-          fireEvent.click(overwriteButton);
+          await screen.findByText(robboMessages.conflictIntro.defaultMessage);
+          const dialog = screen.getByRole('dialog');
+          await user.click(within(dialog).getByRole('radio', { name: robboMessages.conflictReplace.defaultMessage }));
+          await user.click(within(dialog).getByRole('button', { name: robboMessages.conflictUpload.defaultMessage }));
 
-          expect(screen.queryByText(filesPageMessages.overwriteConfirmMessage.defaultMessage)).toBeNull();
+          expect(screen.queryByText(robboMessages.conflictIntro.defaultMessage)).toBeNull();
           await waitFor(() => {
             const assetData = store.getState().models.assets.mOckID6;
             const { asset: responseAssetData } = responseData;
@@ -262,6 +288,8 @@ describe('FilesAndUploads', () => {
 
             expect(assetData).toEqual(defaultData);
           });
+          const [upload] = axiosMock.history.post.filter(request => request.url === getAssetsUrl(courseId));
+          expect(upload.data.get('robbo_on_conflict')).toEqual('replace');
         });
 
         it('should keep original file', async () => {
@@ -269,21 +297,19 @@ describe('FilesAndUploads', () => {
           file = new File(['(⌐□_□)'], 'mOckID6', { type: 'image/png' });
 
           await mockStore(RequestStatus.SUCCESSFUL);
-          axiosMock.onGet(
-            `${getAssetsUrl(courseId)}?display_name=mOckID6&page_size=1`,
-          ).reply(200, { assets: [{ display_name: 'mOckID6' }] });
-          const addFilesButton = screen.getByLabelText(messages.fileInputAriaLabel.defaultMessage);
-          await user.upload(addFilesButton, file);
-          await executeThunk(validateAssetFiles(courseId, [file]), store.dispatch);
+          mockUploadCheckConflict('mOckID6');
+          uploadThroughInput(file);
 
-          const cancelButton = screen.getByText(filesPageMessages.cancelOverwriteButtonLabel.defaultMessage);
-          fireEvent.click(cancelButton);
+          await screen.findByText(robboMessages.conflictIntro.defaultMessage);
+          const cancelButton = within(screen.getByRole('dialog')).getByText(robboMessages.cancel.defaultMessage);
+          await user.click(cancelButton);
 
           const assetData = store.getState().models.assets.mOckID6;
           const defaultAssets = generateFetchAssetApiResponse().assets;
           const [defaultData] = updateFileValues([defaultAssets[4]]);
 
-          expect(screen.queryByText(filesPageMessages.overwriteConfirmMessage.defaultMessage)).toBeNull();
+          expect(screen.queryByText(robboMessages.conflictIntro.defaultMessage)).toBeNull();
+          expect(axiosMock.history.post.filter(request => request.url === getAssetsUrl(courseId))).toHaveLength(0);
           expect(assetData).toEqual(defaultData);
         });
       });
