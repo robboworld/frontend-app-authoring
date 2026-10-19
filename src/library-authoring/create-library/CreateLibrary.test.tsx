@@ -198,8 +198,10 @@ describe('<CreateLibrary />', () => {
         '{"description":"","title":"Test Library Name","org":"org1","slug":"test_library_slug"}',
       );
       expect(mockNavigate).not.toHaveBeenCalled();
-      const errorMessage = 'Request failed with status code 400{ "field": "Error message" }';
-      expect(await screen.findByRole('alert')).toHaveTextContent(errorMessage);
+      // Robbo: the human text with the code and number (src/robbo-errors), not the server's raw JSON.
+      const alert = await screen.findByRole('alert');
+      expect(alert).toHaveTextContent(/BAD-INPUT · [0-9A-F]{4}-[0-9A-F]{4}/);
+      expect(alert).not.toHaveTextContent('Error message');
     });
   });
 

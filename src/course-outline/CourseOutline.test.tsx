@@ -684,8 +684,10 @@ describe('<CourseOutline />', () => {
       }))
       .reply(200, courseLaunchMock);
 
-    const { findByText, queryByRole } = renderComponent();
-    expect(await findByText('"some internal error"')).toBeInTheDocument();
+    const { findByText, queryByRole, queryByText } = renderComponent();
+    // Robbo: the human text with the code and number (src/robbo-errors), not the server's raw answer.
+    expect(await findByText(/SRV-ERROR · [0-9A-F]{4}-[0-9A-F]{4}/)).toBeInTheDocument();
+    expect(queryByText('"some internal error"')).not.toBeInTheDocument();
 
     expect(queryByRole('button', { name: 'Dismiss' })).not.toBeInTheDocument();
   });
@@ -778,7 +780,8 @@ describe('<CourseOutline />', () => {
     const reindexButton = await findByTestId('course-reindex');
     await act(async () => fireEvent.click(reindexButton));
 
-    expect(await findByText('"reindex failed"')).toBeInTheDocument();
+    // Robbo: the human text with the code and number (src/robbo-errors), not the server's raw answer.
+    expect(await findByText(/SRV-ERROR · [0-9A-F]{4}-[0-9A-F]{4}/)).toBeInTheDocument();
   });
 
   it('check that new section list is saved when dragged', async () => {

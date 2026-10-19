@@ -51,6 +51,7 @@ describe('<LibraryAndComponentPicker />', () => {
     mockGetContentLibraryV2List.applyMockError();
     render(<LibraryAndComponentPicker />);
 
-    expect(await screen.findByText(/mocked request failed with status code 500/i)).toBeInTheDocument();
+    // Robbo: the human text with the code and number (src/robbo-errors), not the request's error message.
+    expect(await screen.findByText(/SRV-ERROR · [0-9A-F]{4}-[0-9A-F]{4}/)).toBeInTheDocument();
   });
 });
