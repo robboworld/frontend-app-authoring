@@ -118,8 +118,8 @@ describe('<LibraryCollectionPage />', () => {
   it('shows an error component if no collection returned', async () => {
     // This mock will simulate incorrect collection id
     await renderLibraryCollectionPage(mockCollection.collectionEmpty);
-    const errorMessage = 'Mocked request failed with status code 404{ "detail": "Not found." }';
-    expect(await screen.findByRole('alert')).toHaveTextContent(errorMessage);
+    // Robbo: the human text with the code and number (src/robbo-errors), not the server's raw JSON.
+    expect(await screen.findByRole('alert')).toHaveTextContent(/NOT-FOUND · [0-9A-F]{4}-[0-9A-F]{4}/);
   });
 
   it('shows collection data', async () => {
