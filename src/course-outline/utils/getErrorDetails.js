@@ -1,4 +1,5 @@
 import { API_ERROR_TYPES } from '../constants';
+import { describeError, inlineText } from '../../robbo-errors';
 
 export const getErrorDetails = (error, dismissible = true) => {
   const errorInfo = { dismissible };
@@ -8,10 +9,8 @@ export const getErrorDetails = (error, dismissible = true) => {
     errorInfo.type = API_ERROR_TYPES.forbidden;
     errorInfo.status = error.response.status;
   } else if (error.response?.data) {
-    const { data } = error.response;
-    if ((typeof data === 'string' && !data.includes('</html>')) || typeof data === 'object') {
-      errorInfo.data = JSON.stringify(data);
-    }
+    // Robbo: the human text with the code and number (src/robbo-errors), not the server's raw JSON.
+    errorInfo.data = inlineText(describeError(error));
     errorInfo.status = error.response.status;
     errorInfo.type = API_ERROR_TYPES.serverError;
   } else if (error.request) {
