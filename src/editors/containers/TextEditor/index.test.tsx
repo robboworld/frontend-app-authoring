@@ -27,6 +27,9 @@ jest.mock('../../data/redux', () => ({
       isLibrary: jest.fn(state => ({ isLibrary: state })),
       blockId: jest.fn(state => ({ blockId: state })),
       learningContextId: jest.fn(state => ({ learningContextId: state })),
+      // Robbo: imageNameHint (readable names for pasted images) reads the unit and block titles.
+      unitUrl: jest.fn(() => ({ data: { ancestors: [{ display_name: 'Unit title' }] } })),
+      blockTitle: jest.fn(() => 'Block title'),
     },
     requests: {
       isFailed: jest.fn((state, params) => ({ isFailed: { state, params } })),
@@ -124,6 +127,9 @@ describe('TextEditor', () => {
       expect(
         mapStateToProps(testState).images,
       ).toEqual(selectors.app.images(testState));
+    });
+    test('imageNameHint from the unit title in app.unitUrl', () => {
+      expect(mapStateToProps(testState).imageNameHint).toEqual('Unit title');
     });
   });
 

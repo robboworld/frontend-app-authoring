@@ -1,12 +1,19 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
+import { initializeMocks } from '@src/testUtils';
 
 import { courseDetailsMock } from '../../__mocks__';
 import { ScheduleRow } from '.';
 
 describe('<ScheduleRow />', () => {
   const onChangeMock = jest.fn();
+
+  // Robbo: DatepickerControl picks the date format from getLocale(), which needs configured i18n.
+  beforeEach(() => {
+    initializeMocks();
+  });
+
   const RootWrapper = (props) => (
     <IntlProvider locale="en">
       <ScheduleRow {...props} />

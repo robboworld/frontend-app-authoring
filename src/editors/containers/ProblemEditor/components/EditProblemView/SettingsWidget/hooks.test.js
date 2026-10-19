@@ -19,6 +19,8 @@ jest.mock('react', () => {
 jest.mock('@edx/frontend-platform/i18n', () => ({
   defineMessages: m => m,
 }));
+// Robbo: ../hooks pulls in TinyMceWidget hooks, which import toast-context; it needs the real React mocked above.
+jest.mock('@src/generic/toast-context', () => ({ showToastOutsideReact: jest.fn() }));
 
 jest.mock('../../../../../data/redux', () => ({
   actions: {
