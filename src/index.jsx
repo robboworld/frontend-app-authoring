@@ -7,7 +7,7 @@ import {
   getConfig,
   getPath,
 } from '@edx/frontend-platform';
-import { AppProvider, ErrorPage } from '@edx/frontend-platform/react';
+import { AppProvider } from '@edx/frontend-platform/react';
 import React, { StrictMode, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
@@ -15,6 +15,7 @@ import {
   createRoutesFromElements,
   createBrowserRouter,
   RouterProvider,
+  useRouteError,
 } from 'react-router-dom';
 import {
   QueryClient,
@@ -24,6 +25,12 @@ import {
 import { initializeHotjar } from '@edx/frontend-enterprise-hotjar';
 import { logError } from '@edx/frontend-platform/logging';
 import messages from './i18n';
+import {
+  initRobboErrors,
+  RobboErrorBoundary,
+  RobboErrorPage,
+  robboErrorsMiddleware,
+} from './robbo-errors';
 
 import {
   LibraryAndComponentPicker,
@@ -55,6 +62,13 @@ const queryClient = new QueryClient({
   },
 });
 
+// Robbo: a crash inside a route shows the error page with a code and number (src/robbo-errors)
+// instead of React Router's "Unexpected Application Error!".
+const RobboRouteError = () => {
+  const error = useRouteError();
+  return <RobboErrorPage error={error} />;
+};
+
 const App = () => {
   useEffect(() => {
     if (process.env.HOTJAR_APP_ID) {
@@ -72,7 +86,7 @@ const App = () => {
 
   const router = createBrowserRouter(
     createRoutesFromElements(
-      <Route>
+      <Route errorElement={<RobboRouteError />}>
         <Route path="/home" element={<StudioHome />} />
         <Route path="/libraries" element={<StudioHome />} />
 
@@ -127,15 +141,20 @@ const App = () => {
 
   return (
     <AppProvider store={initializeStore()} wrapWithRouter={false}>
-      <ToastProvider>
-        <QueryClientProvider client={queryClient}>
-          <Head />
-          <RouterProvider router={router} />
-        </QueryClientProvider>
-      </ToastProvider>
+      <RobboErrorBoundary>
+        <ToastProvider>
+          <QueryClientProvider client={queryClient}>
+            <Head />
+            <RouterProvider router={router} />
+          </QueryClientProvider>
+        </ToastProvider>
+      </RobboErrorBoundary>
     </AppProvider>
   );
 };
+
+// Robbo: human-readable errors with a code and number (src/robbo-errors).
+initRobboErrors({ app: 'authoring', audience: 'staff' });
 
 subscribe(APP_READY, () => {
   const root = createRoot(document.getElementById('root'));
@@ -147,18 +166,20 @@ subscribe(APP_READY, () => {
   );
 });
 
-subscribe(APP_INIT_ERROR, (error) => {
+// PubSub calls back with (topic, data): the error is the second argument.
+subscribe(APP_INIT_ERROR, (message, error) => {
   const root = createRoot(document.getElementById('root'));
 
   root.render(
     <StrictMode>
-      <ErrorPage message={error.message} />
+      <RobboErrorPage error={error} startup />
     </StrictMode>,
   );
 });
 
 // oxlint-disable-next-line typescript/no-floating-promises
 initialize({
+  authMiddleware: [robboErrorsMiddleware],
   handlers: {
     config: () => {
       mergeConfig({
