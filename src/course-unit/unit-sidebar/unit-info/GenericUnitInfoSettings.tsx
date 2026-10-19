@@ -1,6 +1,7 @@
 /**
  * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
  * Robbo: «show only to» / «hide from» the selected groups; locked inside a restricted subsection or section.
+ * «Настройки задач» of the unit (ProblemSettingsSection).
  */
 import { FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
 import { Button, ButtonGroup, useToggle } from '@openedx/paragon';
@@ -16,10 +17,12 @@ import { useConfigureUnit } from '@src/course-outline/data/apiHooks';
 import { useFieldDraft } from '@src/hooks/useFieldDraft';
 import ModalNotification from '@src/generic/modal-notification';
 import { InfoOutline } from '@openedx/paragon/icons';
+import { ProblemSettingsSection } from '@src/generic/problem-settings';
 import messages from './messages';
 
 interface UnitInfoSettingsProps {
   id: string;
+  displayName?: string;
   visibilityState: string;
   discussionEnabled?: boolean;
   userPartitionInfo?: UserPartitionInfoTypes;
@@ -205,6 +208,12 @@ export const GenericUnitInfoSettings = (props: UnitInfoSettingsProps) => {
               }))}
           />
         </SidebarSection>
+        <ProblemSettingsSection
+          blockId={props.id}
+          name={props.displayName ?? ''}
+          category="vertical"
+          onApplied={props.updateCallback}
+        />
       </SidebarContent>
       <ModalNotification
         title={intl.formatMessage(messages.modalMakeVisibilityTitle)}

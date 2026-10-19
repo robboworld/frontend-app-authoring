@@ -93,6 +93,7 @@ export const UnitInfoSettings = () => {
   const { sendMessageToIframe } = useIframe();
   const {
     id,
+    displayName,
     visibilityState,
     discussionEnabled,
     userPartitionInfo,
@@ -107,6 +108,7 @@ export const UnitInfoSettings = () => {
   return (
     <GenericUnitInfoSettings
       id={id}
+      displayName={displayName}
       visibilityState={visibilityState}
       discussionEnabled={discussionEnabled}
       userPartitionInfo={userPartitionInfo}

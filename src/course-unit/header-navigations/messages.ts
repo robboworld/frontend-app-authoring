@@ -11,6 +11,22 @@ const messages = defineMessages({
     defaultMessage: 'Preview',
     description: 'The unit preview button text',
   },
+  // Robbo: tooltips of the preview and view live buttons.
+  previewTooltip: {
+    id: 'course-authoring.course-unit.button.preview.robbo-tooltip',
+    defaultMessage: 'The draft of the unit with all saved changes, unpublished ones too. Only the course team can see it.',
+    description: 'Tooltip of the unit preview button',
+  },
+  viewLiveTooltip: {
+    id: 'course-authoring.course-unit.button.view-live.robbo-tooltip',
+    defaultMessage: 'The published version of the unit: what learners see. Unpublished changes are not in it.',
+    description: 'Tooltip of the unit view live button',
+  },
+  viewLiveUnpublishedTooltip: {
+    id: 'course-authoring.course-unit.button.view-live.robbo-tooltip-unpublished',
+    defaultMessage: 'The unit is not published yet, so learners do not see it. Open the draft with Preview.',
+    description: 'Tooltip of the unit view live button while the unit is not published',
+  },
   editButton: {
     id: 'course-authoring.course-unit.button.edit',
     defaultMessage: 'Edit',

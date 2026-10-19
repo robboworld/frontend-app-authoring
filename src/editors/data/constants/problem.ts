@@ -433,6 +433,9 @@ export const GradingMethod = StrictDict({
 
 export const RichTextProblems = [ProblemTypeKeys.SINGLESELECT, ProblemTypeKeys.MULTISELECT] as const;
 
+// Robbo: problem types whose choices the visual editor can shuffle (shuffle="true" on the choice group).
+export const ShuffleProblems = [ProblemTypeKeys.SINGLESELECT, ProblemTypeKeys.MULTISELECT] as const;
+
 export const settingsOlxAttributes = [
   '@_display_name',
   '@_weight',
