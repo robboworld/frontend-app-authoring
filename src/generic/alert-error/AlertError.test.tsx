@@ -36,7 +36,10 @@ describe('<AlertMessage />', () => {
         },
       },
     };
+    // The language the LMS sets for the user; without it the site's default is used (ru online, en courses).
+    document.cookie = 'openedx-language-preference=ru';
     const { getByText, queryByText } = render(<RootWrapper error={error} />);
+    document.cookie = 'openedx-language-preference=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
     expect(getByText('Не получилось выполнить действие')).toBeInTheDocument();
     expect(getByText('SRV-ERROR · 7F3A-29C1')).toBeInTheDocument();
     expect(queryByText(/this is a response body/i)).not.toBeInTheDocument();
