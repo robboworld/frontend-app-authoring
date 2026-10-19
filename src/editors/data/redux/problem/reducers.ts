@@ -23,6 +23,7 @@ const initialState: EditorState['problem'] = {
   isDirty: false,
   settings: {
     randomization: null,
+    shuffle: false,
     scoring: {
       weight: 1,
       attempts: {

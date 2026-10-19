@@ -1,3 +1,7 @@
+/**
+ * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
+ * Robbo: «Настройки задач» of the whole course in the settings tab (ProblemSettingsSection).
+ */
 import { useIntl } from '@edx/frontend-platform/i18n';
 import {
   Tab,
@@ -17,6 +21,9 @@ import { useGetBlockTypes } from '@src/search-manager';
 import { useCourseAuthoringContext } from '@src/CourseAuthoringContext';
 
 import { useCourseDetails } from '@src/course-outline/data/apiHooks';
+import { courseIDtoBlockID } from '@src/course-outline/utils';
+import { useCourseOutlineContext } from '@src/course-outline/CourseOutlineContext';
+import { ProblemSettingsSection } from '@src/generic/problem-settings';
 import messages from '../messages';
 import { useOutlineSidebarContext } from '../OutlineSidebarContext';
 import { useEffect } from 'react';
@@ -154,6 +161,7 @@ export const CourseInfoSidebar = () => {
   const { courseId } = useCourseAuthoringContext();
   const { data: courseDetails } = useCourseDetails(courseId);
   const { currentTabKey, setCurrentTabKey } = useOutlineSidebarContext();
+  const { courseName } = useCourseOutlineContext();
 
   useEffect(() => {
     if (!currentTabKey) {
@@ -181,6 +189,14 @@ export const CourseInfoSidebar = () => {
         </Tab>
         <Tab eventKey="settings" title={intl.formatMessage(messages.settingsTabText)}>
           <SettingsTab />
+          {/* Robbo: «Настройки задач» of the whole course. */}
+          <div className="mt-4">
+            <ProblemSettingsSection
+              blockId={courseIDtoBlockID(courseId)}
+              name={courseName || courseDetails?.title || ''}
+              category="course"
+            />
+          </div>
         </Tab>
       </Tabs>
     </>

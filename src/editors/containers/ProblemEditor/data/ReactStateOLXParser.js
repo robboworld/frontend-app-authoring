@@ -1,6 +1,6 @@
 import { get, has } from 'lodash';
 import { XMLParser, XMLBuilder } from 'fast-xml-parser';
-import { ProblemTypeKeys } from '../../../data/constants/problem';
+import { ProblemTypeKeys, ShuffleProblems } from '../../../data/constants/problem';
 import { ToleranceTypes } from '../components/EditProblemView/SettingsWidget/settingsComponents/Tolerance/constants';
 import { findNodesAndRemoveTheirParentNodes } from './reactStateOLXHelpers';
 
@@ -264,10 +264,14 @@ class ReactStateOLXParser {
     const widgetObject = this.addMultiSelectAnswers(option);
     const demandhint = this.addHints();
     const solution = this.addSolution();
+    // Robbo: «Shuffle answer choices» → shuffle="true" on <choicegroup>/<checkboxgroup>.
+    const widgetAttributes = this.problemState.settings?.shuffle && ShuffleProblems.includes(problemType)
+      ? { ':@': { '@_shuffle': 'true' } }
+      : {};
 
     const problemBodyArr = [{
       [problemType]: [
-        { [widget]: widgetObject },
+        { [widget]: widgetObject, ...widgetAttributes },
         ...solution,
       ],
     }];

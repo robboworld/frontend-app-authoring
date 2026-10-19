@@ -12,6 +12,7 @@ import {
 import {
   ProblemTypeKeys,
   RichTextProblems,
+  ShuffleProblems,
   settingsOlxAttributes,
   ignoredOlxAttributes,
 } from '../../../data/constants/problem';
@@ -237,6 +238,11 @@ export class OLXParser {
     let data = {};
     const widget = get(this.problem, `${problemType}.${widgetName}`);
     const permissableTags = ['choice', '@_type', 'compoundhint', 'option', '#text'];
+    // Robbo: shuffle="true" on <choicegroup>/<checkboxgroup> is the «Shuffle answer choices» setting.
+    const canShuffle = ShuffleProblems.includes(problemType);
+    if (canShuffle) {
+      permissableTags.push('@_shuffle');
+    }
     if (keys(widget).some((tag) => !permissableTags.includes(tag))) {
       throw new Error('Misc Tags, reverting to Advanced Editor');
     }
@@ -244,6 +250,11 @@ export class OLXParser {
       throw new Error('Partial credit not supported by GUI, reverting to Advanced Editor');
     }
     const choice = get(widget, option);
+    const shuffle = canShuffle && String(get(widget, '@_shuffle', '')).toLowerCase() === 'true';
+    // fixed="true" keeps a choice in place while the rest are shuffled; the visual editor would drop it.
+    if (shuffle && [].concat(choice || []).some((element) => has(element, '@_fixed'))) {
+      throw new Error('Fixed choices not supported by GUI, reverting to Advanced Editor');
+    }
     const isComplexAnswer = RichTextProblems.includes(problemType);
     if (isEmpty(choice)) {
       answers.push(
@@ -294,7 +305,7 @@ export class OLXParser {
         ...feedback,
       });
     }
-    data = { answers };
+    data = shuffle ? { answers, shuffle } : { answers };
     const groupFeedbackList = this.getGroupedFeedback(widget);
     if (groupFeedbackList.length) {
       data = {
@@ -785,6 +796,9 @@ export class OLXParser {
     }
     const { answers } = answersObject;
     const settings = { hints };
+    if (answersObject.shuffle) {
+      settings.shuffle = true;
+    }
     if (ProblemTypeKeys.NUMERIC === problemType && has(answers[0], 'tolerance')) {
       const toleranceValue = answers[0].tolerance;
       if (!toleranceValue || toleranceValue.length === 0) {

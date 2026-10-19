@@ -64,6 +64,7 @@ const UnitSettingsTab = ({ unitId }: Props) => {
     <GenericUnitInfoSettings
       key={unitData.id}
       id={unitData.id}
+      displayName={unitData.displayName}
       visibilityState={unitData.visibilityState}
       discussionEnabled={unitData.discussionEnabled}
       userPartitionInfo={unitData.userPartitionInfo}

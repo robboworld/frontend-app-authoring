@@ -1,8 +1,14 @@
+/**
+ * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
+ * Robbo: tooltips that tell «Предварительный просмотр» (the draft) from «Открыть на сайте» (what learners see).
+ */
 import { useIntl } from '@edx/frontend-platform/i18n';
 import {
   Button,
   ButtonGroup,
+  OverlayTrigger,
   Stack,
+  Tooltip,
 } from '@openedx/paragon';
 import {
   Add,
@@ -80,21 +86,37 @@ const HeaderNavigations = ({
             </>
           )}
           <ButtonGroup>
-            <Button
-              variant="outline-primary"
-              onClick={handlePreview}
-              iconBefore={FindInPage}
+            <OverlayTrigger
+              placement="bottom"
+              overlay={<Tooltip id="unit-preview-tooltip">{intl.formatMessage(messages.previewTooltip)}</Tooltip>}
             >
-              {intl.formatMessage(messages.previewButton)}
-            </Button>
+              <Button
+                variant="outline-primary"
+                onClick={handlePreview}
+                iconBefore={FindInPage}
+              >
+                {intl.formatMessage(messages.previewButton)}
+              </Button>
+            </OverlayTrigger>
             {/* TODO: convert to <Button as="a" href="..."> since it navigates to a URL */}
-            <Button
-              variant="outline-primary"
-              onClick={handleViewLive}
-              disabled={!isPublished}
+            {/* Robbo: aria-disabled, not disabled: a disabled button gets no hover or focus, so no tooltip */}
+            <OverlayTrigger
+              placement="bottom"
+              overlay={(
+                <Tooltip id="unit-view-live-tooltip">
+                  {intl.formatMessage(isPublished ? messages.viewLiveTooltip : messages.viewLiveUnpublishedTooltip)}
+                </Tooltip>
+              )}
             >
-              {intl.formatMessage(messages.viewLiveButton)}
-            </Button>
+              <Button
+                variant="outline-primary"
+                className={isPublished ? undefined : 'disabled'}
+                aria-disabled={!isPublished}
+                onClick={isPublished ? handleViewLive : undefined}
+              >
+                {intl.formatMessage(messages.viewLiveButton)}
+              </Button>
+            </OverlayTrigger>
           </ButtonGroup>
         </Stack>
       )}
