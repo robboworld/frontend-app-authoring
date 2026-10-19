@@ -1,7 +1,9 @@
+// Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
 import { useIntl } from '@edx/frontend-platform/i18n';
 import {
   Alert,
 } from '@openedx/paragon';
+import { describeError, isHttpError, RobboErrorDetails } from '../../robbo-errors';
 import messages from './messages';
 
 export interface AlertErrorProps {
@@ -13,14 +15,9 @@ export interface AlertErrorProps {
 /* eslint-disable react/prop-types */
 const AlertError: React.FC<AlertErrorProps> = ({ error, title, onDismiss }) => {
   const intl = useIntl();
-  let errorDetails: string | undefined;
-  if (error instanceof Object && (error as any).response?.data) {
-    if (typeof (error as any).response?.data === 'string') {
-      errorDetails = (error as any).response?.data;
-    } else {
-      errorDetails = JSON.stringify((error as any).response?.data, null, 2);
-    }
-  }
+  // Robbo: a failed request shows the human text with the code and number (src/robbo-errors), not
+  // error.message and the server's raw JSON. Texts and Errors made by the app itself stay as they are.
+  const info = isHttpError(error) ? describeError(error) : null;
 
   return (
     <Alert
@@ -30,14 +27,17 @@ const AlertError: React.FC<AlertErrorProps> = ({ error, title, onDismiss }) => {
       closeLabel={intl.formatMessage(messages.dismissLabel)}
       onClose={onDismiss}
     >
-      {title && <Alert.Heading>{title}</Alert.Heading>}
-      {error instanceof Object && 'message' in error ? String(error.message) : String(error)}
-      <br />
-      {errorDetails && (
-        <pre>
-          {errorDetails}
-        </pre>
-      )}
+      {(title || info) && <Alert.Heading>{title || info?.title}</Alert.Heading>}
+      {info ?
+        (
+          <>
+            <p>{info.message}</p>
+            <RobboErrorDetails info={info} />
+          </>
+        ) :
+        (
+          error instanceof Object && 'message' in error ? String(error.message) : String(error)
+        )}
     </Alert>
   );
 };
