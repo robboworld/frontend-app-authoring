@@ -14,6 +14,7 @@ import HintsCard from './settingsComponents/HintsCard';
 import ResetCard from './settingsComponents/ResetCard';
 import TimerCard from './settingsComponents/TimerCard';
 import TypeCard from './settingsComponents/TypeCard';
+import ShuffleCard from './settingsComponents/ShuffleCard';
 import { ToleranceCard } from './settingsComponents/Tolerance';
 import GroupFeedbackCard from './settingsComponents/GroupFeedback/index';
 import SwitchEditorCard from './settingsComponents/SwitchEditorCard';
@@ -21,7 +22,7 @@ import messages from './messages';
 import { showAdvancedSettingsCards } from './hooks';
 
 import './index.scss';
-import { ProblemTypeKeys } from '../../../../../data/constants/problem';
+import { ProblemTypeKeys, ShuffleProblems } from '../../../../../data/constants/problem';
 import Randomization from './settingsComponents/Randomization';
 
 // This widget should be connected, grab all settings from store, update them as needed.
@@ -78,6 +79,17 @@ const SettingsWidget = ({
           updateAnswer={updateAnswer}
         />
       </div>
+      {ShuffleProblems.includes(problemType)
+        && (
+          <div className="my-3">
+            <ShuffleCard
+              shuffle={!!settings.shuffle}
+              randomization={settings.randomization}
+              defaultRandomization={defaultSettings.rerandomize}
+              updateSettings={updateSettings}
+            />
+          </div>
+        )}
       {ProblemTypeKeys.NUMERIC === problemType
         && (
           <div className="my-3">

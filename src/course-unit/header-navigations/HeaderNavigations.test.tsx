@@ -82,13 +82,29 @@ describe('<HeaderNavigations />', () => {
   it('should enable the "View Live" button when isPublished is true', () => {
     renderComponent({ unitCategory: COURSE_BLOCK_NAMES.vertical.id, isPublished: true });
 
-    expect(screen.getByRole('button', { name: messages.viewLiveButton.defaultMessage })).not.toBeDisabled();
+    // Robbo: aria-disabled instead of disabled, so the button keeps its tooltip
+    expect(screen.getByRole('button', { name: messages.viewLiveButton.defaultMessage }))
+      .toHaveAttribute('aria-disabled', 'false');
   });
 
-  it('should disable the "View Live" button when isPublished is false', () => {
+  it('should disable the "View Live" button when isPublished is false', async () => {
+    const user = userEvent.setup();
     renderComponent({ unitCategory: COURSE_BLOCK_NAMES.vertical.id, isPublished: false });
 
-    expect(screen.getByRole('button', { name: messages.viewLiveButton.defaultMessage })).toBeDisabled();
+    const viewLiveButton = screen.getByRole('button', { name: messages.viewLiveButton.defaultMessage });
+    expect(viewLiveButton).toHaveAttribute('aria-disabled', 'true');
+    await user.click(viewLiveButton);
+    expect(handleViewLiveFn).not.toHaveBeenCalled();
+  });
+
+  it('explains the preview and view live buttons in tooltips', async () => {
+    const user = userEvent.setup();
+    renderComponent({ unitCategory: COURSE_BLOCK_NAMES.vertical.id, isPublished: false });
+
+    await user.hover(screen.getByRole('button', { name: messages.previewButton.defaultMessage }));
+    expect(await screen.findByText(messages.previewTooltip.defaultMessage)).toBeInTheDocument();
+    await user.hover(screen.getByRole('button', { name: messages.viewLiveButton.defaultMessage }));
+    expect(await screen.findByText(messages.viewLiveUnpublishedTooltip.defaultMessage)).toBeInTheDocument();
   });
 
   it('click Info button should open info sidebar', async () => {

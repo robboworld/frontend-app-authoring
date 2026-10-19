@@ -1,6 +1,6 @@
 /**
  * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
- * Robbo: «Ограничения доступа» of the subsection (GroupAccessSection).
+ * Robbo: «Ограничения доступа» of the subsection (GroupAccessSection), «Настройки задач» (ProblemSettingsSection).
  */
 import { FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
 import {
@@ -27,6 +27,7 @@ import { ReleaseSection } from './sharedSettings/ReleaseSection';
 import messages from './messages';
 import { VisibilitySection } from './sharedSettings/VisibilitySection';
 import { GroupAccessSection } from './sharedSettings/GroupAccessSection';
+import { ProblemSettingsSection } from '@src/generic/problem-settings';
 
 interface Props {
   subsectionId: string;
@@ -291,6 +292,7 @@ export const SubsectionSettings = ({ subsectionId }: Props) => {
         subsectionId={subsectionId}
         onChange={onChange}
       />
+      <ProblemSettingsSection blockId={subsectionId} name={itemData?.displayName ?? ''} category="sequential" />
     </SidebarContent>
   );
 };

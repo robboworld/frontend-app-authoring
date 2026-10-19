@@ -178,6 +178,8 @@ export interface EditorState {
     defaultSettings: Record<string, any>;
     settings: {
       randomization: any; // Not sure what type this field has
+      /** Robbo: shuffle="true" on the choice group of single and multiple choice problems. */
+      shuffle: boolean;
       scoring: {
         weight: number;
         attempts: { unlimited: boolean; number: number | null; };

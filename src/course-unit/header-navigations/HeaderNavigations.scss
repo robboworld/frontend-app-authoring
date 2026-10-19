@@ -1,0 +1,10 @@
+// Copyright (C) 2026 Robbo <https://robbo.ru>
+// SPDX-License-Identifier: AGPL-3.0-only
+// Part of the Robbo Open edX distribution. See NOTICE at repository root.
+//
+// «Открыть на сайте» of an unpublished unit is aria-disabled rather than disabled, so it keeps its tooltip
+// (HeaderNavigations.tsx). The theme (paragon-brand-robbo.css) leaves .disabled buttons out of the hover fill;
+// here only the cursor tells that the button does nothing.
+.header-navigations .btn.disabled[aria-disabled="true"] {
+  cursor: not-allowed;
+}

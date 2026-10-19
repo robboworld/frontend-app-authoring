@@ -2,7 +2,9 @@ import { XMLParser } from 'fast-xml-parser';
 import { includes } from 'lodash';
 
 import {
+  RandomizationTypesKeys,
   ShowAnswerTypesKeys,
+  ShuffleProblems,
 } from '../../../data/constants/problem';
 import { popuplateItem } from './SettingsParser';
 
@@ -67,6 +69,15 @@ class ReactStateSettingsParser {
       defaultSettings?.rerandomize,
       true,
     );
+    // Robbo: with randomization "never" every learner gets seed 1 and so the same shuffled order;
+    // "per_student" gives each learner their own order that does not change between attempts.
+    if (
+      stateSettings.shuffle
+      && ShuffleProblems.includes(this.problem.problemType)
+      && [null, undefined, '', RandomizationTypesKeys.NEVER].includes(settings.rerandomize)
+    ) {
+      settings.rerandomize = RandomizationTypesKeys.PERSTUDENT;
+    }
 
     return settings;
   }

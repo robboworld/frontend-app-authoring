@@ -55,14 +55,15 @@ const numericalProblemPartialCreditParser = new OLXParser(numericalProblemPartia
 
 describe('OLXParser', () => {
   describe('throws error and redirects to advanced editor', () => {
-    describe('when settings attributes are on problem tags', () => {
+    describe('when a shuffled choice group has fixed choices', () => {
       it('should throw error and contain message regarding opening advanced editor', () => {
-        try {
-          shuffleOlxParser.getParsedOLXData();
-        } catch (e) {
-          expect(e).toBeInstanceOf(Error);
-          expect(e.message).toBe('Misc Tags, reverting to Advanced Editor');
-        }
+        const olxparser = new OLXParser(shuffleProblemOLX.rawOLX.replace(
+          '<choice correct="false">Napster',
+          '<choice correct="false" fixed="true">Napster',
+        ));
+        expect(() => olxparser.getParsedOLXData()).toThrow(
+          new Error('Fixed choices not supported by GUI, reverting to Advanced Editor'),
+        );
       });
     });
     describe('when question parser finds script tags', () => {
@@ -113,6 +114,20 @@ describe('OLXParser', () => {
           expect(e.message).toBe('OLX found after the multiplechoiceresponse tags, opening in advanced editor');
         }
       });
+    });
+  });
+  describe('Robbo: shuffle="true" on the choice group', () => {
+    it('opens in the visual editor with the «Shuffle answer choices» setting on', () => {
+      const { problemType, settings, answers } = shuffleOlxParser.getParsedOLXData();
+      expect(problemType).toBe(ProblemTypeKeys.SINGLESELECT);
+      expect(settings.shuffle).toBe(true);
+      expect(answers.map(answer => answer.correct)).toEqual([false, false, true, false]);
+    });
+    it('leaves the setting out when the choices are not shuffled', () => {
+      const { settings } = new OLXParser(
+        shuffleProblemOLX.rawOLX.replace(' shuffle="true"', ''),
+      ).getParsedOLXData();
+      expect(settings.shuffle).toBeUndefined();
     });
   });
   describe('getProblemType()', () => {
