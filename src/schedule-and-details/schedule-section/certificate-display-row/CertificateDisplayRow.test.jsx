@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
+import { initializeMocks } from '@src/testUtils';
 
 import { courseDetailsMock } from '../../__mocks__';
 import messages from './messages';
@@ -8,6 +9,12 @@ import { CERTIFICATE_DISPLAY_BEHAVIOR, CertificateDisplayRow } from '.';
 
 describe('<CertificateDisplayRow />', () => {
   const onChangeMock = jest.fn();
+
+  // Robbo: DatepickerControl picks the date format from getLocale(), which needs configured i18n.
+  beforeEach(() => {
+    initializeMocks();
+  });
+
   const RootWrapper = (props) => (
     <IntlProvider locale="en">
       <CertificateDisplayRow {...props} />
