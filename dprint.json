@@ -28,7 +28,8 @@
     "env.config.*",
     "example.env.config.*",
     "module.config.js",
-    "**/messages.{ts,js}"
+    "**/messages.{ts,js}",
+    "src/robbo-errors/**"
   ],
   "plugins": [
     "https://plugins.dprint.dev/typescript-0.95.15.wasm",
