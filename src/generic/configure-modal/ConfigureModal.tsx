@@ -4,6 +4,7 @@
  * «show only to» / «hide from» the selected groups; group_access is sent only when the author changed it.
  * Overflow is visible only on the «Basic» tab, so the taller «Visibility» tab scrolls.
  * Group access of a block inside a restricted section, subsection or unit is locked (GroupAccessLocked).
+ * The release date is sent only when the author changed it, so an inherited one is not pinned on the block.
  */
 import { useEffect, useState } from 'react';
 import * as Yup from 'yup';
@@ -193,6 +194,17 @@ const ConfigureModal = ({
     return buildGroupAccess(userPartitionInfo, data.selectedPartitionIndex, data.selectedGroups, data.accessMode);
   };
 
+  // start is an inherited field: a section or subsection without its own release date shows the course
+  // start. Saving it back unchanged would pin that date on the block, and a later change of the course
+  // start in «Schedule & Details» would no longer reach it. An emptied date (null) makes it inherited again.
+  const getChangedReleaseDate = (releaseDate?: string | null) => {
+    const toTime = (value?: string | null) => (value ? new Date(value).getTime() : null);
+    if (toTime(releaseDate) === toTime(initialValues.releaseDate)) {
+      return undefined;
+    }
+    return releaseDate || null;
+  };
+
   const renderGroupAccess = (values: any, setFieldValue: any, isSubsection: boolean) => (
     groupAccessFrom ? (
       <>
@@ -241,7 +253,7 @@ const ConfigureModal = ({
       handleSave: (data) => {
         onConfigureSubmit({
           isVisibleToStaffOnly: data.isVisibleToStaffOnly,
-          startDatetime: data.releaseDate || null,
+          startDatetime: getChangedReleaseDate(data.releaseDate),
           groupAccess: getChangedGroupAccess(data),
         });
       },
@@ -273,7 +285,7 @@ const ConfigureModal = ({
       handleSave: (data) => {
         onConfigureSubmit({
           isVisibleToStaffOnly: data.isVisibleToStaffOnly,
-          releaseDate: data.releaseDate || null,
+          releaseDate: getChangedReleaseDate(data.releaseDate),
           graderType: data.graderType,
           dueDate: data.dueDate,
           isTimeLimited: data.isTimeLimited,
