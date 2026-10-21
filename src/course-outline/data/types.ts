@@ -88,7 +88,8 @@ export interface CourseItemUpdateResult {
 export interface ConfigureSectionData {
   sectionId: string;
   isVisibleToStaffOnly: boolean;
-  startDatetime: string;
+  // Robbo: undefined leaves the release date as is, null makes it inherited from the course
+  startDatetime?: string | null;
   // Robbo: section group access; undefined leaves it as is
   groupAccess?: Record<string, number[]>;
 }
@@ -137,7 +138,7 @@ export type ChapterConfigurePayload = {
   category: 'chapter';
   sectionId: string;
   isVisibleToStaffOnly: boolean;
-  startDatetime: string;
+  startDatetime?: string | null;
   groupAccess?: Record<string, number[]>;
 };
 

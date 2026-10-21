@@ -1,6 +1,7 @@
 /**
  * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
- * Robbo: group access of sections and subsections, reset of a section's access restrictions.
+ * Robbo: group access of sections and subsections, reset of a section's access restrictions;
+ * a section's release date is sent only when given (undefined keeps the block's own or inherited date).
  */
 import { camelCaseObject, getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
@@ -251,7 +252,8 @@ export async function configureCourseSection(variables: ConfigureSectionData): P
       metadata: {
         // The backend expects metadata.visible_to_staff_only to either true or null
         visible_to_staff_only: variables.isVisibleToStaffOnly ? true : null,
-        start: variables.startDatetime,
+        // Robbo: no start → the date stays as is (an inherited one is not pinned); null → inherited
+        ...(variables.startDatetime !== undefined && { start: variables.startDatetime }),
         // Robbo: section group access (configure modal → «Видимость»)
         ...(variables.groupAccess != null && { group_access: variables.groupAccess }),
       },
