@@ -1,6 +1,7 @@
 /**
  * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
  * Robbo: «Ограничения доступа» of the section (GroupAccessSection), «Настройки задач» (ProblemSettingsSection).
+ * The release date is sent only from ReleaseSection, so other settings do not pin an inherited one.
  */
 import {
   useConfigureSection,
@@ -47,7 +48,6 @@ export const SectionSettings = ({ sectionId }: Props) => {
     mutate({
       sectionId,
       isVisibleToStaffOnly: itemData.visibilityState === VisibilityTypes.STAFF_ONLY,
-      startDatetime: itemData.start,
       ...variables,
     });
   };
@@ -58,7 +58,7 @@ export const SectionSettings = ({ sectionId }: Props) => {
       {!courseDetails?.selfPaced && (
         <ReleaseSection
           itemId={sectionId}
-          onChange={(val: string) => onChange({ startDatetime: val })}
+          onChange={(val?: string) => onChange({ startDatetime: val || null })}
         />
       )}
       <VisibilitySection

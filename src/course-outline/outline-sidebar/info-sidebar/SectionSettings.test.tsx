@@ -97,6 +97,8 @@ describe('SectionSettings', () => {
     expect(configureMutate).toHaveBeenCalledWith(
       expect.objectContaining({ sectionId, isVisibleToStaffOnly: true, visibility: 'changed' }),
     );
+    // Robbo: the release date is not sent with other settings, so an inherited one is not pinned
+    expect(configureMutate.mock.calls.at(-1)[0]).not.toHaveProperty('startDatetime');
   });
 
   it('does not render ReleaseSection when course is self paced', () => {
