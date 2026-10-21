@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { fireEvent, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import { initializeMockApp } from '@edx/frontend-platform';
@@ -33,7 +33,7 @@ jest.mock('react-router-dom', () => ({
 const onCloseMock = jest.fn();
 const onConfigureSubmitMock = jest.fn();
 
-const renderComponent = () =>
+const renderComponent = (props?: object) =>
   render(
     <AppProvider store={store}>
       <IntlProvider locale="en">
@@ -43,6 +43,7 @@ const renderComponent = () =>
           onConfigureSubmit={onConfigureSubmitMock}
           currentItemData={currentSectionMock as unknown as AccessManagedXBlockDataTypes}
           isSelfPaced={false}
+          {...props}
         />
       </IntlProvider>,
     </AppProvider>,
@@ -81,6 +82,40 @@ describe('<ConfigureModal /> for Section', () => {
     await user.click(visibilityTab);
     expect(getByText('Section visibility')).toBeInTheDocument();
     expect(getByText(messages.hideFromLearners.defaultMessage)).toBeInTheDocument();
+  });
+
+  // Robbo: an unchanged (possibly inherited) release date is not sent, so it is not pinned on the section.
+  // A real section has show_correctness, and the form does not submit without it.
+  const sectionWithCorrectness = {
+    currentItemData: { ...currentSectionMock, showCorrectness: 'always' } as unknown as AccessManagedXBlockDataTypes,
+  };
+
+  it('does not send the release date when only the visibility changed', async () => {
+    onConfigureSubmitMock.mockReset();
+    const user = userEvent.setup();
+    const { getByRole, getByLabelText } = renderComponent(sectionWithCorrectness);
+
+    await user.click(getByRole('tab', { name: messages.visibilityTabTitle.defaultMessage }));
+    await user.click(getByLabelText(messages.hideFromLearners.defaultMessage));
+    await user.click(getByRole('button', { name: messages.saveButton.defaultMessage }));
+
+    await waitFor(() => expect(onConfigureSubmitMock).toHaveBeenCalledTimes(1));
+    expect(onConfigureSubmitMock.mock.calls[0][0]).toMatchObject({ isVisibleToStaffOnly: true });
+    expect(onConfigureSubmitMock.mock.calls[0][0].startDatetime).toBeUndefined();
+  });
+
+  it('sends the release date when the author changed it', async () => {
+    onConfigureSubmitMock.mockReset();
+    const user = userEvent.setup();
+    const { getByRole, getAllByPlaceholderText } = renderComponent(sectionWithCorrectness);
+
+    fireEvent.change(getAllByPlaceholderText('MM/DD/YYYY')[0], { target: { value: '06/16/2023' } });
+    await user.click(getByRole('button', { name: messages.saveButton.defaultMessage }));
+
+    await waitFor(() => expect(onConfigureSubmitMock).toHaveBeenCalledTimes(1));
+    const { startDatetime } = onConfigureSubmitMock.mock.calls[0][0];
+    expect(startDatetime).toEqual(expect.any(String));
+    expect(new Date(startDatetime).getTime()).not.toBe(new Date(currentSectionMock.start).getTime());
   });
 });
 
@@ -128,6 +163,18 @@ describe('<ConfigureModal /> for Subsection', () => {
     expect(getByText(messages.dueTimeUTC.defaultMessage)).toBeInTheDocument();
     expect(getByRole('button', { name: messages.cancelButton.defaultMessage })).toBeInTheDocument();
     expect(getByRole('button', { name: messages.saveButton.defaultMessage })).toBeInTheDocument();
+  });
+
+  // Robbo: saving the subsection settings unchanged does not pin its (possibly inherited) release date
+  it('does not send an unchanged release date', async () => {
+    onConfigureSubmitMock.mockReset();
+    const user = userEvent.setup();
+    const { getByRole } = renderSubsectionComponent();
+
+    await user.click(getByRole('button', { name: messages.saveButton.defaultMessage }));
+
+    await waitFor(() => expect(onConfigureSubmitMock).toHaveBeenCalledTimes(1));
+    expect(onConfigureSubmitMock.mock.calls[0][0].releaseDate).toBeUndefined();
   });
 
   it('hides release and due dates for self paced courses', () => {
