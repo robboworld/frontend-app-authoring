@@ -1,3 +1,6 @@
+/**
+ * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
+ */
 import { useIntl } from '@edx/frontend-platform/i18n';
 import {
   Button,
@@ -252,6 +255,7 @@ const GradingSettings = () => {
                       graders={graders}
                       setGradingData={setGradingData}
                       courseAssignmentLists={courseAssignmentLists}
+                      unscoredAssignmentLists={gradingSettings?.unscoredAssignmentLists}
                       setShowSuccessAlert={setShowSuccessAlert}
                       isEditable={isEditable}
                     />

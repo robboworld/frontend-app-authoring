@@ -1981,6 +1981,8 @@
   "course-authoring.grading-settings.assignment.alert.warning.title": "Внимание: указанное здесь количество заданий «{type}» не совпадает с текущим количеством заданий «{type}» в курсе:",
   "course-authoring.grading-settings.assignment.alert.warning.description": "В курсе нет заданий этого типа.",
   "course-authoring.grading-settings.assignment.alert.warning.usage.title": "Внимание: указанное здесь количество заданий «{type}» не совпадает с текущим количеством заданий «{type}» в курсе:",
+  "course-authoring.grading-settings.assignment.alert.warning.usage.found": "В курсе {count, plural, one {# подраздел} few {# подраздела} many {# подразделов} other {# подраздела}} этого типа:",
+  "course-authoring.grading-settings.assignment.alert.warning.unscored.title": "Внимание: {count, plural, one {в # подразделе} other {в # подразделах}} с типом «{type}» нет компонентов, которые дают баллы, — в итоговой оценке {count, plural, one {он не учитывается} other {они не учитываются}}:",
   "course-authoring.grading-settings.assignment.alert.success.title": "Количество заданий «{type}» в курсе совпадает с указанным здесь.",
   "course-authoring.grading-settings.assignment.delete.button": "Удалить",
   "course-authoring.grading-settings.credit.eligibility.label": "Минимальная оценка для получения зачёта:",
