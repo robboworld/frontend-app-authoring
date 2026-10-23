@@ -1,3 +1,6 @@
+/**
+ * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
+ */
 import { defineMessages } from '@edx/frontend-platform/i18n';
 
 const messages = defineMessages({
@@ -80,6 +83,14 @@ const messages = defineMessages({
   assignmentAlertWarningUsageTitle: {
     id: 'course-authoring.grading-settings.assignment.alert.warning.usage.title',
     defaultMessage: 'Warning: The number of {type} assignments defined here does not match the current number of {type} assignments in the course:',
+  },
+  assignmentAlertWarningUsageFound: {
+    id: 'course-authoring.grading-settings.assignment.alert.warning.usage.found',
+    defaultMessage: '{count, plural, one {# assignment} other {# assignments}} of this type found:',
+  },
+  assignmentAlertWarningUnscoredTitle: {
+    id: 'course-authoring.grading-settings.assignment.alert.warning.unscored.title',
+    defaultMessage: 'Warning: {count, plural, one {# {type} assignment has} other {# {type} assignments have}} no components that give points, so the grade leaves {count, plural, one {it} other {them}} out:',
   },
   assignmentAlertWarningSuccess: {
     id: 'course-authoring.grading-settings.assignment.alert.success.title',
