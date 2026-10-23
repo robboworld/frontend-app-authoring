@@ -92,6 +92,26 @@ const messages = defineMessages({
     id: 'course-authoring.grading-settings.assignment.alert.warning.unscored.title',
     defaultMessage: 'Warning: {count, plural, one {# {type} assignment has} other {# {type} assignments have}} no components that give points, so the grade leaves {count, plural, one {it} other {them}} out:',
   },
+  assignmentAlertWarningGroupsTitle: {
+    id: 'course-authoring.grading-settings.assignment.alert.warning.groups.title',
+    defaultMessage: 'Warning: not every group can get 100% for {type}. Some subsections of this type are hidden from them, and the missing ones up to the total number ({minCount}) count as zero:',
+  },
+  assignmentAlertWarningGroupsItem: {
+    id: 'course-authoring.grading-settings.assignment.alert.warning.groups.item',
+    defaultMessage: '{group} ({partition}): sees {count} of {everyone} {everyone, plural, one {subsection} other {subsections}}, at most {max}%',
+  },
+  assignmentAlertWarningGroupsHint: {
+    id: 'course-authoring.grading-settings.assignment.alert.warning.groups.hint',
+    defaultMessage: 'To make 100% possible for every group, set the total number to {suggested}: the grade then averages the subsections a learner sees, and the unanswered ones still count as zero.',
+  },
+  assignmentAlertGroupsSuccess: {
+    id: 'course-authoring.grading-settings.assignment.alert.groups.success.title',
+    defaultMessage: 'Every group can get 100% for {type}: the total number is not more than the subsections each group sees.',
+  },
+  assignmentAlertInfoOutsiders: {
+    id: 'course-authoring.grading-settings.assignment.alert.info.outsiders.title',
+    defaultMessage: 'Learners in none of the groups of {partition} see {count} of {everyone} {type} {everyone, plural, one {subsection} other {subsections}} and can get at most {max}% for them. If the course has such learners, put them in groups.',
+  },
   assignmentAlertWarningSuccess: {
     id: 'course-authoring.grading-settings.assignment.alert.success.title',
     defaultMessage: 'The number of {type} assignments in the course matches the number defined here.',

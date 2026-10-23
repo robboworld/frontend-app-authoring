@@ -1,3 +1,5 @@
+// Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
+
 .course-grading-assignment-wrapper {
   background-color: var(--pgn-color-white);
   padding: var(--pgn-spacing-spacer-4);
@@ -48,8 +50,18 @@
       padding-left: 1.875rem;
       margin-bottom: 0;
     }
+
+    // Robbo: the hint under the list of groups that can't get 100%
+    .course-grading-assignment-item-alert-warning-hint {
+      display: block;
+      margin-top: .5rem;
+      font-size: .75rem;
+      line-height: .938rem;
+    }
   }
 
+  // Robbo: learners outside the groups (info) read like the success line
+  .course-grading-assignment-item-alert-info .alert-heading,
   .course-grading-assignment-item-alert-success .alert-heading {
     font-size: var(--pgn-typography-alert-font-size);
     line-height: var(--pgn-typography-alert-line-height);
