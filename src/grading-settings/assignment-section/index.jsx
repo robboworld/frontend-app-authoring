@@ -1,3 +1,9 @@
+/**
+ * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
+ * Robbo: a warning lists the subsections of the type with nothing that gives points (the grade leaves
+ * them out), and the counts no longer show as matching while there are such subsections.
+ * The «… assignment(s) found» label is a message, so it is translated.
+ */
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useIntl } from '@edx/frontend-platform/i18n';
@@ -21,6 +27,7 @@ const AssignmentSection = ({
   graders,
   setGradingData,
   courseAssignmentLists,
+  unscoredAssignmentLists,
   setShowSuccessAlert,
   isEditable = true,
 }) => {
@@ -80,6 +87,7 @@ const AssignmentSection = ({
         const showDefinedCaseAlert = gradeField.minCount !== courseAssignmentUsage?.length
           && Boolean(courseAssignmentUsage?.length);
         const showNotDefinedCaseAlert = !courseAssignmentUsage?.length && Boolean(gradeField.type);
+        const unscoredAssignments = unscoredAssignmentLists?.[gradeField.type] || [];
 
         return (
           <div key={gradeField.id} className="course-grading-assignment-wrapper mb-4">
@@ -155,7 +163,9 @@ const AssignmentSection = ({
                 description={
                   <>
                     <span className="course-grading-assignment-item-alert-warning-list-label">
-                      {courseAssignmentUsage.length} Final assignment(s) found:
+                      {intl.formatMessage(messages.assignmentAlertWarningUsageFound, {
+                        count: courseAssignmentUsage.length,
+                      })}
                     </span>
                     <ol className="course-grading-assignment-item-alert-warning-list">
                       {courseAssignmentUsage.map(assignmentItem => <li key={assignmentItem}>{assignmentItem}</li>)}
@@ -179,7 +189,24 @@ const AssignmentSection = ({
                 aria-hidden="true"
               />
             )}
-            {gradeField.minCount === courseAssignmentUsage?.length && (
+            {unscoredAssignments.length > 0 && (
+              <AlertMessage
+                className="course-grading-assignment-item-alert-warning"
+                variant="warning"
+                icon={Warning}
+                title={intl.formatMessage(messages.assignmentAlertWarningUnscoredTitle, {
+                  type: gradeField.type,
+                  count: unscoredAssignments.length,
+                })}
+                description={
+                  <ol className="course-grading-assignment-item-alert-warning-list">
+                    {unscoredAssignments.map(assignmentItem => <li key={assignmentItem}>{assignmentItem}</li>)}
+                  </ol>
+                }
+                aria-hidden="true"
+              />
+            )}
+            {gradeField.minCount === courseAssignmentUsage?.length && !unscoredAssignments.length && (
               <AlertMessage
                 className="course-grading-assignment-item-alert-success"
                 variant="success"
@@ -206,6 +233,7 @@ const AssignmentSection = ({
 
 AssignmentSection.defaultProps = {
   courseAssignmentLists: undefined,
+  unscoredAssignmentLists: undefined,
   graders: undefined,
 };
 
@@ -215,6 +243,7 @@ AssignmentSection.propTypes = {
   setShowSavePrompt: PropTypes.func.isRequired,
   setShowSuccessAlert: PropTypes.func.isRequired,
   courseAssignmentLists: PropTypes.shape(defaultAssignmentsPropTypes),
+  unscoredAssignmentLists: PropTypes.objectOf(PropTypes.arrayOf(PropTypes.string)),
   graders: PropTypes.arrayOf(
     PropTypes.shape(defaultAssignmentsPropTypes),
   ),
