@@ -80,6 +80,54 @@ describe('<AssignmentSection />', () => {
       messages.assignmentAlertWarningSuccess.defaultMessage.replace(/{type}/g, 'Test type'),
     )).toBeInTheDocument();
   });
+  describe('groups that cannot get 100%', () => {
+    const groupAssignmentCounts = {
+      'Test type': {
+        everyone: 4,
+        groups: [
+          { partition: 'Content groups', group: 'A', count: 4 },
+          { partition: 'Content groups', group: 'B', count: 3 },
+          { partition: 'Content groups', group: null, count: 0 },
+        ],
+      },
+    };
+    const renderWithCount = (minCount) => render(
+      <RootWrapper
+        graders={[{ ...defaultAssignments, minCount, dropCount: 0 }]}
+        courseAssignmentLists={{ 'Test type': ['S - 1', 'S - 2', 'S - 3', 'S - 4'] }}
+        unscoredAssignmentLists={{}}
+        groupAssignmentCounts={groupAssignmentCounts}
+      />,
+    );
+
+    it('names the groups, their best grade and the total number to set', () => {
+      const { getByText, queryByText } = renderWithCount(4);
+      expect(getByText(
+        'Warning: not every group can get 100% for Test type. Some subsections of this type are hidden from them, '
+        + 'and the missing ones up to the total number (4) count as zero:',
+      )).toBeInTheDocument();
+      expect(getByText('B (Content groups): sees 3 of 4 subsections, at most 75%')).toBeInTheDocument();
+      expect(queryByText(/^A \(Content groups\)/)).not.toBeInTheDocument();
+      expect(getByText(/set the total number to 3:/)).toBeInTheDocument();
+      expect(getByText(
+        'Learners in none of the groups of Content groups see 0 of 4 Test type subsections and can get at most 0% '
+        + 'for them. If the course has such learners, put them in groups.',
+      )).toBeInTheDocument();
+      expect(queryByText(
+        messages.assignmentAlertWarningSuccess.defaultMessage.replace(/{type}/g, 'Test type'),
+      )).not.toBeInTheDocument();
+    });
+    it('shows the total number as fine for every group once it is the suggested one', () => {
+      const { getByText, queryByText } = renderWithCount(3);
+      expect(getByText(
+        messages.assignmentAlertGroupsSuccess.defaultMessage.replace(/{type}/g, 'Test type'),
+      )).toBeInTheDocument();
+      expect(queryByText(/not every group can get 100%/)).not.toBeInTheDocument();
+      expect(queryByText(
+        messages.assignmentAlertWarningUsageTitle.defaultMessage.replace(/{type}/g, 'Test type'),
+      )).not.toBeInTheDocument();
+    });
+  });
   it('checking correct assignment abbreviation value', () => {
     const { getByTestId } = render(<RootWrapper setGradingData={setGradingData} />);
     const assignmentShortLabelInput = getByTestId('assignment-shortLabel-input');
