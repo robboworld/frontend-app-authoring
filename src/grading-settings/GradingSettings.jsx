@@ -256,6 +256,7 @@ const GradingSettings = () => {
                       setGradingData={setGradingData}
                       courseAssignmentLists={courseAssignmentLists}
                       unscoredAssignmentLists={gradingSettings?.unscoredAssignmentLists}
+                      groupAssignmentCounts={gradingSettings?.groupAssignmentCounts}
                       setShowSuccessAlert={setShowSuccessAlert}
                       isEditable={isEditable}
                     />

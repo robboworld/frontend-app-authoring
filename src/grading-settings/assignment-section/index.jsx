@@ -3,19 +3,24 @@
  * Robbo: a warning lists the subsections of the type with nothing that gives points (the grade leaves
  * them out), and the counts no longer show as matching while there are such subsections.
  * The «… assignment(s) found» label is a message, so it is translated.
+ * Another warning names the groups that can't get 100% for the type: some subsections are hidden from
+ * them, and the grader pads the missing ones up to the total number with zeros (utils/groupLimits.js).
+ * It suggests the total number that makes 100% possible for every group; with such a number the counts
+ * show as fine for every group instead of the «does not match» warning.
  */
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useIntl } from '@edx/frontend-platform/i18n';
 
 import { Button } from '@openedx/paragon';
-import { CheckCircle, Warning } from '@openedx/paragon/icons';
+import { CheckCircle, Info, Warning } from '@openedx/paragon/icons';
 
 import AlertMessage from '../../generic/alert-message';
 import { validationAssignmentFields } from './utils/validation';
 import AssignmentItem from './assignments/AssignmentItem';
 import AssignmentTypeName from './assignments/AssignmentTypeName';
 import { defaultAssignmentsPropTypes, ASSIGNMENT_TYPES } from './utils/enum';
+import { getGroupLimits } from './utils/groupLimits';
 import messages from './messages';
 
 const MIN_NUMBER_VALUE = 0;
@@ -28,6 +33,7 @@ const AssignmentSection = ({
   setGradingData,
   courseAssignmentLists,
   unscoredAssignmentLists,
+  groupAssignmentCounts,
   setShowSuccessAlert,
   isEditable = true,
 }) => {
@@ -84,8 +90,16 @@ const AssignmentSection = ({
     <div className="assignment-items">
       {graders?.map((gradeField) => {
         const courseAssignmentUsage = courseAssignmentLists[gradeField.type];
+        const groupLimits = getGroupLimits(
+          groupAssignmentCounts?.[gradeField.type],
+          gradeField.minCount,
+          gradeField.dropCount,
+        );
+        // A total number below the subsections of the course, chosen so that every group can get 100%.
+        const groupsExplainCount = groupLimits.hasHiddenSubsections && !groupLimits.limitedGroups.length
+          && gradeField.minCount < courseAssignmentUsage?.length;
         const showDefinedCaseAlert = gradeField.minCount !== courseAssignmentUsage?.length
-          && Boolean(courseAssignmentUsage?.length);
+          && Boolean(courseAssignmentUsage?.length) && !groupsExplainCount;
         const showNotDefinedCaseAlert = !courseAssignmentUsage?.length && Boolean(gradeField.type);
         const unscoredAssignments = unscoredAssignmentLists?.[gradeField.type] || [];
 
@@ -206,7 +220,64 @@ const AssignmentSection = ({
                 aria-hidden="true"
               />
             )}
-            {gradeField.minCount === courseAssignmentUsage?.length && !unscoredAssignments.length && (
+            {groupLimits.limitedGroups.length > 0 && (
+              <AlertMessage
+                className="course-grading-assignment-item-alert-warning"
+                variant="warning"
+                icon={Warning}
+                title={intl.formatMessage(messages.assignmentAlertWarningGroupsTitle, {
+                  type: gradeField.type,
+                  minCount: gradeField.minCount,
+                })}
+                description={
+                  <>
+                    <ol className="course-grading-assignment-item-alert-warning-list">
+                      {groupLimits.limitedGroups.map(entry => (
+                        <li key={`${entry.partition}-${entry.group}`}>
+                          {intl.formatMessage(messages.assignmentAlertWarningGroupsItem, {
+                            ...entry,
+                            everyone: groupLimits.everyone,
+                          })}
+                        </li>
+                      ))}
+                    </ol>
+                    {groupLimits.suggestedMinCount && (
+                      <span className="course-grading-assignment-item-alert-warning-hint">
+                        {intl.formatMessage(messages.assignmentAlertWarningGroupsHint, {
+                          suggested: groupLimits.suggestedMinCount,
+                        })}
+                      </span>
+                    )}
+                  </>
+                }
+                aria-hidden="true"
+              />
+            )}
+            {groupsExplainCount && !unscoredAssignments.length && (
+              <AlertMessage
+                className="course-grading-assignment-item-alert-success"
+                variant="success"
+                icon={CheckCircle}
+                title={intl.formatMessage(messages.assignmentAlertGroupsSuccess, { type: gradeField.type })}
+                aria-hidden="true"
+              />
+            )}
+            {groupLimits.limitedOutsiders.map(entry => (
+              <AlertMessage
+                key={`outsiders-${entry.partition}`}
+                className="course-grading-assignment-item-alert-info"
+                variant="info"
+                icon={Info}
+                title={intl.formatMessage(messages.assignmentAlertInfoOutsiders, {
+                  ...entry,
+                  type: gradeField.type,
+                  everyone: groupLimits.everyone,
+                })}
+                aria-hidden="true"
+              />
+            ))}
+            {gradeField.minCount === courseAssignmentUsage?.length && !unscoredAssignments.length
+              && !groupLimits.limitedGroups.length && (
               <AlertMessage
                 className="course-grading-assignment-item-alert-success"
                 variant="success"
@@ -234,6 +305,7 @@ const AssignmentSection = ({
 AssignmentSection.defaultProps = {
   courseAssignmentLists: undefined,
   unscoredAssignmentLists: undefined,
+  groupAssignmentCounts: undefined,
   graders: undefined,
 };
 
@@ -244,6 +316,14 @@ AssignmentSection.propTypes = {
   setShowSuccessAlert: PropTypes.func.isRequired,
   courseAssignmentLists: PropTypes.shape(defaultAssignmentsPropTypes),
   unscoredAssignmentLists: PropTypes.objectOf(PropTypes.arrayOf(PropTypes.string)),
+  groupAssignmentCounts: PropTypes.objectOf(PropTypes.shape({
+    everyone: PropTypes.number,
+    groups: PropTypes.arrayOf(PropTypes.shape({
+      partition: PropTypes.string,
+      group: PropTypes.string,
+      count: PropTypes.number,
+    })),
+  })),
   graders: PropTypes.arrayOf(
     PropTypes.shape(defaultAssignmentsPropTypes),
   ),
