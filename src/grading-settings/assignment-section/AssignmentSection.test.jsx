@@ -1,3 +1,6 @@
+/**
+ * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
+ */
 import React from 'react';
 import { render, waitFor, fireEvent } from '@testing-library/react';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
@@ -53,6 +56,29 @@ describe('<AssignmentSection />', () => {
       expect(getByText(messages.assignmentAlertWarningDescription.defaultMessage)).toBeInTheDocument();
       expect(getByText(messages.assignmentDeleteButton.defaultMessage)).toBeInTheDocument();
     });
+  });
+  it('warns about assignments without components that give points', () => {
+    const { getByText, queryByText } = render(
+      <RootWrapper
+        courseAssignmentLists={{ 'Test type': ['Section - Empty'] }}
+        unscoredAssignmentLists={{ 'Test type': ['Section - Empty'] }}
+      />,
+    );
+    expect(getByText(
+      'Warning: 1 Test type assignment has no components that give points, so the grade leaves it out:',
+    )).toBeInTheDocument();
+    expect(getByText('Section - Empty')).toBeInTheDocument();
+    expect(queryByText(
+      messages.assignmentAlertWarningSuccess.defaultMessage.replace(/{type}/g, 'Test type'),
+    )).not.toBeInTheDocument();
+  });
+  it('shows the counts as matching when every assignment gives points', () => {
+    const { getByText } = render(
+      <RootWrapper courseAssignmentLists={{ 'Test type': ['Section - Scored'] }} unscoredAssignmentLists={{}} />,
+    );
+    expect(getByText(
+      messages.assignmentAlertWarningSuccess.defaultMessage.replace(/{type}/g, 'Test type'),
+    )).toBeInTheDocument();
   });
   it('checking correct assignment abbreviation value', () => {
     const { getByTestId } = render(<RootWrapper setGradingData={setGradingData} />);
