@@ -12,14 +12,15 @@ import { useIntl } from '@edx/frontend-platform/i18n';
 
 import messages from './messages';
 import { useRobboHeaderSlot } from './robboHeaderSlot';
+import RobboNotificationsBell from './robboNotificationsBell';
 import RobboWhatsNew from './robboWhatsNew';
 
 interface RobboHeaderExtrasProps {
   shellRef: RefObject<HTMLElement>;
 }
 
-// Before the user menu: «Что нового» and, for platform staff, the «LMS» pill — the way back from
-// Studio, as the «Студия» pill in LMS headers. Styles: robbo-frontend-chrome/studio-header.css.
+// Before the user menu: «Что нового», the notifications bell and, for platform staff, the «LMS» pill —
+// the way back from Studio, as the «Студия» pill in LMS headers. Styles: robbo-frontend-chrome/studio-header.css.
 const RobboHeaderExtras = ({ shellRef }: RobboHeaderExtrasProps) => {
   const intl = useIntl();
   const slot = useRobboHeaderSlot(shellRef);
@@ -32,6 +33,7 @@ const RobboHeaderExtras = ({ shellRef }: RobboHeaderExtrasProps) => {
   return createPortal(
     <>
       <RobboWhatsNew />
+      <RobboNotificationsBell />
       {showLmsLink && (
         <a
           className="robbo-header-lms-link__btn"
