@@ -16,19 +16,15 @@ const config = createConfig('webpack-prod', {
       constants: false,
     },
   },
-  // Silently ignore “module not found” errors for that exact specifier.
+  // Robbo: the stock notifications tray (@edx/frontend-plugin-notifications, which the header package
+  // brings along) is always replaced by the empty stub — Studio shows the Robbo bell instead
+  // (src/header/robboNotificationsBell.tsx), the same one as LMS pages and the other MFEs.
   plugins: [
     new webpack.NormalModuleReplacementPlugin(
       /@edx\/frontend-plugin-notifications/,
       (resource) => {
-        try {
-          // Try to resolve the real package. If it exists, do nothing.
-          require.resolve('@edx/frontend-plugin-notifications');
-        } catch {
-          // Package not found → point to the stub we created.
-          // eslint-disable-next-line no-param-reassign
-          resource.request = path.resolve(__dirname, 'src/stubs/empty-notifications-plugin.tsx');
-        }
+        // eslint-disable-next-line no-param-reassign
+        resource.request = path.resolve(__dirname, 'src/stubs/empty-notifications-plugin.tsx');
       },
     ),
   ],
