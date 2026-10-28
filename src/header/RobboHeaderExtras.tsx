@@ -4,7 +4,7 @@
  *
  * Part of the Robbo Open edX MFE overrides. See NOTICE at repository root.
  */
-import { type RefObject } from 'react';
+import { type RefObject, useCallback, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
@@ -13,6 +13,7 @@ import { useIntl } from '@edx/frontend-platform/i18n';
 import messages from './messages';
 import { useRobboHeaderSlot } from './robboHeaderSlot';
 import RobboNotificationsBell from './robboNotificationsBell';
+import { findUserMenuToggle, type RobboWhatsNewState, useRobboUserMenuWhatsNew } from './robboUserMenuWhatsNew';
 import RobboWhatsNew from './robboWhatsNew';
 
 interface RobboHeaderExtrasProps {
@@ -24,6 +25,10 @@ interface RobboHeaderExtrasProps {
 const RobboHeaderExtras = ({ shellRef }: RobboHeaderExtrasProps) => {
   const intl = useIntl();
   const slot = useRobboHeaderSlot(shellRef);
+  // «Что нового» as a user menu item with a dot on its button, if chosen in account settings.
+  const [whatsNew, setWhatsNew] = useState<RobboWhatsNewState | null>(null);
+  const profileToggle = useCallback(() => findUserMenuToggle(shellRef.current), [shellRef]);
+  useRobboUserMenuWhatsNew(shellRef, whatsNew, intl.formatMessage(messages['header.robbo.whatsNew']));
   if (!slot) {
     return null;
   }
@@ -32,7 +37,7 @@ const RobboHeaderExtras = ({ shellRef }: RobboHeaderExtrasProps) => {
   const showLmsLink = Boolean(lmsUrl && getAuthenticatedUser()?.administrator);
   return createPortal(
     <>
-      <RobboWhatsNew />
+      <RobboWhatsNew profileToggle={profileToggle} onChange={setWhatsNew} />
       <RobboNotificationsBell />
       {showLmsLink && (
         <a
