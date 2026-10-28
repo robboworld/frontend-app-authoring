@@ -250,6 +250,7 @@
   "course-authoring.files-and-uploads.file-info.fileActive.column": "In use",
   "course-authoring.files-and-videos.sort-and-filter.modal.filter.activeCheckbox.label": "In use",
   "course-authoring.files-and-videos.sort-and-filter.modal.filter.inactiveCheckbox.label": "Not in use",
+  "robbo.header.user.whatsNew": "What's new",
   "robbo.header.lms.label": "LMS",
   "robbo.header.lms.aria": "Go to LMS",
   "course-authoring.schedule-section.introducing.robbo-card-preview.intro": "This is how learners will see the course card. Changes on this page show up here right away.",

@@ -186,6 +186,11 @@ const messages = defineMessages({
     defaultMessage: 'LMS',
     description: 'Header pill that opens the LMS (platform staff only)',
   },
+  'header.robbo.whatsNew': {
+    id: 'robbo.header.user.whatsNew',
+    defaultMessage: "What's new",
+    description: 'User menu item that opens the latest platform changes (if chosen in account settings)',
+  },
   'header.robbo.lms.aria': {
     id: 'robbo.header.lms.aria',
     defaultMessage: 'Go to LMS',
