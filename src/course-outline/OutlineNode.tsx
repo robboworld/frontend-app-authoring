@@ -2,7 +2,8 @@
  * OutlineNode — unified card renderer for all three outline levels.
  *
  * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
- * Robbo: «Сбросить ограничения доступа» in the section menu (confirmation, request, toast).
+ * Robbo: «Сбросить ограничения доступа» in the section menu (confirmation, request, toast);
+ * «Только полный доступ» on sections and subsections (menu toggle, badge, toast).
  */
 import {
   useCallback,
@@ -13,8 +14,8 @@ import {
   type ReactNode,
 } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Bubble, Button, useToggle } from '@openedx/paragon';
-import { Warning } from '@openedx/paragon/icons';
+import { Badge, Bubble, Button, Icon, useToggle } from '@openedx/paragon';
+import { Lock, Warning } from '@openedx/paragon/icons';
 import { useQueryClient } from '@tanstack/react-query';
 import classNames from 'classnames';
 import moment from 'moment';
@@ -42,6 +43,7 @@ import {
   useScrollState,
   useDuplicateItem,
   useResetSectionGroupAccess,
+  useSetPaidOnly,
 } from './data';
 import ModalNotification from '@src/generic/modal-notification';
 import { useToastContext } from '@src/generic/toast-context';
@@ -120,6 +122,7 @@ const OutlineNode = ({
   const { courseId, openUnlinkModal, getUnitUrl } = useCourseAuthoringContext();
   const duplicateMutation = useDuplicateItem(courseId);
   const resetAccessMutation = useResetSectionGroupAccess(courseId);
+  const paidOnlyMutation = useSetPaidOnly(courseId);
   const { showToast } = useToastContext();
   const { openPublishModal } = useCourseOutlineContext();
   const queryClient = useQueryClient();
@@ -289,6 +292,20 @@ const OutlineNode = ({
 
   const isDroppable = model.isDroppable(actions);
 
+  // Robbo: «Только полный доступ» is set on sections and subsections; units inside inherit it
+  const paidOnly = Boolean(blk.robboPaidOnly);
+  const handleTogglePaidOnly = depth < 2 ?
+    () =>
+      paidOnlyMutation.mutate({ itemId: blk.id, paidOnly: !paidOnly }, {
+        onSuccess: () =>
+          showToast(intl.formatMessage(
+            paidOnly ? outlineNodeMessages.paidOnlyOffDone : outlineNodeMessages.paidOnlyOnDone,
+            { name: blk.displayName },
+          )),
+        onError: () => showToast(intl.formatMessage(outlineNodeMessages.paidOnlyError)),
+      }) :
+    undefined;
+
   const showPaste = depth === 1 && blk.enableCopyPasteUnits && showPasteUnit && sharedClipboardData;
 
   if (!shouldRenderUnit) { return null; }
@@ -333,6 +350,8 @@ const OutlineNode = ({
                 onClickConfigure={() => onOpenConfigureModal(model.actionSelection())}
                 onClickDelete={() => onOpenDeleteModal(model.actionSelection())}
                 onClickResetGroupAccess={depth === 0 ? openResetAccessModal : undefined}
+                onClickTogglePaidOnly={handleTogglePaidOnly}
+                paidOnly={paidOnly}
                 onClickUnlink={() => openUnlinkModal(model.unlinkPayload(liveBlock))}
                 onClickMoveUp={handleMoveUp}
                 onClickMoveDown={handleMoveDown}
@@ -382,6 +401,14 @@ const OutlineNode = ({
                     </Button>
                   </div>
                 )}
+                {paidOnly && depth < 2 && (
+                  <div className="mb-1" data-testid={`${levelConfig.name}-card-paid-only`}>
+                    <Badge variant="warning" className="d-inline-flex align-items-center">
+                      <Icon src={Lock} size="xs" className="mr-1" />
+                      {intl.formatMessage(outlineNodeMessages.paidOnlyBadge)}
+                    </Badge>
+                  </div>
+                )}
                 <XBlockStatus
                   isSelfPaced={isSelfPaced}
                   isCustomRelativeDatesActive={isCustomRelativeDatesActive}
@@ -429,10 +456,11 @@ const OutlineNode = ({
           handleAction={() => {
             closeResetAccessModal();
             resetAccessMutation.mutate(blk.id, {
-              onSuccess: ({ cleared }) => showToast(intl.formatMessage(
-                cleared ? outlineNodeMessages.resetGroupAccessDone : outlineNodeMessages.resetGroupAccessNothing,
-                { count: cleared },
-              )),
+              onSuccess: ({ cleared }) =>
+                showToast(intl.formatMessage(
+                  cleared ? outlineNodeMessages.resetGroupAccessDone : outlineNodeMessages.resetGroupAccessNothing,
+                  { count: cleared },
+                )),
               onError: () => showToast(intl.formatMessage(outlineNodeMessages.resetGroupAccessError)),
             });
           }}

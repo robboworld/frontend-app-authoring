@@ -1,3 +1,6 @@
+/**
+ * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
+ */
 import { getConfig } from '@edx/frontend-platform';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { useSelector } from 'react-redux';
@@ -103,6 +106,13 @@ export const useSettingMenuItems = (courseId: string) => {
       ? [{
         href: `/course/${courseId}/settings/details`,
         title: intl.formatMessage(messages['header.links.scheduleAndDetails']),
+      }]
+      : []),
+    // Robbo: what is paid in the course (src/robbo-course-type); the team reads it, platform staff change it
+    ...(perms.canViewScheduleAndDetails
+      ? [{
+        href: `/course/${courseId}/settings/course-type`,
+        title: intl.formatMessage(messages['header.links.robboCourseType']),
       }]
       : []),
     ...(perms.canViewGradingSettings

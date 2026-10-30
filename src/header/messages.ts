@@ -1,3 +1,6 @@
+/**
+ * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
+ */
 import { defineMessages } from '@edx/frontend-platform/i18n';
 
 const messages = defineMessages({
@@ -190,6 +193,11 @@ const messages = defineMessages({
     id: 'robbo.header.user.whatsNew',
     defaultMessage: "What's new",
     description: 'User menu item that opens the latest platform changes (if chosen in account settings)',
+  },
+  'header.links.robboCourseType': {
+    id: 'course-authoring.header.links.robbo-course-type',
+    defaultMessage: 'Course type',
+    description: 'Link to the Robbo «Тип курса» settings page (paid full access, paid certificate)',
   },
   'header.robbo.lms.aria': {
     id: 'robbo.header.lms.aria',
