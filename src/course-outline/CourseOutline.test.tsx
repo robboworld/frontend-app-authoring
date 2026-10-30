@@ -1581,16 +1581,11 @@ describe('<CourseOutline />', () => {
     const [firstSubsection] = await within(currentSection).findAllByTestId('subsection-card');
     const subsectionDropdownButton = await within(firstSubsection).findByTestId('subsection-card-header__menu-button');
 
-    subsection.start = expectedRequestData.metadata.start;
-    subsection.due = expectedRequestData.metadata.due;
-    subsection.format = expectedRequestData.graderType;
-    subsection.isTimeLimited = expectedRequestData.metadata.is_time_limited;
-    subsection.defaultTimeLimitMinutes = expectedRequestData.metadata.default_time_limit_minutes;
-    subsection.hideAfterDue = expectedRequestData.metadata.hide_after_due;
+    // Robbo: the release date is sent only when the author changed it, so the modal opens
+    // with the subsection as it was; the saved values are served after «Save».
     axiosMock
       .onGet(getXBlockApiUrl(subsection.id))
-      .reply(200, subsection);
-    section.childInfo.children[0] = subsection;
+      .reply(200, cloneDeep(subsection));
 
     await user.click(subsectionDropdownButton);
     const configureBtn = await within(firstSubsection).findByTestId('subsection-card-header__menu-configure-button');
@@ -1629,6 +1624,18 @@ describe('<CourseOutline />', () => {
     let hoursWrapper = await within(configureModal).findByTestId('advanced-tab-hours-picker-wrapper');
     let hours = await within(hoursWrapper).findByPlaceholderText('HH:MM');
     fireEvent.change(hours, { target: { value: '54:30' } });
+
+    subsection.start = expectedRequestData.metadata.start;
+    subsection.due = expectedRequestData.metadata.due;
+    subsection.format = expectedRequestData.graderType;
+    subsection.isTimeLimited = expectedRequestData.metadata.is_time_limited;
+    subsection.defaultTimeLimitMinutes = expectedRequestData.metadata.default_time_limit_minutes;
+    subsection.hideAfterDue = expectedRequestData.metadata.hide_after_due;
+    axiosMock
+      .onGet(getXBlockApiUrl(subsection.id))
+      .reply(200, subsection);
+    section.childInfo.children[0] = subsection;
+
     const saveButton = await within(configureModal).findByTestId('configure-save-button');
     await user.click(saveButton);
 
@@ -1696,7 +1703,7 @@ describe('<CourseOutline />', () => {
         exam_review_rules: 'some rules for proctored exams',
         default_time_limit_minutes: 30,
         is_onboarding_exam: false,
-        start: '1970-01-01T05:00:00Z',
+        // Robbo: the release date was not changed, so it is not sent
       },
     };
 
@@ -1847,7 +1854,7 @@ describe('<CourseOutline />', () => {
         exam_review_rules: '',
         default_time_limit_minutes: 30,
         is_onboarding_exam: false,
-        start: '1970-01-01T05:00:00Z',
+        // Robbo: the release date was not changed, so it is not sent
       },
     };
 
@@ -1958,7 +1965,7 @@ describe('<CourseOutline />', () => {
         exam_review_rules: '',
         default_time_limit_minutes: 30,
         is_onboarding_exam: true,
-        start: '2013-02-05T05:00:00Z',
+        // Robbo: the release date was not changed, so it is not sent
       },
     };
 
@@ -2069,7 +2076,7 @@ describe('<CourseOutline />', () => {
         exam_review_rules: '',
         default_time_limit_minutes: 0,
         is_onboarding_exam: false,
-        start: '1970-01-01T05:00:00Z',
+        // Robbo: the release date was not changed, so it is not sent
       },
     };
 
