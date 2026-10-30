@@ -1,3 +1,6 @@
+/**
+ * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
+ */
 import { defineMessages } from '@edx/frontend-platform/i18n';
 
 const messages = defineMessages({
@@ -49,6 +52,16 @@ const messages = defineMessages({
     id: 'course-authoring.course-outline.card.menu.reset-group-access',
     defaultMessage: 'Reset access restrictions',
     description: 'Robbo: section menu item that removes the group restrictions of the section and its content',
+  },
+  menuPaidOnlyOn: {
+    id: 'course-authoring.course-outline.card.menu.paid-only-on',
+    defaultMessage: 'Full access only',
+    description: 'Robbo: menu item that makes a section/subsection available to learners with full access only',
+  },
+  menuPaidOnlyOff: {
+    id: 'course-authoring.course-outline.card.menu.paid-only-off',
+    defaultMessage: 'Make available to everyone',
+    description: 'Robbo: menu item that removes «Full access only» from a section/subsection',
   },
   menuDuplicate: {
     id: 'course-authoring.course-outline.card.menu.duplicate',

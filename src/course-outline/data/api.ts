@@ -236,9 +236,22 @@ export async function publishCourseItem(itemId: string): Promise<CourseItemUpdat
  * Robbo: «Сбросить ограничения доступа» of a section — removes the group access rules of the section and of
  * everything inside it (openedx-platform cms/djangoapps/contentstore/robbo_group_access.py).
  */
-export async function resetSectionGroupAccess(sectionId: string): Promise<{ cleared: number }> {
+export async function resetSectionGroupAccess(sectionId: string): Promise<{ cleared: number; }> {
   const { data } = await getAuthenticatedHttpClient()
     .post(`${getApiBaseUrl()}/robbo/group-access/reset/${sectionId}`);
+  return data;
+}
+
+/**
+ * Robbo: «Только полный доступ» of a section/subsection (openedx-platform lms/djangoapps/robbo_paid_content).
+ * Republished at once, as «Настроить» does, so learners get it without a separate publish.
+ */
+export async function setPaidOnly(itemId: string, paidOnly: boolean): Promise<object> {
+  const { data } = await getAuthenticatedHttpClient()
+    .post(getCourseItemApiUrl(itemId), {
+      metadata: { robbo_paid_only: paidOnly },
+      publish: 'republish',
+    });
   return data;
 }
 

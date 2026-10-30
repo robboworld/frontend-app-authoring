@@ -33,6 +33,23 @@ const messages = defineMessages({
     id: 'course-authoring.course-outline.section.reset-group-access.error',
     defaultMessage: 'Could not reset access restrictions',
   },
+  // Robbo: «Только полный доступ» (openedx-platform lms/djangoapps/robbo_paid_content)
+  paidOnlyBadge: {
+    id: 'course-authoring.course-outline.card.badge.paid-only',
+    defaultMessage: 'Full access only',
+  },
+  paidOnlyOnDone: {
+    id: 'course-authoring.course-outline.card.paid-only.on',
+    defaultMessage: '“{name}” is now for learners with full access only',
+  },
+  paidOnlyOffDone: {
+    id: 'course-authoring.course-outline.card.paid-only.off',
+    defaultMessage: '“{name}” is now available to everyone',
+  },
+  paidOnlyError: {
+    id: 'course-authoring.course-outline.card.paid-only.error',
+    defaultMessage: 'Could not change the access. Try again.',
+  },
   sectionHighlightsBadge: {
     id: 'course-authoring.course-outline.section.badge.section-highlights',
     defaultMessage: 'Section highlights',
