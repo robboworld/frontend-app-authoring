@@ -1,3 +1,6 @@
+/**
+ * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
+ */
 import {
   Navigate,
   Routes,
@@ -23,6 +26,7 @@ import {
 } from './course-outline';
 import ScheduleAndDetails from './schedule-and-details';
 import { GradingSettings } from './grading-settings';
+import { CourseTypePage } from './robbo-course-type';
 import CourseTeam from './course-team/CourseTeam';
 import { CourseUpdates } from './course-updates';
 import { CourseUnit, SubsectionUnitRedirect } from './course-unit';
@@ -147,6 +151,10 @@ const CourseAuthoringRoutes = () => {
             <Route
               path="settings/grading"
               element={<GradingSettings />}
+            />
+            <Route
+              path="settings/course-type"
+              element={<CourseTypePage />}
             />
             <Route
               path="course_team"
