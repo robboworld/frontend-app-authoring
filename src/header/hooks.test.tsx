@@ -295,7 +295,7 @@ describe('header utils', () => {
       });
       const actualItems =
         renderHook(() => useSettingMenuItems('course-123'), { wrapper: createWrapper() }).result.current;
-      expect(actualItems).toHaveLength(6);
+      expect(actualItems).toHaveLength(7); // Robbo: + «Тип курса»
     });
     it('when user has access to advanced settings should include advanced settings option', () => {
       const actualItemsTitle = renderHook(() => useSettingMenuItems('course-123'), { wrapper: createWrapper() }).result

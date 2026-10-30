@@ -1,6 +1,7 @@
 /**
  * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
- * Robbo: «Сбросить ограничения доступа» in the section menu (onClickResetGroupAccess).
+ * Robbo: «Сбросить ограничения доступа» in the section menu (onClickResetGroupAccess),
+ * «Только полный доступ» on sections and subsections (onClickTogglePaidOnly).
  */
 import {
   type ReactNode,
@@ -49,6 +50,9 @@ interface CardHeaderProps {
   onClickConfigure: () => void;
   onClickDelete: () => void;
   onClickResetGroupAccess?: () => void;
+  /** Robbo: «Только полный доступ» toggle (sections and subsections); ``paidOnly`` is its current state */
+  onClickTogglePaidOnly?: () => void;
+  paidOnly?: boolean;
   renameSectionId?: string;
   renameSubsectionId?: string;
   onClickUnlink: () => void;
@@ -90,6 +94,8 @@ const CardHeader = ({
   onClickConfigure,
   onClickDelete,
   onClickResetGroupAccess,
+  onClickTogglePaidOnly,
+  paidOnly,
   renameSectionId,
   renameSubsectionId,
   onClickUnlink,
@@ -362,6 +368,15 @@ const CardHeader = ({
                   onClick={onClickResetGroupAccess}
                 >
                   {intl.formatMessage(messages.menuResetGroupAccess)}
+                </Dropdown.Item>
+              )}
+              {onClickTogglePaidOnly && (
+                <Dropdown.Item
+                  data-testid={`${namePrefix}-card-header__menu-paid-only-button`}
+                  disabled={editMutation.isPending}
+                  onClick={onClickTogglePaidOnly}
+                >
+                  {intl.formatMessage(paidOnly ? messages.menuPaidOnlyOff : messages.menuPaidOnlyOn)}
                 </Dropdown.Item>
               )}
               {getConfig().ENABLE_TAGGING_TAXONOMY_PAGES === 'true' && (

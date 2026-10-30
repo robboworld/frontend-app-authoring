@@ -579,4 +579,33 @@ describe('<CardHeader />', () => {
     await act(async () => fireEvent.click(unlinkMenuItem));
     expect(onClickUnlinkMock).toHaveBeenCalled();
   });
+
+  // Robbo: «Только полный доступ» (openedx-platform lms/djangoapps/robbo_paid_content)
+  it('toggles «Full access only» from the menu', async () => {
+    const onClickTogglePaidOnly = jest.fn();
+    const { rerender } = renderComponent({ ...cardHeaderProps, onClickTogglePaidOnly, paidOnly: false });
+    fireEvent.click(await screen.findByTestId('subsection-card-header__menu-button'));
+    const item = await screen.findByTestId('subsection-card-header__menu-paid-only-button');
+    expect(item).toHaveTextContent(messages.menuPaidOnlyOn.defaultMessage);
+    await act(async () => fireEvent.click(item));
+    expect(onClickTogglePaidOnly).toHaveBeenCalled();
+    rerender(
+      <CardHeader
+        {...cardHeaderProps}
+        onClickTogglePaidOnly={onClickTogglePaidOnly}
+        paidOnly
+        titleComponent={<span>{cardHeaderProps.title}</span>}
+      />,
+    );
+    fireEvent.click(await screen.findByTestId('subsection-card-header__menu-button'));
+    expect(await screen.findByTestId('subsection-card-header__menu-paid-only-button'))
+      .toHaveTextContent(messages.menuPaidOnlyOff.defaultMessage);
+  });
+
+  it('has no «Full access only» item without the handler (units)', async () => {
+    renderComponent();
+    fireEvent.click(await screen.findByTestId('subsection-card-header__menu-button'));
+    await screen.findByText(messages.menuConfigure.defaultMessage);
+    expect(screen.queryByTestId('subsection-card-header__menu-paid-only-button')).not.toBeInTheDocument();
+  });
 });

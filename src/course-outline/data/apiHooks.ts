@@ -1,6 +1,6 @@
 /**
  * Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
- * Robbo: useResetSectionGroupAccess.
+ * Robbo: useResetSectionGroupAccess, useSetPaidOnly.
  */
 import { containerComparisonQueryKeys } from '@src/container-comparison/data/apiHooks';
 import { courseOutlineQueryKeys } from './queryKeys';
@@ -46,6 +46,7 @@ import {
   publishCourseItem,
   configureCourseSection,
   resetSectionGroupAccess,
+  setPaidOnly,
   configureCourseSubsection,
   configureCourseUnit,
   restartIndexingOnCourse,
@@ -432,3 +433,12 @@ export function useRestartIndexingOnCourse(courseId: string) {
     mutationFn: (reindexLink: string) => restartIndexingOnCourse(reindexLink),
   });
 }
+
+// Robbo: «Только полный доступ» on a section/subsection; the whole course outline is refetched afterwards
+export const useSetPaidOnly = (courseId?: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ itemId, paidOnly }: { itemId: string; paidOnly: boolean; }) => setPaidOnly(itemId, paidOnly),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: courseOutlineQueryKeys.course(courseId) }),
+  });
+};
