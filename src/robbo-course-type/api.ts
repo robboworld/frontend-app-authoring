@@ -19,6 +19,10 @@ export interface CourseTypeData {
   /** The course passing grade, %; the certificate threshold can't be lower. */
   passingPercent: number | null;
   certificate: {
+    /** The course issues certificates at all (the «honor» mode; «audit» never gets one). */
+    issued: boolean;
+    /** Learners in «audit» now: turning certificates on moves them to «honor». */
+    auditLearners: number;
     paid: boolean;
     price: number | null;
     minPercent: number | null;
@@ -48,6 +52,8 @@ export interface CourseTypeData {
 
 export interface CourseTypeUpdate {
   certificate?: {
+    /** true turns certificates on (honor); false is ignored — they are not turned off here */
+    issued?: boolean;
     paid: boolean;
     price?: string;
     min_percent?: string | null;

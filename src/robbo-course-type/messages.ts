@@ -30,11 +30,11 @@ const messages = defineMessages({
   },
   typeFullAccess: {
     id: 'course-authoring.robbo-course-type.type.full-access',
-    defaultMessage: "Paid full access",
+    defaultMessage: "Free and paid versions of the course",
   },
   typeBoth: {
     id: 'course-authoring.robbo-course-type.type.both',
-    defaultMessage: "Paid full access and paid certificate",
+    defaultMessage: "Free and paid versions of the course, paid certificate",
   },
   currentType: {
     id: 'course-authoring.robbo-course-type.current',
@@ -50,23 +50,23 @@ const messages = defineMessages({
   },
   fullAccessTitle: {
     id: 'course-authoring.robbo-course-type.full-access.title',
-    defaultMessage: "Full access",
+    defaultMessage: "Free and paid versions of the course",
   },
   fullAccessHint: {
     id: 'course-authoring.robbo-course-type.full-access.hint',
-    defaultMessage: "A learner can pay for full access; the course then shows the «Full access» tab.",
+    defaultMessage: "The course can be taken for free, and its full version can be bought. What opens only in the full version is marked in «Paid content» below; learners who bought it get the «Full access» tab in the course.",
   },
   fullAccessPaid: {
     id: 'course-authoring.robbo-course-type.full-access.paid',
-    defaultMessage: "Full access is paid",
+    defaultMessage: "Sell the full version of the course",
   },
   fullAccessLearners: {
     id: 'course-authoring.robbo-course-type.full-access.learners',
-    defaultMessage: "Paid already: {count}",
+    defaultMessage: "Bought the full version: {count}",
   },
   fullAccessOffWithLearners: {
     id: 'course-authoring.robbo-course-type.full-access.off-with-learners',
-    defaultMessage: "Learners who paid keep full access; it is just not sold any more.",
+    defaultMessage: "Those who bought it keep the full version; it is just not sold any more.",
   },
   certificateTitle: {
     id: 'course-authoring.robbo-course-type.certificate.title',
@@ -98,7 +98,7 @@ const messages = defineMessages({
   },
   freeForVerified: {
     id: 'course-authoring.robbo-course-type.certificate.free-for-verified',
-    defaultMessage: "Free for learners who paid for full access",
+    defaultMessage: "Free for learners who bought the full version",
   },
   freeForCohorts: {
     id: 'course-authoring.robbo-course-type.certificate.free-for-cohorts',
@@ -182,7 +182,39 @@ const messages = defineMessages({
   },
   notSold: {
     id: 'course-authoring.robbo-course-type.paid-content.not-sold',
-    defaultMessage: "Full access is not on sale, so learners on the free path can't open paid parts at all. Turn on «Full access is paid» above.",
+    defaultMessage: "The full version of the course is not on sale, so learners can't open paid parts at all. Turn on «Sell the full version of the course» above.",
+  },
+  typeNoCertificate: {
+    id: 'course-authoring.robbo-course-type.type.no-certificate',
+    defaultMessage: "Free course without a certificate",
+  },
+  typeFullAccessNoCertificate: {
+    id: 'course-authoring.robbo-course-type.type.full-access-no-certificate',
+    defaultMessage: "Free and paid versions of the course, no certificate",
+  },
+  certificateIssued: {
+    id: 'course-authoring.robbo-course-type.certificate.issued',
+    defaultMessage: "The course issues a certificate",
+  },
+  certificateIssuedHint: {
+    id: 'course-authoring.robbo-course-type.certificate.issued-hint',
+    defaultMessage: "Learners enroll in «honor» and get the certificate when they pass the course. It is not turned off here, so that enrolled learners keep their certificates.",
+  },
+  certificateOffHint: {
+    id: 'course-authoring.robbo-course-type.certificate.off-hint',
+    defaultMessage: "Now learners enroll in «audit» and get no certificate. Turn it on and the course switches to «honor».",
+  },
+  certificateOnPending: {
+    id: 'course-authoring.robbo-course-type.certificate.on-pending',
+    defaultMessage: "After saving, the course switches to «honor». Set up the certificate itself in «Settings → Certificates».",
+  },
+  certificateAuditLearners: {
+    id: 'course-authoring.robbo-course-type.certificate.audit-learners',
+    defaultMessage: "Learners already in «audit» ({count}) are moved to «honor» too.",
+  },
+  certificatePaidNeedsIssued: {
+    id: 'course-authoring.robbo-course-type.certificate.paid-needs-issued',
+    defaultMessage: "A certificate can be paid only in a course that issues certificates.",
   },
 });
 
