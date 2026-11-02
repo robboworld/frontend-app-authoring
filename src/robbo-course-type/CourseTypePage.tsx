@@ -35,6 +35,7 @@ import messages from './messages';
 interface Draft {
   fullAccessPaid: boolean;
   fullAccessPrice: string;
+  certificateIssued: boolean;
   certificatePaid: boolean;
   certificatePrice: string;
   minPercent: string;
@@ -50,6 +51,7 @@ interface Draft {
 const draftFromData = (data: CourseTypeData): Draft => ({
   fullAccessPaid: data.fullAccess.paid,
   fullAccessPrice: data.fullAccess.price == null ? '' : String(data.fullAccess.price),
+  certificateIssued: data.certificate.issued,
   certificatePaid: data.certificate.paid,
   certificatePrice: data.certificate.price == null ? '' : String(data.certificate.price),
   minPercent: data.certificate.minPercent == null ? '' : String(data.certificate.minPercent),
@@ -66,15 +68,16 @@ const updateFromDraft = (draft: Draft): CourseTypeUpdate => ({
   full_access: draft.fullAccessPaid
     ? { paid: true, price: draft.fullAccessPrice.trim() }
     : { paid: false },
-  certificate: draft.certificatePaid
+  certificate: draft.certificateIssued && draft.certificatePaid
     ? {
+      issued: true,
       paid: true,
       price: draft.certificatePrice.trim(),
       min_percent: draft.minPercent.trim() || null,
       free_for_verified: draft.freeForVerified,
       free_for_cohorts: draft.freeForCohorts,
     }
-    : { paid: false },
+    : { issued: draft.certificateIssued, paid: false },
   paid_content: draft.paidContentEnabled
     ? {
       enabled: true,
@@ -86,7 +89,8 @@ const updateFromDraft = (draft: Draft): CourseTypeUpdate => ({
     : { enabled: false },
 });
 
-const typeMessage = (fullAccessPaid: boolean, certificatePaid: boolean) => {
+const typeMessage = (fullAccessPaid: boolean, certificateIssued: boolean, certificatePaid: boolean) => {
+  if (!certificateIssued) { return fullAccessPaid ? messages.typeFullAccessNoCertificate : messages.typeNoCertificate; }
   if (fullAccessPaid && certificatePaid) { return messages.typeBoth; }
   if (fullAccessPaid) { return messages.typeFullAccess; }
   if (certificatePaid) { return messages.typeCertificate; }
@@ -157,60 +161,55 @@ const CourseTypePage = () => {
         <div className="col-lg-9 px-0 mb-5">
           <p className="h4 mb-4" data-testid="robbo-course-type-current">
             {intl.formatMessage(messages.currentType, {
-              type: intl.formatMessage(typeMessage(draft.fullAccessPaid, draft.certificatePaid)),
+              type: intl.formatMessage(
+                typeMessage(draft.fullAccessPaid, draft.certificateIssued, draft.certificatePaid),
+              ),
             })}
           </p>
 
           {!canEdit && <Alert variant="info" icon={Info}>{intl.formatMessage(messages.readOnly)}</Alert>}
-          {canEdit && draft.certificatePaid && !data.paidCertificatesSwitch && (
+          {canEdit && draft.certificateIssued && draft.certificatePaid && !data.paidCertificatesSwitch && (
             <Alert variant="warning" icon={Warning}>{intl.formatMessage(messages.switchOff)}</Alert>
           )}
 
           <Card className="mb-4">
             <Card.Section>
-              <h3 className="h4">{intl.formatMessage(messages.fullAccessTitle)}</h3>
-              <p className="small text-gray-700">{intl.formatMessage(messages.fullAccessHint)}</p>
-              <Form.Switch
-                checked={draft.fullAccessPaid}
-                disabled={!canEdit}
-                onChange={(event) => change({ fullAccessPaid: event.target.checked })}
-              >
-                {intl.formatMessage(messages.fullAccessPaid)}
-              </Form.Switch>
-              {draft.fullAccessPaid && (
-                <Form.Group className="mt-3 mb-0" controlId="robbo-full-access-price">
-                  <Form.Label>{intl.formatMessage(messages.price)}</Form.Label>
-                  <Form.Control
-                    type="number"
-                    min={1}
-                    step={1}
-                    value={draft.fullAccessPrice}
-                    disabled={!canEdit}
-                    onChange={(event) => change({ fullAccessPrice: event.target.value })}
-                  />
-                </Form.Group>
-              )}
-              {data.fullAccess.learners > 0 && (
-                <p className="small text-gray-700 mt-3 mb-0">
-                  {intl.formatMessage(messages.fullAccessLearners, { count: data.fullAccess.learners })}
-                  {!draft.fullAccessPaid && ` ${intl.formatMessage(messages.fullAccessOffWithLearners)}`}
-                </p>
-              )}
-            </Card.Section>
-          </Card>
-
-          <Card className="mb-4">
-            <Card.Section>
               <h3 className="h4">{intl.formatMessage(messages.certificateTitle)}</h3>
+              <Form.Switch
+                checked={draft.certificateIssued}
+                // Turned on here, turned off nowhere on this page: learners in «honor» would lose certificates
+                disabled={!canEdit || data.certificate.issued}
+                onChange={(event) => change({ certificateIssued: event.target.checked })}
+              >
+                {intl.formatMessage(messages.certificateIssued)}
+              </Form.Switch>
+              <p className="small text-gray-700 mt-2" data-testid="robbo-certificate-issued-hint">
+                {data.certificate.issued && intl.formatMessage(messages.certificateIssuedHint)}
+                {!data.certificate.issued && !draft.certificateIssued &&
+                  intl.formatMessage(messages.certificateOffHint)}
+                {!data.certificate.issued && draft.certificateIssued &&
+                  intl.formatMessage(messages.certificateOnPending)}
+                {!data.certificate.issued && data.certificate.auditLearners > 0 && ` ${
+                  intl.formatMessage(
+                    messages.certificateAuditLearners,
+                    { count: data.certificate.auditLearners },
+                  )
+                }`}
+              </p>
               <p className="small text-gray-700">{intl.formatMessage(messages.certificateHint)}</p>
               <Form.Switch
-                checked={draft.certificatePaid}
-                disabled={!canEdit}
+                checked={draft.certificateIssued && draft.certificatePaid}
+                disabled={!canEdit || !draft.certificateIssued}
                 onChange={(event) => change({ certificatePaid: event.target.checked })}
               >
                 {intl.formatMessage(messages.certificatePaid)}
               </Form.Switch>
-              {draft.certificatePaid && (
+              {!draft.certificateIssued && (
+                <p className="small text-gray-700 mt-2 mb-0">
+                  {intl.formatMessage(messages.certificatePaidNeedsIssued)}
+                </p>
+              )}
+              {draft.certificateIssued && draft.certificatePaid && (
                 <>
                   <Form.Group className="mt-3" controlId="robbo-certificate-price">
                     <Form.Label>{intl.formatMessage(messages.price)}</Form.Label>
@@ -261,6 +260,39 @@ const CourseTypePage = () => {
                     ))}
                   </Form.Group>
                 </>
+              )}
+            </Card.Section>
+          </Card>
+
+          <Card className="mb-4">
+            <Card.Section>
+              <h3 className="h4">{intl.formatMessage(messages.fullAccessTitle)}</h3>
+              <p className="small text-gray-700">{intl.formatMessage(messages.fullAccessHint)}</p>
+              <Form.Switch
+                checked={draft.fullAccessPaid}
+                disabled={!canEdit}
+                onChange={(event) => change({ fullAccessPaid: event.target.checked })}
+              >
+                {intl.formatMessage(messages.fullAccessPaid)}
+              </Form.Switch>
+              {draft.fullAccessPaid && (
+                <Form.Group className="mt-3 mb-0" controlId="robbo-full-access-price">
+                  <Form.Label>{intl.formatMessage(messages.price)}</Form.Label>
+                  <Form.Control
+                    type="number"
+                    min={1}
+                    step={1}
+                    value={draft.fullAccessPrice}
+                    disabled={!canEdit}
+                    onChange={(event) => change({ fullAccessPrice: event.target.value })}
+                  />
+                </Form.Group>
+              )}
+              {data.fullAccess.learners > 0 && (
+                <p className="small text-gray-700 mt-3 mb-0">
+                  {intl.formatMessage(messages.fullAccessLearners, { count: data.fullAccess.learners })}
+                  {!draft.fullAccessPaid && ` ${intl.formatMessage(messages.fullAccessOffWithLearners)}`}
+                </p>
               )}
             </Card.Section>
           </Card>

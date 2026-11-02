@@ -27,6 +27,8 @@ const apiData = (overrides = {}) => ({
   paid_certificates_switch: true,
   passing_percent: 50,
   certificate: {
+    issued: true,
+    audit_learners: 0,
     paid: false,
     price: null,
     min_percent: null,
@@ -76,6 +78,8 @@ describe('<CourseTypePage />', () => {
       200,
       apiData({
         certificate: {
+          issued: true,
+          audit_learners: 0,
           paid: true,
           price: 990,
           min_percent: 80,
@@ -98,6 +102,7 @@ describe('<CourseTypePage />', () => {
       full_access: { paid: false },
       paid_content: { enabled: false },
       certificate: {
+        issued: true,
         paid: true,
         price: '990',
         min_percent: '80',
@@ -125,6 +130,8 @@ describe('<CourseTypePage />', () => {
       apiData({
         paid_certificates_switch: false,
         certificate: {
+          issued: true,
+          audit_learners: 0,
           paid: true,
           price: 990,
           min_percent: null,
@@ -161,5 +168,39 @@ describe('<CourseTypePage />', () => {
       display: 'hidden',
       grading: 'excluded',
     });
+  });
+
+  it('turns certificates on for a course in «audit» before a certificate can be paid', async () => {
+    const user = userEvent.setup();
+    const audit = {
+      issued: false,
+      audit_learners: 4,
+      paid: false,
+      price: null,
+      min_percent: null,
+      free_for_verified: true,
+      free_for_cohorts: [],
+    };
+    axiosMock.onGet(getCourseTypeApiUrl(courseId)).reply(200, apiData({ certificate: audit }));
+    axiosMock.onPut(getCourseTypeApiUrl(courseId)).reply(200, apiData());
+    renderPage();
+
+    const paidSwitch = await screen.findByRole('switch', { name: messages.certificatePaid.defaultMessage });
+    expect(paidSwitch).toBeDisabled();
+    expect(screen.getByText(messages.certificatePaidNeedsIssued.defaultMessage)).toBeInTheDocument();
+    expect(screen.getByTestId('robbo-course-type-current')).toHaveTextContent(
+      messages.typeNoCertificate.defaultMessage,
+    );
+    expect(screen.getByTestId('robbo-certificate-issued-hint')).toHaveTextContent('(4)');
+
+    await user.click(screen.getByRole('switch', { name: messages.certificateIssued.defaultMessage }));
+    expect(screen.getByRole('switch', { name: messages.certificatePaid.defaultMessage })).toBeEnabled();
+    expect(screen.getByTestId('robbo-course-type-current')).toHaveTextContent(messages.typeFree.defaultMessage);
+    await user.click(screen.getByRole('button', { name: messages.save.defaultMessage }));
+
+    await screen.findByText(messages.saved.defaultMessage);
+    expect(JSON.parse(axiosMock.history.put[0].data).certificate).toEqual({ issued: true, paid: false });
+    // Issued now: the switch can't be turned back off here
+    expect(screen.getByRole('switch', { name: messages.certificateIssued.defaultMessage })).toBeDisabled();
   });
 });
