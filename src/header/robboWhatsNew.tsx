@@ -8,6 +8,8 @@ import { useEffect, useRef } from 'react';
 import { getConfig } from '@edx/frontend-platform';
 import { getLocale } from '@edx/frontend-platform/i18n';
 
+import { createWidgetLoader, preloadWidget, type RobboPrefetchApi } from './robboWidgetPreload';
+
 import type { RobboWhatsNewState } from './robboUserMenuWhatsNew';
 
 // «Что нового» button: one widget for every header, served by the LMS (robbo_changelog); it fetches
@@ -27,7 +29,7 @@ interface RobboWhatsNewWidget {
   subscribe: (fn: (info: RobboWhatsNewInfo) => void) => () => void;
 }
 
-interface RobboWhatsNewApi {
+interface RobboWhatsNewApi extends RobboPrefetchApi {
   mount: (container: HTMLElement, options: Record<string, unknown>) => RobboWhatsNewWidget | null;
 }
 
@@ -37,27 +39,9 @@ declare global {
   }
 }
 
-let widgetPromise: Promise<RobboWhatsNewApi> | null = null;
+const loadWidget = createWidgetLoader<RobboWhatsNewApi>(WIDGET_PATH, () => window.RobboWhatsNew);
 
-const loadWidget = (lmsBaseUrl: string): Promise<RobboWhatsNewApi> => {
-  if (window.RobboWhatsNew) {
-    return Promise.resolve(window.RobboWhatsNew);
-  }
-  if (!widgetPromise) {
-    widgetPromise = new Promise((resolve, reject) => {
-      const script = document.createElement('script');
-      script.src = `${lmsBaseUrl.replace(/\/$/, '')}${WIDGET_PATH}`;
-      script.async = true;
-      script.onload = () => (window.RobboWhatsNew ? resolve(window.RobboWhatsNew) : reject(new Error('no widget')));
-      script.onerror = () => {
-        widgetPromise = null;
-        reject(new Error('whats-new widget failed to load'));
-      };
-      document.head.appendChild(script);
-    });
-  }
-  return widgetPromise;
-};
+preloadWidget(loadWidget);
 
 interface RobboWhatsNewProps {
   profileToggle?: () => HTMLElement | null;

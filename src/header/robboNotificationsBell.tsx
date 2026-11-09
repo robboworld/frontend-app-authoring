@@ -8,6 +8,8 @@ import { useEffect, useRef } from 'react';
 import { getConfig } from '@edx/frontend-platform';
 import { getLocale } from '@edx/frontend-platform/i18n';
 
+import { createWidgetLoader, preloadWidget, type RobboPrefetchApi } from './robboWidgetPreload';
+
 // Notifications button: one widget for every header, served by the LMS (robbo_notifications), like
 // «Что нового»: bell with the unseen counter and a panel with the latest notifications, a tick per
 // unread one and «Прочитать все»; hides itself while the notifications tray is off. The full list
@@ -18,7 +20,7 @@ interface RobboNotificationsWidget {
   unmount: () => void;
 }
 
-interface RobboNotificationsApi {
+interface RobboNotificationsApi extends RobboPrefetchApi {
   mount: (container: HTMLElement, options: Record<string, unknown>) => RobboNotificationsWidget | null;
 }
 
@@ -28,29 +30,9 @@ declare global {
   }
 }
 
-let widgetPromise: Promise<RobboNotificationsApi> | null = null;
+const loadWidget = createWidgetLoader<RobboNotificationsApi>(WIDGET_PATH, () => window.RobboNotifications);
 
-const loadWidget = (lmsBaseUrl: string): Promise<RobboNotificationsApi> => {
-  if (window.RobboNotifications) {
-    return Promise.resolve(window.RobboNotifications);
-  }
-  if (!widgetPromise) {
-    widgetPromise = new Promise((resolve, reject) => {
-      const script = document.createElement('script');
-      script.src = `${lmsBaseUrl.replace(/\/$/, '')}${WIDGET_PATH}`;
-      script.async = true;
-      script.onload = () => (
-        window.RobboNotifications ? resolve(window.RobboNotifications) : reject(new Error('no widget'))
-      );
-      script.onerror = () => {
-        widgetPromise = null;
-        reject(new Error('notifications widget failed to load'));
-      };
-      document.head.appendChild(script);
-    });
-  }
-  return widgetPromise;
-};
+preloadWidget(loadWidget);
 
 const getFeedUrl = (lmsBaseUrl: string): string => {
   const base: string = getConfig().ACCOUNT_SETTINGS_URL || `${lmsBaseUrl.replace(/\/$/, '')}/account`;
